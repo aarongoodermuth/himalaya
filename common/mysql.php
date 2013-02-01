@@ -18,7 +18,7 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/constants.php';
 
 // connects to the database (if it can, aborts connection otherwise)
 // (connection)
-function mysql_connect()
+function mysql_make_connection()
 {
   //...
   //test only

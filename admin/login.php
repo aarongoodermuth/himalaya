@@ -43,7 +43,7 @@ $REDIRECT_TIME     =    3;       // 3 seconds
 /**************/
 
 //establish a connection with our database
-$c = mysql_connect();
+$c = mysql_make_connection();
 
 //check if cookie corresponds to a valid user
 if( isset($_COOKIE[ $ADMIN_COOKIE_NAME ]) ) 
