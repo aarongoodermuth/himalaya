@@ -1,9 +1,7 @@
 <?php
-
 /**************/
 /** INCLUDES **/
 /**************/
-
 include_once '/home/goodermuth/dev/websites/himalaya/common/constants.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_admin.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/mysql.php';
@@ -42,6 +40,8 @@ $REDIRECT_TIME     =    3;       // 3 seconds
 /** PHP CODE **/
 /**************/
 
+print_html_header();
+
 //establish a connection with our database
 $c = mysql_make_connection();
 
@@ -64,7 +64,7 @@ if($valid_cookie_exists)
   setcookie($COOKIE_NAME, $_COOKIE[$ADMIN_COOKIE_NAME], $COOKIE_TIMEOUT); 
 
   //get user information that is found 
-  $username = mysql_get_admin_username_from_cookie($c, $_COOKIE[$ADMIN_COOKIE_NAME]);
+  $username = mysql_admin_get_username_from_cookie($c, $_COOKIE[$ADMIN_COOKIE_NAME]);
 
   //show user information, give chance to log out, give chance to redirect manually
   echo "<p>Welcome back " . $username . "!</p>";
@@ -89,7 +89,7 @@ else
       {
         $rand_cookie_value = rand();                                 //get random number for cookie value
       }
-      mysql_log_admin_cookie($_POST['username'], $rand_cookie_value);      //place session info into database under user's entry
+      mysql_admin_log_cookie($_POST['username'], $rand_cookie_value);      //place session info into database under user's entry
       setcookie($ADMIN_COOKIE_NAME, $rand_cookie_value, $COOKIE_TIMEOUT);  //set cookie with value 
     
       //send to dashboard
@@ -113,6 +113,8 @@ else
 }
 
 mysql_disconnect($c);
+
+print_html_footer();
 
 /******************/
 /** END PHP CODE **/

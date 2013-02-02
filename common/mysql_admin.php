@@ -18,7 +18,7 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/constants.php';
 
 // logs to cookie to the database
 // (void)
-function mysql_log_admin_cookie( $connection, $username, $cookie_cal )
+function mysql_admin_log_cookie( $connection, $username, $cookie_cal )
 {
   //...
 }
@@ -41,10 +41,18 @@ function mysql_admin_login_test( $connection, $username, $password )
 
 // finds the username from a cookie value
 // (string || null)
-function mysql_get_admin_username_from_cookie( $connection, $cookie_val )
+function mysql_admin_get_username_from_cookie( $connection, $cookie_val )
 {
   //...
   return "test_user_name";
+}
+
+// returns the type of admin a user is
+// (string)
+function mysql_admin_get_type($c, $username)
+{
+  //...
+  return 'sysadmin';
 }
 
 /*******************/
