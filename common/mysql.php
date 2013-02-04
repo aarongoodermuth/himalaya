@@ -25,12 +25,12 @@ function mysql_make_connection()
   if(!$mysqli_obj)
   {  die('Could not connect');  }
 
-//  $connected = mysqli_obj->real_connect($MYSQL_SERVERNAME, $MYSQL_USERNAME, $MYSQL_PASSWORD, $DB_NAME);
+  $connected = mysqli_real_connect($mysqli_obj, $MYSQL_SERVERNAME, $MYSQL_USERNAME, $MYSQL_PASSWORD, $DB_NAME);
   
-//  if (!$connected)
-//  {
-//    die('Could not connect');
-//  }
+  if (!$connected)
+  {
+    die('Could not connect');
+  }
 
   return $mysqli_obj;
 }
@@ -39,7 +39,7 @@ function mysql_make_connection()
 // (void)
 function mysql_disconnect( $mysqli_obj )
 {
- // mysqli_obj->close();
+  mysqli_close($mysqli_obj);
 }
 
 // filters all inputs for SQL Injection
