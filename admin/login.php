@@ -78,7 +78,7 @@ else
         $rand_cookie_value = rand();
       }
        // place session info into database under user's entry
-       mysql_admin_log_cookie($_POST['username'], $rand_cookie_value);
+       mysql_admin_log_cookie($c, $_POST['username'], $rand_cookie_value);
        // set cookie with value
        setcookie($ADMIN_COOKIE_NAME, $rand_cookie_value, $COOKIE_TIMEOUT);  
     
