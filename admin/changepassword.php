@@ -32,7 +32,6 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/forms.php';
 /**************/
 
 $c = mysql_make_connection();
-print_html_header();
 
 // check for valid cookie
 if( isset($_COOKIE[$ADMIN_COOKIE_NAME]) )
@@ -42,6 +41,8 @@ if( isset($_COOKIE[$ADMIN_COOKIE_NAME]) )
 
 if( isset($username) )
 {
+  show_html_header();
+
   if( isset($_POST['newpassword1']) && isset($_POST[$newpassword2]) )
   {
     // see if passwords match

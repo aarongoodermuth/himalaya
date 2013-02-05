@@ -1,2 +1,2 @@
 cd /home/goodermuth/dev/websites/himalaya/
-git fetch
+git pull

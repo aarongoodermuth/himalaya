@@ -7,6 +7,7 @@
 include_once '/home/goodermuth/dev/websites/himalaya/common/constants.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/mysql.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_admin.php';
+include_once '/home/goodermuth/dev/websites/himalaya/common/functions.php';
 
 /******************/
 /** END INCLUDES **/
@@ -81,14 +82,11 @@ function show_sysadmin_page()
 $c = mysql_make_connection();
 
 // check for valid cookie
-if( isset($_COOKIE['himalaya_admin']) )
-{
-  $username = mysql_admin_get_username_from_cookie( $c, $_COOKIE['himalaya_admin'] );
-}
+$username = check_logged_in_user($c);
 
-if( isset($username) ) // also checks if not null
+if( $username != null ) 
 {
-
+die('test');
   // get admin user type based on cookie
   $user_type = mysql_admin_get_type($c, $username);
 
@@ -99,30 +97,37 @@ if( isset($username) ) // also checks if not null
   switch( $user_type )
   {
     case 'Telemarketer':
+        show_html_header();
 	show_telemarketer_page();
         show_all();
 	break;
     case 'Sales Manager':
+        show_html_header();
 	show_sales_page();
         show_all();
 	break;
     case 'Shipping':
+        show_html_header();
 	show_shipping_page();
         show_all();
 	break;
     case 'Accounting':
+        show_html_header();
 	show_accounting_page();
         show_all();
 	break;
     case 'Gift Card':
+        show_html_header();
 	show_gift_card_page();
         show_all();
 	break;
     case 'Owner':
+        show_html_header();
 	show_owner_page();
         show_all();
 	break;
     case 'SysAdmin':
+        show_html_header();
 	show_sysadmin_page();
         show_all();
 	break;
@@ -133,7 +138,7 @@ if( isset($username) ) // also checks if not null
     }
 }
 else
-{
+{die('other test');
   //redirect to login page
   header('Refresh:0; url="login.php"'); 
 }
