@@ -21,9 +21,12 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/constants.php';
 // (string || null)
 function check_logged_in_user($c)
 {
+  global $ADMIN_COOKIE_NAME, $COOKIE_TIMEOUT;
+  
   // if already logged in
-  if( isset($_COOKIE['himalaya_admin']) )
+  if( isset($_COOKIE[$ADMIN_COOKIE_NAME]) )
   {
+echo '<p>at least we have a cookie</p>';
     // reset cookie
     setcookie($ADMIN_COOKIE_NAME, $_COOKIE[$ADMIN_COOKIE_NAME], time() + $COOKIE_TIMEOUT);
 

@@ -75,10 +75,23 @@ function mysql_admin_login_test( $c, $username, $password )
 
 // finds the username from a cookie value
 // (string || null)
-function mysql_admin_get_username_from_cookie( $connection, $cookie_val )
+function mysql_admin_get_username_from_cookie( $c, $cookie_val )
 {
-  //...
-  return "test_user_name";
+  $query = 'SELECT Username FROM ' . $ADMIN_TABLE . ' WHERE Session="'
+              . $cookie_val . '"';
+echo 'got here';
+  $results = mysqli_query($c, $query);
+  $row = mysqli_fetch_row($results);
+  if($row)
+  {
+    echo $row[0];
+    $row[0];
+  }
+  else
+  {
+    echo 'fuck';
+    return 'test';
+  }
 }
 
 // returns the type of admin a user is

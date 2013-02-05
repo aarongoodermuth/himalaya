@@ -84,6 +84,8 @@ $c = mysql_make_connection();
 // check for valid cookie
 $username = check_logged_in_user($c);
 
+echo '<p>' . $username . '</p>';
+
 if( $username != null ) 
 {
 die('test');

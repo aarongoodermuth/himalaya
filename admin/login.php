@@ -72,7 +72,7 @@ else
     {
       // sucessful login
       // put cookie on computer and log value in database
-      $rand_cookie_value = 0;
+      $rand_cookie_value = rand();
       while( mysql_admin_cookie_value_used($c, $rand_cookie_value) )
       {
         $rand_cookie_value = rand();
