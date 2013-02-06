@@ -72,7 +72,7 @@ else
     {
       // sucessful login
       // put cookie on computer and log value in database
-      $rand_cookie_value = 0;
+      $rand_cookie_value = rand();
       while( mysql_admin_cookie_value_used($c, $rand_cookie_value) )
       {
         $rand_cookie_value = rand();
@@ -80,8 +80,7 @@ else
        // place session info into database under user's entry
        mysql_admin_log_cookie($c, $_POST['username'], $rand_cookie_value);
        // set cookie with value
-       setcookie($ADMIN_COOKIE_NAME, $rand_cookie_value, $COOKIE_TIMEOUT);  
-    
+       setcookie($ADMIN_COOKIE_NAME, $rand_cookie_value, time() + $COOKIE_TIMEOUT);  
       // send to dashboard
       header('Refresh:0; url=dashboard.php'); 
     }

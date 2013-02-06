@@ -7,7 +7,6 @@
 include_once '/home/goodermuth/dev/websites/himalaya/common/constants.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/mysql.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_admin.php';
-include_once '/home/goodermuth/dev/websites/himalaya/common/forms.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/functions.php';
 
 /******************/
@@ -34,45 +33,20 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/functions.php';
 
 $c = mysql_make_connection();
 
-// check for valid cookie
 $username = check_logged_in_user($c);
 
-if( $username != null)
+if($username != null)
 {
-  print_html_header();
-
-  if( isset($_POST['newpassword1']) && isset($_POST['newpassword2']) )
-  {
-    // see if passwords match
-    if($_POST['newpassword1'] == $_POST['newpassword2'])
-    {
-      if( mysql_admin_new_password($c, $username, $_POST['newpassword1']) )
-      {
-        echo '<p style="color:red">Password had been updated</p>';
-      }
-      else
-      {
-        echo '<p style="color:red">Invalid Password</p>';
-      }
-    }
-    else
-    {
-      echo '<p style="color:red">Passwords did not match</p>';
-    }
-  }
-  
-  // always show the change password form
-  echo '<h3>Change password for account name: ' . $username . '</h3>';
-  show_form('changepassword');
-
-  echo '<p><a href="dashboard.php">Return to Dashboard</a></p>';
+  // delete session info in DB
+  mysql_admin_log_cookie($c, $username, 0);
 }
-else
-{
-  header('Refresh:0; url=login.php');
-}
+ 
+// remove cookie
+setcookie($ADMIN_COOKIE_NAME, 0, time() - 1);
 
-print_html_footer();
+// redirect to login page(?)
+header('refresh:0; url="login.php"');
+
 mysql_disconnect($c);
 
 /******************/

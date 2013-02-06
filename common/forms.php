@@ -25,22 +25,9 @@ function show_form($form_name)
  
 }
 
-// (void)
-function print_html_header()
-{
-  echo "<html><head></head><body>";
-}
-
-// (void)
-function print_html_footer()
-{
-  echo "</body></html>";
-}
-
 /*******************/
 /** END FUNCTIONS **/
 /*******************/
 
 //----------------------------------------------------------------------------------------
 ?>
-

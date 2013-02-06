@@ -23,13 +23,13 @@ function mysql_make_connection()
   global $MYSQL_SERVERNAME, $MYSQL_USERNAME, $MYSQL_PASSWORD, $DB_NAME;
   $mysqli_obj = mysqli_init();
   if(!$mysqli_obj)
-  {  die('Could not connect');  }
+  {  /*die('Could not connect');*/  }
 
   $connected = mysqli_real_connect($mysqli_obj, $MYSQL_SERVERNAME, $MYSQL_USERNAME, $MYSQL_PASSWORD, $DB_NAME);
   
   if (!$connected)
   {
-    die('Could not connect');
+    //die('Could not connect');
   }
 
   return $mysqli_obj;
@@ -56,4 +56,3 @@ function sanitize($input)
 
 //----------------------------------------------------------------------------------------
 ?>
-
