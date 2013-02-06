@@ -69,6 +69,12 @@ function show_sysadmin_page()
   echo "<p><a href='modifydb.php'><Modify Database</a></p>";
 }
 
+function print_welcome_message($type, $name)
+{
+  // display a welcome message
+  echo '<h3>Welcome to the ' . $type . ' dashboard, ' . $name . '!</h3>';
+}
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/
@@ -89,44 +95,48 @@ if( $username != null )
   // get admin user type based on cookie
   $user_type = mysql_admin_get_type($c, $username);
 
-  // display a welcome message
-  echo '<h3>Welcome to the ' . $user_type . ' dashboard, ' . $username . '!</h3>';
-
-  // display the dashboard based on user type
+   // display the dashboard based on user type
   switch( $user_type )
   {
     case $ADMIN_USER_TYPE_MAPPING[1]: //'SysAdmin'
         print_html_header();
-	show_sysadmin_page();
+	print_welcome_message($user_type, $username);
+        show_sysadmin_page();
         show_all();
 	break;
     case $ADMIN_USER_TYPE_MAPPING[2]: //'Owner'
         print_html_header();
-	show_owner_page();
+	print_welcome_message($user_type, $username);	
+        show_owner_page();
         show_all();
 	break;
     case $ADMIN_USER_TYPE_MAPPING[3]: //'Telemarketer'
         print_html_header();
+	print_welcome_message($user_type, $username);
 	show_telemarketer_page();
         show_all();
 	break;
     case $ADMIN_USER_TYPE_MAPPING[4]: //'Sales Manager'
         print_html_header();
+	print_welcome_message($user_type, $username);
 	show_sales_page();
         show_all();
 	break;
     case $ADMIN_USER_TYPE_MAPPING[5]: //'Shipping'
         print_html_header();
+	print_welcome_message($user_type, $username);
 	show_shipping_page();
         show_all();
 	break;
     case $ADMIN_USER_TYPE_MAPPING[6]: //'Accounting'
         print_html_header();
+	print_welcome_message($user_type, $username);
 	show_accounting_page();
         show_all();
 	break;
     case $ADMIN_USER_TYPE_MAPPING[7]: //'Gift Card'
         print_html_header();
+	print_welcome_message($user_type, $username);
 	show_gift_card_page();
         show_all();
 	break;
@@ -139,7 +149,7 @@ if( $username != null )
     }
 }
 else
-{die('other test');
+{
   //redirect to login page
   header('Refresh:0; url="login.php"'); 
 }

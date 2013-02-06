@@ -48,6 +48,10 @@ $username = check_logged_in_user($c);
 
 if($username != null)
 {
+ 
+  // redirect
+  header( 'Refresh:' . $REDIRECT_TIME . '; url=dashboard.php' );
+ 
   print_html_header();
   // show user information, give chance to log out, give chance to redirect 
   //    manually
@@ -57,9 +61,6 @@ if($username != null)
   echo '<p>Redirecting in ' . $REDIRECT_TIME . '. If you are not redirected,'
           . ' you may <a href="dashboard.php">click here</a> to go to the'
           . ' dashboard</p>';
-
-  // redirect
-  header( 'Refresh:' . $REDIRECT_TIME . '; url=dashboard.php' );
 }
 else
 {

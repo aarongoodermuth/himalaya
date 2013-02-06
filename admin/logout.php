@@ -42,7 +42,7 @@ if($username != null)
 }
  
 // remove cookie
-setcookie($ADMIN_COOKIE_NAME, 0, time() - 1);
+setcookie($ADMIN_COOKIE_NAME, $_COOKIE[$ADMIN_COOKIE_NAME], time() - 1);
 
 // redirect to login page(?)
 header('refresh:0; url="login.php"');
@@ -55,4 +55,3 @@ mysql_disconnect($c);
 
 //------------------------------------------------------------------------------
 ?>
-
