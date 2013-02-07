@@ -42,8 +42,8 @@ if($username != null)
 }
  
 // remove cookie
-setcookie($ADMIN_COOKIE_NAME, $_COOKIE[$ADMIN_COOKIE_NAME], time() - 1);
-
+setcookie($ADMIN_COOKIE_NAME, null, time() - 3600);
+   
 // redirect to login page(?)
 header('refresh:0; url="login.php"');
 

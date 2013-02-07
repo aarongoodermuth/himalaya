@@ -92,7 +92,7 @@ function mysql_admin_get_username_from_cookie( $c, $cookie_val )
   }
   else
   {
-    return 'no user found';
+    return null;
   }
 }
 

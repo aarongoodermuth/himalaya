@@ -142,7 +142,7 @@ if( $username != null )
 	break;
     default:
         //delete cookie
-        setcookie($ADMIN_COOKIE_NAME, $_COOKIE[$ADMIN_COOKIE_NAME], TIME() - 1);
+        setcookie($ADMIN_COOKIE_NAME, null,  1);
 	// redirect to login page
         header('Refresh:0; url="login.php"');
 	break;

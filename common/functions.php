@@ -38,11 +38,19 @@ function check_logged_in_user($c)
   // if already logged in
   if( isset($_COOKIE[$ADMIN_COOKIE_NAME]) )
   {
-    // reset cookie
-    setcookie($ADMIN_COOKIE_NAME, $_COOKIE[$ADMIN_COOKIE_NAME], time() + $COOKIE_TIMEOUT);
-
     // get username that is associated with the cookie
     $rn = mysql_admin_get_username_from_cookie($c, $_COOKIE[$ADMIN_COOKIE_NAME]);
+    if($rn == null)
+    {
+      // delete cookie
+      setcookie($ADMIN_COOKIE_NAME, null, 1);
+    }
+    else
+    {
+      // reset cookie
+      setcookie($ADMIN_COOKIE_NAME, $_COOKIE[$ADMIN_COOKIE_NAME], time() + $COOKIE_TIMEOUT);
+    }
+
     return $rn;
   }
   else
