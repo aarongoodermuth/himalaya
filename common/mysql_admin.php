@@ -151,6 +151,20 @@ function mysql_admin_add_user($c, $username, $password, $type)
   return mysqli_query($c, $query);
 }
 
+// deletes an admin user
+// (boolean)
+function mysql_admin_remove_user($c, $username)
+{
+  global $ADMIN_TABLE;
+
+  $username = sanitize($username);
+
+  $query = 'DELETE FROM ' . $ADMIN_TABLE . ' WHERE Username="' 
+              . $username . '"';
+  
+  return mysqli_query($c, $query);
+}
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/

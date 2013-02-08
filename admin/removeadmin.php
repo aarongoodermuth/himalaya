@@ -42,6 +42,13 @@ if( mysql_admin_get_type($c, $username) == $ADMIN_USER_TYPE_MAPPING[1])
   //check if we are already adding a user
   if(isset($_POST['username']))
   {
+    // NOTE!!!
+    // the following implementation will display "User <username> successfully 
+    //    removed" even if there was no user with that username in the database
+    // a better implementation would check how many rows were affected and 
+    //    report differently based on the user exists
+    // this will be saved for a later relase
+    // ...
     if( mysql_admin_remove_user($c, $_POST['username']) )
     {
         echo '<p style="color:red">User "' . $_POST['username'] . '" successfully removed</p>.';
