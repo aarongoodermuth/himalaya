@@ -1,0 +1,16 @@
+<!--provides a username, password, tpye dropdown and submit button for adding admin user-->
+<form action='addadmin.php' method='post'>
+<h3>Add new admin user</h3>
+<p>Username: <input type="text" name="newusername"></input></p>
+<p>Password: <input type="password" name="newpassword"></input></p>
+<select name="newtype">
+  <option value="1">SysAdmin</option>
+  <option value="2">Owner</option>
+  <option value="3">Telemarketer</option>
+  <option value-"4">Sales Manager</option>
+  <option value="5">Shipping</option>
+  <option value="6">Accounting</option>
+  <option value="7">Gift Card Retailer</option>
+</select>
+<p><input value="Submit" type="submit"></input></p>
+</form>

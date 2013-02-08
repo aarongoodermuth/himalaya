@@ -1,0 +1,6 @@
+<!--provides a username and submit button for removing admin user-->
+<form action='removeadmin.php' method='post'>
+<h3>Remove admin user</h3>
+<p>Username: <input type="text" name="username"></input></p>
+<p><input value="Submit" type="submit"></input></p>
+</form>

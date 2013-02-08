@@ -11,7 +11,7 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/mysql.php';
 /** END INCLUDES **/
 /******************/
 
-//----------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 /***************/
 /** FUNCTIONS **/
@@ -40,8 +40,9 @@ function mysql_admin_cookie_value_used( $c, $cookie_val )
 
   $cookie_val = sanitize($cookie_val);
 
-  if($results =  mysqli_query($c, 'SELECT * FROM ' . $ADMIN_TABLE . ' WHERE Session="'
-                 . $cookie_val. '"') )
+  if($results =  mysqli_query($c, 'SELECT * FROM ' . $ADMIN_TABLE 
+                                     . ' WHERE Session="'
+                                     . $cookie_val. '"') )
   {
     return mysqli_num_rows($results); 
   }
@@ -134,9 +135,25 @@ function mysql_admin_new_password($c, $username, $password)
   return mysqli_query($c, $query);
 }
 
+// adds a new admin user
+// (boolean)
+function mysql_admin_add_user($c, $username, $password, $type)
+{
+  global $ADMIN_TABLE;
+  
+  $username = sanitize($username);
+  $password = sanitize($password);
+  $type     = sanitize($type);
+
+  $query = 'INSERT INTO ' . $ADMIN_TABLE . ' VALUES("' . $username . ' ", "' 
+              . $password . '", "' . $type . '", "0")';
+
+  return mysqli_query($c, $query);
+}
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/
 
-//----------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 ?>

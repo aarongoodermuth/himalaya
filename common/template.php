@@ -36,4 +36,3 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/constants.php';
 
 //------------------------------------------------------------------------------
 ?>
-
