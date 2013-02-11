@@ -165,6 +165,13 @@ function mysql_admin_remove_user($c, $username)
   return mysqli_query($c, $query);
 }
 
+// ...
+// (boolean)
+function mysql_admin_db_query($c, $query)
+{
+  //...
+}
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/
