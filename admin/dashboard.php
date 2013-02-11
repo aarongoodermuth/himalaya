@@ -66,7 +66,7 @@ function show_sysadmin_page()
   show_owner_page();
   echo "<p><a href='addadmin.php'>Add Admin Users</a></p>";
   echo "<p><a href='removeadmin.php'>Remove Admin Users</a></p>";
-  echo "<p><a href='modifydb.php'><Modify Database</a></p>";
+  echo "<p><a href='modifydb.php'>Modify Database</a></p>";
 }
 
 function print_welcome_message($type, $name)
