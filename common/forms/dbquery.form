@@ -1,0 +1,5 @@
+<!--provides a username, password, and submit button for logging in-->
+<form action='modifydb.php' method='post'>
+<p>Query:</p><p> <textarea rows="10" cols="100"  name="query"></textarea></p>
+<p><input value="Submit" type="submit"></input></p>
+</form>
