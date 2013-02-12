@@ -165,11 +165,39 @@ function mysql_admin_remove_user($c, $username)
   return mysqli_query($c, $query);
 }
 
-// ...
-// (boolean)
+// takes the query submitted by the user and sends it to the database
+// this fn then takes a look at the database response and attempts to 
+//    send that response to the caller
+// NOTE: this fn does not do any sanitization of the query before sending
+//          it to the database and any call of this fn is made at the caller's
+//          own risk
+// (string)
 function mysql_admin_db_query($c, $query)
 {
+  $db_answer = mysqli_query($c, $query);
+
+  if($db_answer === TRUE)
+  {
+    // get actual response
+    //...
+    return 'Query successfully executed. ' . mysqli_affected_rows($c) 
+              . ' affected rows.';
+  }
+
+  if($db_answer === FALSE)
+  {
+    // get actual response
+    return mysqli_error($c);
+  }
+
+  // database is trying to return something
   //...
+
+
+
+  mysqli_free_result($db_answer);
+
+  return 'something';
 }
 
 /*******************/

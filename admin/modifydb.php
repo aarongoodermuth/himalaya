@@ -20,14 +20,7 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/forms.php';
 /** FUNCTIONS **/
 /***************/
 
-// takes in the resutls of the DB query and formats a string that 
-//    shows the response of the DB
-// (string)
-function result_handler($db_results)
-{
-  //...
-  return '*sticks tounge out*';
-}
+//...
 
 /*******************/
 /** END FUNCTIONS **/
@@ -54,11 +47,17 @@ if( mysql_admin_get_type($c, $username) == $ADMIN_USER_TYPE_MAPPING[1])
   //check if we are already adding a user
   if(isset($_POST['query']))
   {
-    $results = mysql_admin_db_query($c, $_POST['query']);
-    echo '<p>Query sent to database:</p><p style="color:red">' 
-            . $_POST['query'] . '</p>';
-    echo '<p>Database response:</p><p style="color:red">' 
-            . result_handler($results) . '</p>';
+    if($_POST['query'] == '')
+    {
+      echo '<p style="color:red">Cannot Send empty Query</p>';
+    }
+    else
+    {
+      echo '<p>Query sent to database:</p><p style="color:red">' 
+              . $_POST['query'] . '</p>';
+      echo '<p>Database response:</p><p style="color:red">' 
+              . mysql_admin_db_query($c, $_POST['query']) . '</p>';
+    }
   }
  
   show_form('dbquery');
