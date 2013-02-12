@@ -36,7 +36,7 @@ function show_telemarketer_page()
 // (void)
 function show_sales_page()
 {
-  echo "<p><a href='salesorderreport.php'>Show Sales/Order Reports</a></p>";
+  echo "<p><a href='sales.php'>Show Sales/Order Reports</a></p>";
 }
 
 // (void)
