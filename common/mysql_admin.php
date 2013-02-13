@@ -171,7 +171,7 @@ function mysql_admin_remove_user($c, $username)
 // NOTE: this fn does not do any sanitization of the query before sending
 //          it to the database and any call of this fn is made at the caller's
 //          own risk
-// (string)
+// (html string)
 function mysql_admin_db_query($c, $query)
 {
   $db_answer = mysqli_query($c, $query);
@@ -191,13 +191,43 @@ function mysql_admin_db_query($c, $query)
   }
 
   // database is trying to return something
-  //...
-
-
+  $i = 0;
+  while( $row[$i] = mysqli_fetch_row($db_answer) )
+  {
+    $i++;
+  }
+  $fields = mysqli_fetch_fields($db_answer);
 
   mysqli_free_result($db_answer);
+ 
+  if($row === NULL)
+  {
+    return '{empty}';
+  }
+  else
+  {
+    $retval = '<table style="color:red" border="1"><tr>';
 
-  return 'something';
+    //make the table head such that the column names are shown
+    foreach($fields as $field)
+    {
+      $retval = $retval . '<td><h4>' . $field->name . '</h4></td>';
+    }
+    $retval = $retval . '</tr>';
+
+    for($j=0; $j<$i; $j++)
+    {
+      $retval = $retval . '<tr>';
+      foreach($row[$j] as $item)
+      {
+        $retval = $retval . '<td>' . $item . '</td>';
+      }
+      $retval = $retval . '</tr>';
+    }
+
+    $retval = $retval . '</table>';
+    return $retval;
+  }
 }
 
 /*******************/
