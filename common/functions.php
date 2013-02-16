@@ -59,6 +59,15 @@ function check_logged_in_user($c)
   }
 }
 
+// (void)
+function show_form($form_name)
+{
+  $data = file_get_contents('/home/goodermuth/dev/websites/himalaya/common/forms/' 
+                                 . $form_name . '.form');
+  echo $data;
+ 
+}
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/

@@ -230,6 +230,117 @@ function mysql_admin_db_query($c, $query)
   }
 }
 
+// (boolean)
+function mysql_admin_complete_transaction($c, $orderid)
+{
+  $orderid = sanitize($orderid);
+
+  $query = 'UPDATE Orders SET status="complete" WHERE order_id="' . $orderid
+              . '" AND status="pendingpayment"';
+
+  return mysqli_query($c, $query);  
+}
+
+// (boolean)
+function mysql_admin_shipment_made($c, $orderid)
+{
+  $orderid = sanitize($orderid);
+
+  $query = 'UPDATE Orders SET status="pendingpayment" WHERE order_id="' . $orderid
+              . '" AND status="pendingshipment"';
+
+  return mysqli_query($c, $query);  
+}
+
+// returns information used for running telemarketer report
+// (array(array(string)))
+function mysql_admin_tele_report($c)
+{
+  global $REG_USER_TABLE;
+
+  $query = 'SELECT * FROM ' . $REG_USER_TABLE;
+
+  $result = mysqli_query($c, $query);
+
+  $i = 0;
+  while( $row[$i] = mysqli_fetch_row($result) )
+  {
+    $i++;
+  }
+  $row[$i] = NULL;
+
+  mysqli_free_result($result);
+
+  return $row;
+}
+
+// returns the phone numbers associated with a username
+// (string)
+function mysql_admin_phone($c, $username)
+{
+  global $PHONE_TABLE;
+
+  $query = 'SELECT number FROM ' . $PHONE_TABLE . ' WHERE username="' . $username .'"';
+  
+  $db_answer = mysqli_query($c, $query);
+  
+  if($db_answer === false || $db_answer === true)
+  {
+    $row[0] = '{empty}';
+    return $row;
+  }
+  else
+  {
+    $i = 0;
+    while( $row[$i] = mysqli_fetch_row($db_answer) )
+    {
+      $i++;
+    }
+  }
+
+  return $row;
+}
+
+// returns the number of Registered Users
+// (int)
+function mysql_admin_tele_users($c)
+{
+  global $REG_USER_TABLE;
+  $query = 'SELECT COUNT(*) FROM ' . $REG_USER_TABLE;
+
+  $db_answer = mysqli_query($c, $query);
+  
+  $row = mysqli_fetch_row($db_answer);
+  return $row[0];
+}
+
+// gets the address of a Registered_User
+// (string)
+function mysql_admin_get_address($c, $username)
+{
+   global $PHONE_TABLE;
+
+  $query = 'SELECT number FROM ' . $PHONE_TABLE . ' WHERE username="' . $username .'"';
+  
+  $db_answer = mysqli_query($c, $query);
+  
+  if($db_answer === false || $db_answer === true)
+  {
+    $row[0] = '{empty}';
+    return $row;
+  }
+  else
+  {
+    $i = 0;
+    while( $row[$i] = mysqli_fetch_row($db_answer) )
+    {
+      $i++;
+    }
+  }
+
+  return $row;
+}
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/

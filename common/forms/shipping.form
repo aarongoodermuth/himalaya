@@ -1,0 +1,6 @@
+<!--provides a text box and submit button for entering cleared shipments-->
+<form action='shipping.php' method='post'>
+<h3>Enter Order ID associated with shipped item</h3>
+<p>Order ID: <input type="text" name="orderid"></input></p>
+<p><input value="Submit" type="submit"></input></p>
+</form>

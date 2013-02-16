@@ -1,0 +1,6 @@
+<!--provides a text box and submit button for entering cleared payments-->
+<form action='accounting.php' method='post'>
+<h3>Enter Order ID associated with completed transaction</h3>
+<p>Order ID: <input type="text" name="orderid"></input></p>
+<p><input value="Submit" type="submit"></input></p>
+</form>

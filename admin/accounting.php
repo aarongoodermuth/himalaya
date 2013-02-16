@@ -33,9 +33,35 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_admin.php';
 
 $c = mysql_make_connection();
 
-print_html_header();
+$username = check_logged_in_user($c);
+$user_type = mysql_admin_get_type($c, $username);
 
-echo '<p>Not yet implemented</p>';
+if($user_type == $ADMIN_USER_TYPE_MAPPING[1] ||
+   $user_type == $ADMIN_USER_TYPE_MAPPING[2] ||
+   $user_type == $ADMIN_USER_TYPE_MAPPING[6] )
+{
+  print_html_header();
+
+  if(isset($_POST['orderid']))
+  {
+    if( mysql_admin_complete_transaction($c, $_POST['orderid']) )
+    {
+      echo '<p style="color:red">Success!</p>';
+    }
+    else
+    {
+      echo '<p style="color:red">Transaction update failed.</p>';
+    }
+  }
+
+  show_form('accounting');
+}
+else
+{
+  header('refresh:0; url=login.php');
+}
+
+echo '<p><a href="dashboard.php">Return to Dashboard</a></p>';
 
 print_html_footer();
 
