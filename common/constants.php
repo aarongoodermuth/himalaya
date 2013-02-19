@@ -9,7 +9,8 @@ $DB_NAME             =     'testDB';
 $ADMIN_TABLE         =     $DB_NAME . '.Admin_Users';
 $REG_USER_TABLE      =     $DB_NAME . '.Registered_Users';
 $PHONE_TABLE         =     $DB_NAME . '.Phones';
-
+$ADDRESS_TABLE       =     $DB_NAME . '.Address';
+$ZIP_TABLE           =     $DB_NAME . '.ZIP_codes';
 $ADMIN_USER_TYPE_MAPPING = array('System', 'SysAdmin', 'Owner', 'Telemarketer',
                                'Sales Manager', 'Shipping', 'Accounting', 
                                'Gift Card');

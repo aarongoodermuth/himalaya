@@ -318,9 +318,10 @@ function mysql_admin_tele_users($c)
 // (string)
 function mysql_admin_get_address($c, $username)
 {
-   global $PHONE_TABLE;
+  global $ADDRESS_TABLE;
 
-  $query = 'SELECT number FROM ' . $PHONE_TABLE . ' WHERE username="' . $username .'"';
+/*TEMP ONLY*/return '{not yet implemented}';
+  $query = 'SELECT street FROM ' . $ADDRESS_TABLE . ' WHERE username="' . $username .'"';
   
   $db_answer = mysqli_query($c, $query);
   
@@ -337,7 +338,6 @@ function mysql_admin_get_address($c, $username)
       $i++;
     }
   }
-
   return $row;
 }
 

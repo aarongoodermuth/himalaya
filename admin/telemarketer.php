@@ -36,8 +36,8 @@ function print_report_row($c, $row)
   $phones = mysql_admin_phone($c, $row[0]);
   $address = mysql_admin_get_address($c, $row[0]);  
 
+  echo '<td>' . $address . '</td>';
   echo '<td>' . $phones[0][0] . '</td>';
-  echo '<td>' . $address[0][0] . '</td>';
   echo '<td>' . get_alt_phones($phones) . '</td>';
   echo '</tr>';
 }
