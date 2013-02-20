@@ -27,8 +27,8 @@ function mysql_admin_log_cookie( $c, $username, $cookie_val )
   $username = sanitize($username);
   $cookie_val = sanitize($cookie_val);
 
-  $query = 'UPDATE ' . $ADMIN_TABLE . ' SET Session="' . $cookie_val
-              . '" WHERE Username="' . $username . '"';
+  $query = 'UPDATE ' . $ADMIN_TABLE . ' SET asession="' . $cookie_val
+              . '" WHERE username="' . $username . '"';
   mysqli_query($c, $query);
 }
 
@@ -41,7 +41,7 @@ function mysql_admin_cookie_value_used( $c, $cookie_val )
   $cookie_val = sanitize($cookie_val);
 
   if($results =  mysqli_query($c, 'SELECT * FROM ' . $ADMIN_TABLE 
-                                     . ' WHERE Session="'
+                                     . ' WHERE asession="'
                                      . $cookie_val. '"') )
   {
     return mysqli_num_rows($results); 
@@ -61,8 +61,8 @@ function mysql_admin_login_test( $c, $username, $password )
   $username = sanitize($username);
   $password = sanitize($password);
 
-  $query = 'SELECT * FROM ' . $ADMIN_TABLE . ' WHERE Username="'
-              . $username . '" AND Password="' . $password . '"';
+  $query = 'SELECT * FROM ' . $ADMIN_TABLE . ' WHERE username="'
+              . $username . '" AND password="' . $password . '"';
 
   if( $results = mysqli_query($c, $query) )
   {
@@ -82,7 +82,7 @@ function mysql_admin_get_username_from_cookie( $c, $cookie_val )
 
   $cookie_val = sanitize($cookie_val);
   
-  $query = 'SELECT Username FROM ' . $ADMIN_TABLE . ' WHERE Session="'
+  $query = 'SELECT username FROM ' . $ADMIN_TABLE . ' WHERE asession="'
               . $cookie_val . '"';
  
   $results = mysqli_query($c, $query);
@@ -105,7 +105,7 @@ function mysql_admin_get_type($c, $username)
 
   $username = sanitize($username);
 
-  $query = 'SELECT Type FROM '. $ADMIN_TABLE . ' WHERE Username="' . $username . '"';
+  $query = 'SELECT atype FROM '. $ADMIN_TABLE . ' WHERE username="' . $username . '"';
 
   $results = mysqli_query($c, $query);
   if($results)
@@ -129,8 +129,8 @@ function mysql_admin_new_password($c, $username, $password)
   $username = sanitize($username);
   $password = sanitize($password);
 
-  $query = 'UPDATE ' . $ADMIN_TABLE . ' SET Password="' . $password 
-              . '" WHERE Username="' . $username . '"';
+  $query = 'UPDATE ' . $ADMIN_TABLE . ' SET password="' . $password 
+              . '" WHERE username="' . $username . '"';
 
   return mysqli_query($c, $query);
 }
@@ -159,7 +159,7 @@ function mysql_admin_remove_user($c, $username)
 
   $username = sanitize($username);
 
-  $query = 'DELETE FROM ' . $ADMIN_TABLE . ' WHERE Username="' 
+  $query = 'DELETE FROM ' . $ADMIN_TABLE . ' WHERE username="' 
               . $username . '"';
   
   return mysqli_query($c, $query);
@@ -235,7 +235,7 @@ function mysql_admin_complete_transaction($c, $orderid)
 {
   $orderid = sanitize($orderid);
 
-  $query = 'UPDATE Orders SET status="complete" WHERE order_id="' . $orderid
+  $query = 'UPDATE Orders SET status="complete" WHERE item_id="' . $orderid
               . '" AND status="pendingpayment"';
 
   return mysqli_query($c, $query);  
@@ -246,7 +246,7 @@ function mysql_admin_shipment_made($c, $orderid)
 {
   $orderid = sanitize($orderid);
 
-  $query = 'UPDATE Orders SET status="pendingpayment" WHERE order_id="' . $orderid
+  $query = 'UPDATE Orders SET status="pendingpayment" WHERE item_id="' . $orderid
               . '" AND status="pendingshipment"';
 
   return mysqli_query($c, $query);  
@@ -280,7 +280,7 @@ function mysql_admin_phone($c, $username)
 {
   global $PHONE_TABLE;
 
-  $query = 'SELECT number FROM ' . $PHONE_TABLE . ' WHERE username="' . $username .'"';
+  $query = 'SELECT pnum FROM ' . $PHONE_TABLE . ' WHERE username="' . $username .'"';
   
   $db_answer = mysqli_query($c, $query);
   
