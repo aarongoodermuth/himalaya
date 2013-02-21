@@ -36,17 +36,16 @@ function print_report_row($c, $row)
   $phones = mysql_admin_phone($c, $row[0]);
   $address = mysql_admin_get_address($c, $row[0]);  
 
-  echo '<td>' . $address . '</td>';
-  echo '<td>' . $phones[0][0] . '</td>';
-  echo '<td>' . get_alt_phones($phones) . '</td>';
+  echo '<td>' . disp_addresses($c, $address) . '</td>';
+  echo '<td>' . disp_phones($phones) . '</td>';
   echo '</tr>';
 }
 
-// gets all alternate phones as newline seperated string
+// gets all phone numbers as '<br />' seperated string
 // (string)
-function get_alt_phones($row)
+function disp_phones($row)
 {
-  $i = 1;
+  $i = 0;
   $retval = '';
 
   while($i < count($row) - 1)
@@ -55,17 +54,40 @@ function get_alt_phones($row)
     $i++;
   }
   
-  //make sure we have enough phone numbers to break everything
-  if(count($row) > 1)
+  // place the last phone number in place
+  $retval = $retval . $row[$i][0];
+
+  return $retval;
+}
+
+// gets all addresses as '<br />' seperated string
+// (string)
+function disp_addresses($c, $row)
+{
+  $i = 0;
+  $retval = '';
+  
+  while($i < count($row) - 1)
   {
-    $retval = $retval . $row[$i][0];
-  }
-  else
-  {
-    $retval = '';
+    $retval = $retval . $row[$i][0] . '<br />';
+    $retval = $retval . disp_address_row2($c, $row[$i][1]) . '<br />';
+    $retval = $retval . '<br />';
+    $i++;
   }
 
   return $retval;
+}
+
+// get the "city, state zip" for a given zip code
+// (string)
+function disp_address_row2($c, $zip)
+{
+  $row = mysql_admin_zip($c, $zip);
+  $z     = $row[0];
+  $city  = $row[1];
+  $state = $row[2];
+
+  return $city . ', ' . $state . ' ' . $z;
 }
 
 /*******************/
@@ -91,7 +113,7 @@ if( $user_type == $ADMIN_USER_TYPE_MAPPING[1] ||
   echo '<table style="text-align:center" align="center" border="1">';
   echo '<tr style="font-weight:bold; text-align:center"><td>Username</td><td>Name</td>
            <td>Email</td><td>Gender</td><td>Age</td><td>Income</td><td>Address</td>
-           <td>Phone</td><td>Additional Phones</td></tr>';
+           <td>Phone Numbers</td></tr>';
   // run telemarketer report
   //...
   $rows = mysql_admin_tele_report($c);

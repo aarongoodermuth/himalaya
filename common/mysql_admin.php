@@ -286,7 +286,7 @@ function mysql_admin_phone($c, $username)
   
   if($db_answer === false || $db_answer === true)
   {
-    $row[0] = '{empty}';
+    $row[0] = '{empty}'; // should never see
     return $row;
   }
   else
@@ -320,14 +320,13 @@ function mysql_admin_get_address($c, $username)
 {
   global $ADDRESS_TABLE;
 
-/*TEMP ONLY*/return '{not yet implemented}';
-  $query = 'SELECT street FROM ' . $ADDRESS_TABLE . ' WHERE username="' . $username .'"';
+  $query = 'SELECT street, zip FROM ' . $ADDRESS_TABLE . ' WHERE username="' . $username .'"';
   
   $db_answer = mysqli_query($c, $query);
   
   if($db_answer === false || $db_answer === true)
   {
-    $row[0] = '{empty}';
+    $row[0] = 'asdfasdfasdf'; // should never see this
     return $row;
   }
   else
@@ -338,6 +337,33 @@ function mysql_admin_get_address($c, $username)
       $i++;
     }
   }
+  return $row;
+}
+
+// returns a row of zip code infor for a given zip code
+// (string[])
+function mysql_admin_zip($c, $zip)
+{
+  $zip = sanitize($zip);
+
+  global $ZIP_TABLE;
+
+  $query = 'SELECT zip, city, zstate FROM ' . $ZIP_TABLE . ' WHERE zip="' . $zip .'"';
+
+  $db_answer = mysqli_query($c, $query);
+  
+  if($db_answer === false)
+  {
+    $row[0] = '{error}'; // should never see
+    $row[1] = '{error}'; // should never see
+    $row[2] = '{error}'; // should never see
+    return $row;
+  }
+  else
+  {
+    $row = mysqli_fetch_row($db_answer);
+  }
+
   return $row;
 }
 
