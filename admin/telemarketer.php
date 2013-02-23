@@ -67,12 +67,18 @@ function disp_addresses($c, $row)
   $i = 0;
   $retval = '';
   
-  while($i < count($row) - 1)
+  while($i < count($row) - 2)
   {
     $retval = $retval . $row[$i][0] . '<br />';
     $retval = $retval . disp_address_row2($c, $row[$i][1]) . '<br />';
     $retval = $retval . '<br />';
     $i++;
+  }
+  
+  if(count($row) > 0)
+  {
+    $retval = $retval . $row[$i][0] . '<br />';
+    $retval = $retval . disp_address_row2($c, $row[$i][1]);
   }
 
   return $retval;
