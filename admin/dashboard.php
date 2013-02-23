@@ -88,7 +88,7 @@ function print_welcome_message($type, $name)
 $c = mysql_make_connection();
 
 // check for valid cookie
-$username = check_logged_in_user($c);
+$username = check_logged_in_admin_user($c);
 
 if( $username != null ) 
 {

@@ -6,7 +6,6 @@
 
 include_once '/home/goodermuth/dev/websites/himalaya/common/constants.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/mysql.php';
-include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_admin.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/functions.php';
 
 /******************/
@@ -19,7 +18,27 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/functions.php';
 /** FUNCTIONS **/
 /***************/
 
+$c = mysql_make_connection();
+$user = check_logged_in_user($c);
 
+if($user == null)
+{
+  // take to the login page
+  header('refresh:0; url=welcome/login.php');
+  print_html_header();
+//  echo '<p>You are being redirected. If you are not automatically redirected,
+//           you may click <a href="welcome/login.php">here.</a></p>';
+  print_html_footer();
+}
+else
+{
+  // take to the user page for this user
+  header('refresh:0; url=users/dashboard.php');
+  print_html_header();
+//  echo '<p>You are being redirected. If you are not automatically redirected,
+//            you may click <a href="users/dashboard.php">here.</a></p>';
+  print_html_footer();
+}
 
 /*******************/
 /** END FUNCTIONS **/
@@ -31,23 +50,7 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/functions.php';
 /** PHP CODE **/
 /**************/
 
-$c = mysql_make_connection();
 
-$username = check_logged_in_admin_user($c);
-
-if($username != null)
-{
-  // delete session info in DB
-  mysql_admin_log_cookie($c, $username, 0);
-}
- 
-// remove cookie
-setcookie($ADMIN_COOKIE_NAME, null, time() - 3600);
-   
-// redirect to login page(?)
-header('refresh:0; url="login.php"');
-
-mysql_disconnect($c);
 
 /******************/
 /** END PHP CODE **/

@@ -33,6 +33,37 @@ function print_html_footer()
 // (string || null)
 function check_logged_in_user($c)
 {
+  global $COOKIE_NAME, $COOKIE_TIMEOUT;
+  
+  // if already logged in
+  if( isset($_COOKIE[$COOKIE_NAME]) )
+  {
+    // get username that is associated with the cookie
+    $rn = mysql_admin_get_username_from_cookie($c, $_COOKIE[$COOKIE_NAME]);
+    if($rn == null)
+    {
+      // delete cookie
+      setcookie($COOKIE_NAME, null, 1);
+    }
+    else
+    {
+      // reset cookie
+      setcookie($COOKIE_NAME, $_COOKIE[$COOKIE_NAME], time() + $COOKIE_TIMEOUT);
+    }
+
+    return $rn;
+  }
+  else
+  {
+    return null;
+  }
+}
+
+// checks if there is admin user logged in. If so, resets the cookie and returns
+//    username. If not, returns null
+// (string || null)
+function check_logged_in_admin_user($c)
+{
   global $ADMIN_COOKIE_NAME, $COOKIE_TIMEOUT;
   
   // if already logged in

@@ -45,13 +45,13 @@ $REDIRECT_TIME     =    3;       // 3 seconds
 // establish a connection with our database
 $c = mysql_make_connection();
 
-$username = check_logged_in_admin_user($c);
+$username = check_logged_in_user($c);
 
 if($username != null)
 {
  
   // redirect
-  header( 'Refresh:' . $REDIRECT_TIME . '; url=dashboard.php' );
+  header( 'Refresh:' . $REDIRECT_TIME . '; url=../users/dashboard.php' );
  
   print_html_header();
   // show user information, give chance to log out, give chance to redirect 
@@ -70,21 +70,21 @@ else
   if( isset($_POST['username']) && isset($_POST['password']) )
   {
     // if attempted check for success or failure
-    if( mysql_admin_login_test( $c, $_POST['username'], $_POST['password'] ) )
+    if( mysql_login_test( $c, $_POST['username'], $_POST['password'] ) )
     {
       // sucessful login
       // put cookie on computer and log value in database
       $rand_cookie_value = rand();
-      while( mysql_admin_cookie_value_used($c, $rand_cookie_value) )
+      while( mysql_cookie_value_used($c, $rand_cookie_value) )
       {
         $rand_cookie_value = rand();
       }
-       // place session info into database under user's entry
-       mysql_admin_log_cookie($c, $_POST['username'], $rand_cookie_value);
-       // set cookie with value
-       setcookie($ADMIN_COOKIE_NAME, $rand_cookie_value, time() + $COOKIE_TIMEOUT);  
+      // place session info into database under user's entry
+      mysql_log_cookie($c, $_POST['username'], $rand_cookie_value);
+      // set cookie with value
+      setcookie($COOKIE_NAME, $rand_cookie_value, time() + $COOKIE_TIMEOUT);  
       // send to dashboard
-      header('Refresh:0; url=dashboard.php'); 
+      header('Refresh:0; url=../users/dashboard.php'); 
     }
     else
     {
