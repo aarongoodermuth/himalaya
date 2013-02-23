@@ -367,6 +367,27 @@ function mysql_admin_zip($c, $zip)
   return $row;
 }
 
+// returns all the entries of items that are found in the Products table but 
+//    not in the Sale_Items table
+// (string[][])
+function mysql_admin_outofstock($c)
+{
+  global $SUPPLIERS_TABLE, $PRODUCTS_TABLE;
+
+  $query = 'SELECT company_name, contact_name, username FROM ' . $SUPPLIERS_TABLE;
+  
+  $db_answer = mysqli_query($c, $query);
+  
+  $i = 0;
+  while( $cur= mysqli_fetch_row($db_answer) )
+  {
+    $row[$i] = $cur;
+    $i++;
+  }
+
+  return $row;
+}
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/

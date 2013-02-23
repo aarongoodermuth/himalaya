@@ -25,10 +25,12 @@ function print_outofstock_table($c)
 {
   $rows = mysql_admin_outofstock($c);
   
-  for($i=0; $i<count($rows); $i++)
+  $retval = '';
+  
+  for($i=0; $i</*count($rows)-*/1; $i++)
   {
-    echo '<tr><td>' . $rows[$i][0] . '</td><td>' . $rows[$i][1]
-         . '</td><td>' . $rows[$i][2] . '</td></tr>';
+    $retval = $retval . '<tr><td>' . $rows[$i][0] . '</td><td>' . $rows[$i][1]
+                      . '</td><td>' . $rows[$i][2] . '</td></tr>';
   }
 }
 

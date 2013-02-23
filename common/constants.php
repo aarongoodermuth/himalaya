@@ -12,6 +12,8 @@ $REG_USER_TABLE      =     $DB_NAME . '.Registered_Users';
 $PHONE_TABLE         =     $DB_NAME . '.Phones';
 $ADDRESS_TABLE       =     $DB_NAME . '.Addresses';
 $ZIP_TABLE           =     $DB_NAME . '.ZIP_Codes';
+$SUPPLIERS_TABLE     =     $DB_NAME . '.Suppliers';
+
 $ADMIN_USER_TYPE_MAPPING = array('System', 'SysAdmin', 'Owner', 'Telemarketer',
                                'Sales Manager', 'Shipping', 'Accounting', 
                                'Gift Card');
