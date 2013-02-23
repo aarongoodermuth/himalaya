@@ -2,6 +2,7 @@
 
 $COOKIE_TIMEOUT      =     10 * 60 * 60;    // 10 minutes
 $ADMIN_COOKIE_NAME   =     'himalaya_admin';
+$COOKIE_NAME         =     'himalaya';
 $MYSQL_SERVERNAME    =     'localhost';
 $MYSQL_USERNAME      =     'root';
 $MYSQL_PASSWORD      =     '431w';

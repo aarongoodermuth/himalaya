@@ -101,7 +101,7 @@ function disp_address_row2($c, $zip)
 /**************/
 
 $c = mysql_make_connection();
-$username = check_logged_in_user($c);
+$username = check_logged_in_admin_user($c);
 $user_type = mysql_admin_get_type($c, $username);
 
 if( $user_type == $ADMIN_USER_TYPE_MAPPING[1] ||

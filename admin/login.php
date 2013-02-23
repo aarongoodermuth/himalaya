@@ -45,7 +45,7 @@ $REDIRECT_TIME     =    3;       // 3 seconds
 // establish a connection with our database
 $c = mysql_make_connection();
 
-$username = check_logged_in_user($c);
+$username = check_logged_in_admin_user($c);
 
 if($username != null)
 {

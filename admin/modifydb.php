@@ -32,7 +32,7 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/functions.php';
 /**************/
 
 $c = mysql_make_connection();
-$username = check_logged_in_user($c);
+$username = check_logged_in_admin_user($c);
 
 if( mysql_admin_get_type($c, $username) == $ADMIN_USER_TYPE_MAPPING[1])
 {
