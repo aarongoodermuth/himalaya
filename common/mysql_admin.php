@@ -235,10 +235,26 @@ function mysql_admin_complete_transaction($c, $orderid)
 {
   $orderid = sanitize($orderid);
 
-  $query = 'UPDATE Orders SET status="complete" WHERE item_id="' . $orderid
-              . '" AND status="pendingpayment"';
+  $query = 'UPDATE Orders SET status="3" WHERE item_id="' . $orderid
+              . '" AND status="2"';
 
-  return mysqli_query($c, $query);  
+  $db_answer = mysqli_query($c, $query);
+  
+  if($db_answer === false)
+  {
+    return false;
+  }  
+  else
+  { 
+    if( mysqli_affected_rows($c) > 0 )
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
 }
 
 // (boolean)
