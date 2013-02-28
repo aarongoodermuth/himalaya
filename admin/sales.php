@@ -19,6 +19,15 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_admin.php';
 /** FUNCTIONS **/
 /***************/
 
+// prints a custom html header for this page only. adds styling (padding 
+//    for a div.)
+// (void)
+function print_this_html_header()
+{
+  echo '<html><head><style type="text/css">div{margin-bottom:100px;}</style>'
+          . '</head><body>';
+}
+
 // prints the rows of the table for items that are out of stock
 // (void)
 function print_outofstock_table($c)
@@ -39,11 +48,30 @@ function restock_value($c)
   return 0;
 }
 
-// ...
+// prints the items that have only 1 or 2 items currently being sold
 // (void)
 function print_lowstock_table($c)
 {
-  echo '';
+  $rows = mysql_admin_lowstock($c);
+  
+  for($i=0; $i<count($rows); $i++)
+  {
+    echo '<tr><td>' . $rows[$i][0] . '</td><td>' . $rows[$i][1]
+         . '</td><td>' . $rows[$i][2] . '</td></tr>';
+  }
+}
+
+// prints all items that have been sold in the last week
+// (void)
+function print_sold_items_table($c)
+{
+  $rows = mysql_admin_recently_sold($c);
+  
+  for($i=0; $i<count($rows); $i++)
+  {
+    echo '<tr><td>' . $rows[$i][0] . '</td><td>' . $rows[$i][1]
+         . '</td><td>' . $rows[$i][2] . '</td></tr>';
+  }
 }
 
 /*******************/
@@ -64,7 +92,7 @@ if( $user_type == $ADMIN_USER_TYPE_MAPPING[1] ||
     $user_type == $ADMIN_USER_TYPE_MAPPING[2] ||
     $user_type == $ADMIN_USER_TYPE_MAPPING[4] )
 {
-  print_html_header();
+  print_this_html_header();
   echo '<h3 style="text-align:center">Sales/Order Report</h3>';
 
   echo '<div><h4 style="text-align:center">Out of Stock Items</h4>';
@@ -85,25 +113,16 @@ if( $user_type == $ADMIN_USER_TYPE_MAPPING[1] ||
   print_lowstock_table($c);
   echo '</table>'; 
   echo '</div>';
- 
-  echo '<h1>This one is going to be a pain in the butt to implement</h1>'; 
-
-  //echo '<table style="text-align:center" align="center" border="1">';
-  //echo '<tr style="font-weight:bold; text-align:center"><td>Username</td><td>Name</td>
-  //         <td>Email</td><td>Gender</td><td>Age</td><td>Income</td><td>Address</td>
-  //         <td>Phone</td><td>Additional Phones</td></tr>';
   
-  // run telemarketer report
-  //...
-  //$rows = mysql_admin_tele_report($c);
-  //$i = 0;
-  //while( $rows[$i] != NULL && $rows[$i] != '')
-  //{
-  //  print_report_row($c, $rows[$i]);
-  //  $i++;
-  //}
-  ///...
-  //echo '</table>';
+  //print sold items table
+  echo '<div><h4 style="text-align:center">Recently Sold Items</h4>';
+  echo '<table style="text-align:center" align="center" border="1">';
+  echo '<tr style="font-weight:bold; text-align:center"><td>Name</td>
+           <td>Retailer</td><td>Selling Price</td></tr>';
+  print_sold_items_table();
+  echo '</table>'; 
+  echo '</div>';
+  
   echo '<p><a href="dashboard.php">Return to Dashboard</a></p>';
   
   print_html_footer();
