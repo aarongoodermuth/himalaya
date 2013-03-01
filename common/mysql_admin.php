@@ -406,10 +406,23 @@ function mysql_admin_outofstock($c)
 {
   global $SUPPLIERS_TABLE, $PRODUCTS_TABLE;
 
-  $query = 'SELECT company_name, contact_name, username FROM ' . $SUPPLIERS_TABLE;
+  $query = 'SELECT p_name, category_name, p_desc 
+            FROM Products p, Sale_Items s, Categories c 
+            WHERE p.product_id NOT IN (SELECT product_id FROM Sale_Items)
+                  AND c.category_id=p.category_id
+            GROUP BY category_name'; 
   
   $db_answer = mysqli_query($c, $query);
-  
+  if($db_answer === false)
+  {
+    return null;
+  }
+
+  if(mysqli_num_rows($db_answer) == 0)
+  {
+    return null;
+  }
+
   $i = 0;
   while( $cur= mysqli_fetch_row($db_answer) )
   {
@@ -427,10 +440,24 @@ function mysql_admin_lowstock($c)
 {
   global $SUPPLIERS_TABLE, $PRODUCTS_TABLE;
 
-  $query = 'SELECT company_name, contact_name, username FROM ' . $SUPPLIERS_TABLE;
+  $query = 'SELECT p_name, category_name, p_desc 
+            FROM Products p, Sale_Items s, Categories c 
+            WHERE p.product_id IN (SELECT product_id 
+                                   FROM Sale_Items 
+                                   HAVING COUNT(*)=1 OR COUNT(*)=2) 
+                  AND c.category_id=p.category_id'; 
   
   $db_answer = mysqli_query($c, $query);
-  
+  if($db_answer === false)
+  {
+    return null;
+  }
+
+  if(mysqli_num_rows($db_answer) == 0)
+  {
+    return null;
+  }
+ 
   $i = 0;
   while( $cur= mysqli_fetch_row($db_answer) )
   {
@@ -447,10 +474,28 @@ function mysql_admin_recently_sold($c)
 {
   global $SUPPLIERS_TABLE, $PRODUCTS_TABLE;
 
-  $query = 'SELECT company_name, contact_name, username FROM ' . $SUPPLIERS_TABLE;
+  $query = 'SELECT action_date, 
+                   username, 
+                   (SELECT p_name FROM Products p WHERE p.product_id =
+                       (SELECT product_id from Sale_Items s WHERE o.item_id=s.item_id)), 
+                   (SELECT p_desc FROM Products p WHERE p.product_id =
+                       (SELECT product_id from Sale_Items s WHERE o.item_id=s.item_id)), 
+                   (SELECT price from Sales where o.item_id=item_id), 
+                   (SELECT item_desc FROM Sale_Items where o.item_id=item_id), 
+                   (SELECT username FROM Sale_Items where o.item_id=item_id) 
+            FROM Orders o WHERE (o.action_date >= (CURDATE()-7))';
   
   $db_answer = mysqli_query($c, $query);
-  
+  if($db_answer === false)
+  {
+    return null;
+  }
+ 
+  if(mysqli_num_rows($db_answer) == 0)
+  {
+    return null;
+  }
+
   $i = 0;
   while( $cur= mysqli_fetch_row($db_answer) )
   {

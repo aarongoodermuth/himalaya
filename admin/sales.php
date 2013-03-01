@@ -33,19 +33,7 @@ function print_this_html_header()
 function print_outofstock_table($c)
 {
   $rows = mysql_admin_outofstock($c);
-  
-  for($i=0; $i<count($rows); $i++)
-  {
-    echo '<tr><td>' . $rows[$i][0] . '</td><td>' . $rows[$i][1]
-         . '</td><td>' . $rows[$i][2] . '</td></tr>';
-  }
-}
-
-// returns the value of items that need restocked
-// (float)
-function restock_value($c)
-{
-  return 0;
+  echo make_html_table($rows);
 }
 
 // prints the items that have only 1 or 2 items currently being sold
@@ -53,12 +41,7 @@ function restock_value($c)
 function print_lowstock_table($c)
 {
   $rows = mysql_admin_lowstock($c);
-  
-  for($i=0; $i<count($rows); $i++)
-  {
-    echo '<tr><td>' . $rows[$i][0] . '</td><td>' . $rows[$i][1]
-         . '</td><td>' . $rows[$i][2] . '</td></tr>';
-  }
+  echo make_html_table($rows);
 }
 
 // prints all items that have been sold in the last week
@@ -66,12 +49,26 @@ function print_lowstock_table($c)
 function print_sold_items_table($c)
 {
   $rows = mysql_admin_recently_sold($c);
+  echo make_html_table($rows);  
+}
+
+// takes a 2D array and puts its content into an html table
+// (html formatted table)
+function make_html_table($arr)
+{
+  $retval = '';
   
-  for($i=0; $i<count($rows); $i++)
+  for($i=0; $i<count($arr); $i++)
   {
-    echo '<tr><td>' . $rows[$i][0] . '</td><td>' . $rows[$i][1]
-         . '</td><td>' . $rows[$i][2] . '</td></tr>';
+    $retval = $retval . '<tr>';
+    for($j=0; $j<count($arr[$i]); $j++)
+    {
+      $retval = $retval . '<td>' . $arr[$i][$j] . '</td>';
+    }
+    $retval = $retval . '</tr>';
   }
+
+  return $retval;
 }
 
 /*******************/
@@ -98,17 +95,16 @@ if( $user_type == $ADMIN_USER_TYPE_MAPPING[1] ||
   echo '<div><h4 style="text-align:center">Out of Stock Items</h4>';
   echo '<table style="text-align:center" align="center" border="1">';
   echo '<tr style="font-weight:bold; text-align:center"><td>Name</td>
-           <td>Retailer</td><td>Selling Price</td></tr>';
+           <td>Category</td><td>Description</td></tr>';
   // print table contents
   print_outofstock_table($c);
   echo '</table>'; 
-  echo '<p><strong>Restock Value:</strong> ' . restock_value($c) . '</p>';
   echo '</div>';
   
   echo '<div><h4 style="text-align:center">Low Stock Items</h4>';
   echo '<table style="text-align:center" align="center" border="1">';
   echo '<tr style="font-weight:bold; text-align:center"><td>Name</td>
-           <td>Retailer</td><td>Selling Price</td></tr>';
+           <td>Category</td><td>Description</td></tr>';
   // print table contents
   print_lowstock_table($c);
   echo '</table>'; 
@@ -119,7 +115,7 @@ if( $user_type == $ADMIN_USER_TYPE_MAPPING[1] ||
   echo '<table style="text-align:center" align="center" border="1">';
   echo '<tr style="font-weight:bold; text-align:center"><td>Name</td>
            <td>Retailer</td><td>Selling Price</td></tr>';
-  print_sold_items_table();
+  print_sold_items_table($c);
   echo '</table>'; 
   echo '</div>';
   
