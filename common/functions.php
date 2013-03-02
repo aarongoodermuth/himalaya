@@ -39,7 +39,7 @@ function check_logged_in_user($c)
   if( isset($_COOKIE[$COOKIE_NAME]) )
   {
     // get username that is associated with the cookie
-    $rn = mysql_admin_get_username_from_cookie($c, $_COOKIE[$COOKIE_NAME]);
+    $rn = mysql_get_username_from_cookie($c, $_COOKIE[$COOKIE_NAME]);
     if($rn == null)
     {
       // delete cookie

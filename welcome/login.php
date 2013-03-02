@@ -94,6 +94,10 @@ else
 
       // show the pasword page
       show_form('login');
+
+      // give link to create account
+      echo '<div><p>New to Himalaya.biz? <a href="createaccount.php">
+              Create an account</a></p></div>';
     }
   }
   else
@@ -102,8 +106,14 @@ else
     // no login was attempted
     // just show the password page
     show_form('login');
+
+    // give link to create account
+    echo '<div><p>New to Himalaya.biz? <a href="createaccount.php">
+            Create an account</a></p></div>';
   }
 }
+
+print_html_footer();
 
 mysql_disconnect($c);
 print_html_footer();

@@ -1,0 +1,26 @@
+<!--provides a username, password, type dropdown, other relevant info and 
+submit button for adding user-->
+<form name="createuser" action="createaccount.php" method="post">
+<h3>Create Account</h3>
+<p>Username: <input type="text" name="username"></input></p>
+<p>Password: <input type="password" name="password"></input></p>
+<p>Member Type: <br />
+<input type="radio" name="type" value="0" onclick="Registered_User_selected()">User</input>
+<input type="radio" name="type" value="1" onclick="Supplier_selected()">Supplier</input>
+</p>
+<br /><!--registered user info-->
+<h3>User Information</h3>
+<p>Full Name: <input type="text" name="name"></input></p>
+<p>Email: <input type="text" name="email"></input></p>
+<p>Gender: <br />
+<input type="radio" name="gender" value="0">Male</input>
+<input type="radio" name="gender" value="1">Female</input>
+</p>
+<p>Age: <input type="text" name="age"></input></p>
+<p>Income: <input type="text" name="income"></input></p>
+<br /><!--supplier info-->
+<h3>Supplier Information</h3>
+<p>Company Name: <input type="text" name="company"></input></p>
+<p>Contact Name: <input type="text" name="contact"></input></p>
+<p><input value="Submit" type="submit"></input></p>
+</form>
