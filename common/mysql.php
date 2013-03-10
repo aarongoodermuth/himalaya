@@ -197,8 +197,18 @@ function mysql_create_supplier($c, $username, $password, $company, $contact)
 // (boolean)
 function mysql_create_ru($c, $username, $password, $name, $email, $gender, $age, $income)
 {
+  global $RU_TABLE, $MEMBERS_TABLE;
+  
   if(!mysql_create_member($c, $username, $password))
   {
+    return false;
+  }
+
+  if(!mysql_add_email($c, $username, $email))
+  {
+    $query = 'DELETE FROM ' . $MEMBERS_TABLE . ' WHERE username="' . $username 
+                . '"';
+    mysqli_query($c, $query);
     return false;
   }
 
@@ -209,24 +219,44 @@ function mysql_create_ru($c, $username, $password, $name, $email, $gender, $age,
   $age      = sanitize($age);
   $income   = sanitize($income);
 
-  global $RU_TABLE, $MEMBERS_TABLE;
-  
   $query = 'INSERT INTO ' . $RU_TABLE . ' VALUES("' . $username 
-              . '", "' . $name . '", "' . $email . '", "' . $gender . '", "' 
+              . '", "' . $name . '", "' . $gender . '", "' 
               . $age . '", "' . $income . '", "0")';
   
   $db_answer = mysqli_query($c, $query);
 
   if($db_answer === false)
-  {echo $query;
-    $query = 'DELETE FROM ' . $MEMBERS_TABLE . ' WHERE username="' . $username . '"';
+  {
+    $query = 'DELETE FROM ' . $MEMBERS_TABLE . ' WHERE username="' . $username 
+                . '"';
+    mysqli_query($c, $query);
+    $query = 'DELETE FROM ' . $EMAIL_TABLE   . ' WHERE username="' . $username 
+                . '" AND email="' . $email . '"';
     mysqli_query($c, $query);
     return false; 
   }
   return true;
 }
 
+// adds entry to the email table
+// (boolean)
+function mysql_add_email($c, $username, $email)
+{
+  global $EMAIL_TABLE;
 
+  $username = sanitize($username);
+  $email    = sanitize($email);
+
+  $query = 'INSERT INTO ' . $EMAIL_TABLE . ' VALUES("' . $username . '", "' 
+              . $email . '")';
+  $db_answer = mysqli_query($c, $query);
+  if($db_answer === false)
+  {
+    return false;
+  }
+
+  return true;
+}
 /*******************/
 /** END FUNCTIONS **/
 /*******************/

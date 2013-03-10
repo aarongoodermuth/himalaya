@@ -15,6 +15,7 @@ $ZIP_TABLE           =     $DB_NAME . '.ZIP_Codes';
 $SUPPLIERS_TABLE     =     $DB_NAME . '.Suppliers';
 $MEMBERS_TABLE       =     $DB_NAME . '.Members';
 $RU_TABLE            =     $DB_NAME . '.Registered_Users';
+$EMAIL_TABLE         =     $DB_NAME . '.Emails';
 
 $ADMIN_USER_TYPE_MAPPING = array('System', 'SysAdmin', 'Owner', 'Telemarketer',
                                'Sales Manager', 'Shipping', 'Accounting', 
