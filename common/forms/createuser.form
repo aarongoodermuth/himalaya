@@ -13,8 +13,8 @@ submit button for adding user-->
 <p>Full Name: <input type="text" name="name"></input></p>
 <p>Email: <input type="text" name="email"></input></p>
 <p>Gender: <br />
-<input type="radio" name="gender" value="0">Male</input>
-<input type="radio" name="gender" value="1">Female</input>
+<input id="gender1" type="radio" name="gender" value="M">Male</input>
+<input id="gender2" type="radio" name="gender" value="F">Female</input>
 </p>
 <p>Age: <input type="text" name="age"></input></p>
 <p>Income: <input type="text" name="income"></input></p>

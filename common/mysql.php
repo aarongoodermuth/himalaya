@@ -42,14 +42,6 @@ function mysql_disconnect( $mysqli_obj )
   mysqli_close($mysqli_obj);
 }
 
-// filters all inputs for SQL Injection
-// (string)
-function sanitize($input)
-{
-  //...
-  return $input;
-}
-
 // check if a usename and password combination are valid
 // (boolean)
 function mysql_login_test( $c, $username, $password )
@@ -134,6 +126,106 @@ function mysql_get_username_from_cookie( $c, $cookie_val )
     return null;
   }
 }
+
+// checks if this username is already in the database
+// (boolean)
+function mysql_username_unique($c, $username)
+{
+  global $MEMBERS_TABLE;
+  $username = sanitize($username);
+
+  $query = 'SELECT COUNT(*) FROM ' . $MEMBERS_TABLE . ' WHERE username="' 
+              . $username . '"';
+  
+  $db_answer = mysqli_query($c, $query);
+
+  $row = mysqli_fetch_row($db_answer);
+  return ($row[0] == 0);
+}
+
+// inserts a member into the database
+// (void)
+function mysql_create_member($c, $username, $password)
+{
+  $username = sanitize($username);
+  $password = sanitize($password);
+
+  global $MEMBERS_TABLE;
+
+  $query = 'INSERT INTO ' . $MEMBERS_TABLE . ' VALUES("' . $username . 
+              '", "' . $password . '", "0")';
+
+  $db_answer = mysqli_query($c, $query);
+
+  if($db_answer === false)
+  {
+    return false;
+  }
+  return true;
+}
+
+// inserts a member and a supplier into the database 
+// (boolean)
+function mysql_create_supplier($c, $username, $password, $company, $contact)
+{
+  $username = sanitize($username);
+  $company  = sanitize($company);
+  $contact  = sanitize($contact);
+
+  global $SUPPLIERS_TABLE, $MEMBERS_TABLE;
+  if(!mysqli_create_member($c, $username, $password))
+  {
+    return false;
+  }
+
+  $query = 'INSERT INTO ' . $SUPPLIERS_TABLE . ' VALUES("' . $username .
+              '", "' . $company . '", "' . $contact . '")';
+
+  $db_answer = mysqli_query($c, $query[0]);
+
+  if($db_answer === false)
+  {
+    $query = 'DELETE FROM ' . $MEMBERS_TABLE . ' WHERE username="' . $username . '"';
+    mysqli_query($c, $query);
+    return false;
+  }
+
+  return true;
+}
+
+// inserts a registered user into the database
+// (boolean)
+function mysql_create_ru($c, $username, $password, $name, $email, $gender, $age, $income)
+{
+  if(!mysql_create_member($c, $username, $password))
+  {
+    return false;
+  }
+
+  $username = sanitize($username);
+  $name     = sanitize($name);
+  $email    = sanitize($email);
+  $gender   = sanitize($gender);
+  $age      = sanitize($age);
+  $income   = sanitize($income);
+
+  global $RU_TABLE, $MEMBERS_TABLE;
+  
+  $query = 'INSERT INTO ' . $RU_TABLE . ' VALUES("' . $username 
+              . '", "' . $name . '", "' . $email . '", "' . $gender . '", "' 
+              . $age . '", "' . $income . '", "0")';
+  
+  $db_answer = mysqli_query($c, $query);
+
+  if($db_answer === false)
+  {echo $query;
+    $query = 'DELETE FROM ' . $MEMBERS_TABLE . ' WHERE username="' . $username . '"';
+    mysqli_query($c, $query);
+    return false; 
+  }
+  return true;
+}
+
 
 /*******************/
 /** END FUNCTIONS **/

@@ -99,6 +99,14 @@ function show_form($form_name)
  
 }
 
+// filters all inputs for SQL Injection
+// (string)
+function sanitize($input)
+{
+  //...
+  return $input;
+}
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/

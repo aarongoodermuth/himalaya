@@ -7,7 +7,8 @@ function Registered_User_selected()
   // enable all registered user elements
   document.createuser.name.disabled = false;
   document.createuser.email.disabled = false;
-  document.createuser.gender.disabled = false;
+  document.getElementById("gender1").disabled = false;
+  document.getElementById("gender2").disabled = false;
   document.createuser.age.disabled = false;
   document.createuser.income.disabled = false;
 }
@@ -22,7 +23,8 @@ function Supplier_selected()
   // disable all registered user elements
   document.createuser.name.disabled = true;
   document.createuser.email.disabled = true;
-  document.createuser.gender.disabled = true;
+  document.getElementById("gender1").disabled = true;
+  document.getElementById("gender2").disabled = true;
   document.createuser.age.disabled = true;
   document.createuser.income.disabled = true;
 }
@@ -36,7 +38,8 @@ function disable_all()
   // disable all registered user elements
   document.createuser.name.disabled = true;
   document.createuser.email.disabled = true;
-  document.createuser.gender.disabled = true;
+  document.getElementById("gender1").disabled = true;
+  document.getElementById("gender2").disabled = true;
   document.createuser.age.disabled = true;
   document.createuser.income.disabled = true;
 }

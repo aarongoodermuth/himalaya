@@ -34,13 +34,47 @@ function print_this_html_header()
 // (boolean)
 function values_set()
 {
-  return isset($_POST['username']) || isset($_POST['password']) || isset($_POST['type']);
+  return isset($_POST['username']) || isset($_POST['password']) ||
+         isset($_POST['type']);
 }
 
 // see is all values are set
 // (boolean)
 function all_set()
 {
+  if( isset($_POST['type']) )
+  {
+    if($_POST['type'] == 0)
+    {
+      return valid('username') && valid('password') && valid('name') && 
+             valid('email') && valid('age') && valid('income');
+    }
+    else
+    {
+      return valid('username') && valid('password') && valid('company') && 
+             valid('contact');
+    }
+  }
+  else
+  {
+    return false;
+  } 
+}
+
+// checks if value is set and not blank
+// (boolean)
+function valid($val)
+{
+  $val = $_POST[$val];
+
+  if( isset($val) )
+  {
+    if($val != '')
+    {
+      return true;
+    }
+  }
+
   return false;
 }
 
@@ -60,11 +94,46 @@ if( values_set() )
 {
   if(all_set())
   {
-    // create the user
-    //...
-    
-    // redirect to user page
-    //...
+    if(mysql_username_unique($c, $_POST['username']))
+    {
+      
+      // create the user
+      if($_POST['type'] == 0)
+      {
+        // registered user
+        if( !mysql_create_ru($c, $_POST['username'], $_POST['password'], 
+                          $_POST['name'], $_POST['email'], $_POST['gender'], 
+                          $_POST['age'], $_POST['income'])
+          )
+        {
+          $goof = true;
+        }
+      }
+      else
+      {
+        // supplier
+        if( !mysql_create_supplier($c, $_POST['username'], $_POST['password'],
+                                 $_POST['company'], $_POST['contact'])
+          )
+        {
+          $goof = true;
+        }
+      }
+      
+      if(!$goof)
+      {
+        // redirect to user page
+        header('refresh:0; url=login.php');
+      }
+      else
+      {
+        echo '<p style="color:red">Not all entries were valid</p>';
+      }
+    }
+    else
+    {
+      echo '<p style="color:red">That username is already taken</p>';
+    }
   }
   else
   {
