@@ -257,6 +257,38 @@ function mysql_add_email($c, $username, $email)
 
   return true;
 }
+
+// ...
+// (string)
+function mysql_get_type_from_username($c, $username)
+{
+  global $RU_TABLE, $SUPPLIERS_TABLE, $USER_TYPE_MAPPING;
+
+  $username = sanitize($username);
+  
+  $query[0] = 'SELECT COUNT(*) FROM ' . $RU_TABLE        . ' WHERE username="' . $username . '"';
+  $query[1] = 'SELECT COUNT(*) FROM ' . $SUPPLIERS_TABLE . ' WHERE username="' . $username . '"';
+
+  $db_answer[0] = mysqli_query($c, $query[0]);
+  $db_answer[1] = mysqli_query($c, $query[1]);
+  
+  $row[0] = mysqli_fetch_row($db_answer[0]);
+  $row[1] = mysqli_fetch_row($db_answer[1]);
+
+  if($row[0][0] == 1 && $row[1][0] == 0)
+  {
+    return $USER_TYPE_MAPPING[0];
+  }
+  elseif($row[0][0] == 0 && $row[1][0] == 1)
+  {
+    return $USER_TYPE_MAPPNG[1];
+  }
+  else
+  {
+    return null;
+  }
+}
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/

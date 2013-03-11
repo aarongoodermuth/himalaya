@@ -17,6 +17,7 @@ $MEMBERS_TABLE       =     $DB_NAME . '.Members';
 $RU_TABLE            =     $DB_NAME . '.Registered_Users';
 $EMAIL_TABLE         =     $DB_NAME . '.Emails';
 
+$USER_TYPE_MAPPING       = array('Registered User', 'Supplier');
 $ADMIN_USER_TYPE_MAPPING = array('System', 'SysAdmin', 'Owner', 'Telemarketer',
                                'Sales Manager', 'Shipping', 'Accounting', 
                                'Gift Card');

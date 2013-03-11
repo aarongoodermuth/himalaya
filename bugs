@@ -1,0 +1,7 @@
+THIS IS A LIST OF THINGS THAT COULD BE FIXED
+I WOULD PREFER TO WAIT UNTIL WE HAVE MOST OF THE BASIC FUNCTIONALITY 
+COMPLETED BEFORE SPENDING TIME FIXING THESE OVERALL MINOR THINGS
+FEEL FREE TO ADD TO THIS LIST AS NECCESARY
+-------------------------------------------------------------------------------
+createuser.php:           income does not have max value check
+multple:                  make it pretty
