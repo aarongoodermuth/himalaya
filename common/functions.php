@@ -34,7 +34,7 @@ function print_html_footer()
 function check_logged_in_user($c)
 {
   global $COOKIE_NAME, $COOKIE_TIMEOUT;
-  
+ 
   // if already logged in
   if( isset($_COOKIE[$COOKIE_NAME]) )
   {
@@ -43,12 +43,12 @@ function check_logged_in_user($c)
     if($rn == null)
     {
       // delete cookie
-      setcookie($COOKIE_NAME, null, 1);
+      setcookie($COOKIE_NAME, null, 1, '/');
     }
     else
     {
       // reset cookie
-      setcookie($COOKIE_NAME, $_COOKIE[$COOKIE_NAME], time() + $COOKIE_TIMEOUT);
+      setcookie($COOKIE_NAME, $_COOKIE[$COOKIE_NAME], time() + $COOKIE_TIMEOUT, '/');
     }
 
     return $rn;

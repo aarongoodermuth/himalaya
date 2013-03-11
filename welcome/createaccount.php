@@ -61,6 +61,13 @@ function all_set()
   } 
 }
 
+// see if some of the values are actually numbers
+// (boolean)
+function type_check()
+{
+  return is_numeric($_POST['age']) && is_numeric($_POST['income']);
+}
+
 // checks if value is set and not blank
 // (boolean)
 function valid($val)
@@ -100,13 +107,21 @@ if( values_set() )
       // create the user
       if($_POST['type'] == 0)
       {
-        // registered user
-        if( !mysql_create_ru($c, $_POST['username'], $_POST['password'], 
-                          $_POST['name'], $_POST['email'], $_POST['gender'], 
-                          $_POST['age'], $_POST['income'])
-          )
+        if(!type_check())
         {
           $goof = true;
+        }
+        // registered user
+        elseif( !mysql_create_ru($c, $_POST['username'], $_POST['password'], 
+                          $_POST['name'], $_POST['email'], $_POST['gender'], 
+                          $_POST['age'], $_POST['income'])
+              )
+        {
+          $goof = true;
+        }
+        else
+        {
+          $goof = false;
         }
       }
       else
@@ -122,16 +137,21 @@ if( values_set() )
       
       if(!$goof)
       {
+        
         // redirect to user page
-        header('refresh:0; url=login.php');
+        header('refresh:2; url=login.php');
+        print_this_html_header();
+        echo '<p style="color:red">Account Successfully Created. Redirecting</p>';
       }
       else
       {
+        print_this_html_header();
         echo '<p style="color:red">Not all entries were valid</p>';
       }
     }
     else
     {
+      print_this_html_header();
       echo '<p style="color:red">That username is already taken</p>';
     }
   }
@@ -148,6 +168,7 @@ else
 }
 
 show_form('createuser');
+echo '<p><a href="login.php">Return to Login Screen</a></p>';
 print_html_footer();
 
 mysql_disconnect($c);

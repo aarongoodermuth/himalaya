@@ -5,7 +5,6 @@
 
 include_once '/home/goodermuth/dev/websites/himalaya/common/constants.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/functions.php';
-include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_admin.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/mysql.php';
 
 /******************/
@@ -82,7 +81,7 @@ else
       // place session info into database under user's entry
       mysql_log_cookie($c, $_POST['username'], $rand_cookie_value);
       // set cookie with value
-      setcookie($COOKIE_NAME, $rand_cookie_value, time() + $COOKIE_TIMEOUT);  
+      setcookie($COOKIE_NAME, $rand_cookie_value, time() + $COOKIE_TIMEOUT, '/');  
       // send to dashboard
       header('Refresh:0; url=../users/dashboard.php'); 
     }

@@ -74,7 +74,7 @@ function mysql_log_cookie( $c, $username, $cookie_val )
   $username = sanitize($username);
   $cookie_val = sanitize($cookie_val);
 
-  $query = 'UPDATE ' . $MEMBERS_TABLE . ' SET asession="' . $cookie_val
+  $query = 'UPDATE ' . $MEMBERS_TABLE . ' SET session_id="' . $cookie_val
               . '" WHERE username="' . $username . '"';
   mysqli_query($c, $query);
 }
@@ -107,9 +107,9 @@ function mysql_get_username_from_cookie( $c, $cookie_val )
 
   $cookie_val = sanitize($cookie_val);
 
-  $query = 'SELECT username FROM ' . $MEMBERS_TABLE . ' WHERE asession="'
+  $query = 'SELECT username FROM ' . $MEMBERS_TABLE . ' WHERE session_id="'
               . $cookie_val . '"';
-
+  
   $results = mysqli_query($c, $query);
   if($results == null)
   {
