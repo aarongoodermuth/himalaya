@@ -49,7 +49,7 @@ if($user != null)
   {
     // is a RU
     print_html_header();
-    echo '<h3>Welcome to the Dashboard, ' . $user . '!</h3>';
+    echo '<h3>Welcome to the Supplier Dashboard, ' . $user . '!</h3>';
     show_links();
     print_html_footer();
   }

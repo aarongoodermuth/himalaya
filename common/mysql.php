@@ -281,7 +281,7 @@ function mysql_get_type_from_username($c, $username)
   }
   elseif($row[0][0] == 0 && $row[1][0] == 1)
   {
-    return $USER_TYPE_MAPPNG[1];
+    return $USER_TYPE_MAPPING[1];
   }
   else
   {
