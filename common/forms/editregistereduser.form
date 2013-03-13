@@ -2,9 +2,6 @@
 submit button for adding user-->
 <form name="editregistereduser" action="editaccount.php" method="post">
 <h3>Edit Account</h3>
-<p>Password: <input type="password" name="password"></input></p>
-<br /><!--registered user info-->
-<h3>User Information</h3>
 <p>Full Name: <input type="text" name="name"></input></p>
 <p>Email: <input type="text" name="email"></input></p>
 <p>Gender: <br />

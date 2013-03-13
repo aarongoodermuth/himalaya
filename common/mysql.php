@@ -173,15 +173,15 @@ function mysql_create_supplier($c, $username, $password, $company, $contact)
   $contact  = sanitize($contact);
 
   global $SUPPLIERS_TABLE, $MEMBERS_TABLE;
-  if(!mysqli_create_member($c, $username, $password))
+  if(!mysql_create_member($c, $username, $password))
   {
     return false;
   }
-
+  
   $query = 'INSERT INTO ' . $SUPPLIERS_TABLE . ' VALUES("' . $username .
               '", "' . $company . '", "' . $contact . '")';
 
-  $db_answer = mysqli_query($c, $query[0]);
+  $db_answer = mysqli_query($c, $query);
 
   if($db_answer === false)
   {
@@ -289,6 +289,34 @@ function mysql_get_type_from_username($c, $username)
   }
 }
 
+// updates RU info. Returns true on sucess, false on failure
+// (boolean)
+function mysql_update_ru($c, $username, $name, $email, $gender, $age, $income)
+{
+  $username = sanitize($username);
+  $name     = sanitize($name);
+  $email    = sanitize($email);
+  $gender   = sanitize($gender);
+  $age      = sanitize($age);
+  $income   = sanitize($income);
+
+  $query = 'UPDATE ' . $RU_TABLE . 'where ';
+}
+
+// ...
+// (boolean)
+function mysql_new_password($c, $username, $password)
+{
+  global $MEMBERS_TABLE;
+
+  $username = sanitize($username);
+  $password = sanitize($password);
+
+  $query = 'UPDATE ' . $MEMBERS_TABLE. ' SET password="' . $password . 
+              '" WHERE username="' . $username . '"';
+
+  return mysqli_query($c, $query);
+}
 /*******************/
 /** END FUNCTIONS **/
 /*******************/

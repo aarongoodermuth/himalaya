@@ -22,13 +22,14 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/functions.php';
 // (void)
 function show_links()
 {
-  echo '<p><a href="selling.php">Items I am selling</a></p>';              // items I'm selling
-  echo '<p><a href="bought.php">Items I am buying</a></p>';                // items I have bought
-  echo '<p><a href="highbidder.php">Items where I am high bidder</a></p>'; // items I am high bidder
-  echo '<p><a href="../items/browse">Search or Browse</a></p>';            // search/browse
-  echo '<p><a href="sellitem.php">Sell Item</a></p>';                      // sell an item
-  echo '<p><a href="editaccount.php">Edit Account</a></p>';                // edit account
-  echo '<p><a href="../welcome/logout.php">Log Out</a></p>';               // log out
+  echo '<p><a href="selling.php">Items I am selling</a></p>';                // items I'm selling
+  echo '<p><a href="bought.php">Items I am buying</a></p>';                  // items I have bought
+  echo '<p><a href="highbidder.php">Items where I am high bidder</a></p>';   // items I am high bidder
+  echo '<p><a href="../items/browse">Search or Browse</a></p>';              // search/browse
+  echo '<p><a href="sellitem.php">Sell Item</a></p>';                        // sell an item
+  echo '<p><a href="editaccount.php">Edit Account</a></p>';                  // edit account
+  echo '<p><a href="../members/changepassword.php">Change Password</a></p>'; // change password
+  echo '<p><a href="../welcome/logout.php">Log Out</a></p>';                 // log out
 } 
 
 /*******************/

@@ -24,7 +24,7 @@ function print_this_html_header()
 {
   echo '<html><head>';
   echo '<script type="text/javascript" 
-           src="/himalaya/common/javascript/createuser.js">
+           src="../common/javascript/createuser.js">
            </script>';
   echo '</head>';
   echo '<body onload="disable_all()">';
@@ -56,7 +56,7 @@ function all_set()
     }
   }
   else
-  {
+  {die("asdf");
     return false;
   } 
 }
@@ -76,12 +76,12 @@ function valid($val)
 
   if( isset($val) )
   {
-    if($val != '')
+    if(!empty($val))
     {
       return true;
     }
   }
-
+die("qwer");
   return false;
 }
 
@@ -103,7 +103,8 @@ if( values_set() )
   {
     if(mysql_username_unique($c, $_POST['username']))
     {
-      
+      $goof = false;
+ 
       // create the user
       if($_POST['type'] == 0)
       {
@@ -139,7 +140,7 @@ if( values_set() )
       {
         
         // redirect to user page
-        header('refresh:2; url=login.php');
+        header('refresh:4; url=login.php');
         print_this_html_header();
         echo '<p style="color:red">Account Successfully Created. Redirecting</p>';
       }

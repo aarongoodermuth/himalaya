@@ -3,5 +3,6 @@ I WOULD PREFER TO WAIT UNTIL WE HAVE MOST OF THE BASIC FUNCTIONALITY
 COMPLETED BEFORE SPENDING TIME FIXING THESE OVERALL MINOR THINGS
 FEEL FREE TO ADD TO THIS LIST AS NECCESARY
 -------------------------------------------------------------------------------
-createuser.php:           income does not have max value check
-multple:                  make it pretty
+createuser.php:             income does not have max value check
+multple:                    make it pretty
+welcome/createaccount.php   change path of javascrip[t file
