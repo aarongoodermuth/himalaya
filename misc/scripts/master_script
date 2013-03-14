@@ -1,0 +1,2 @@
+mysql -u root -p431w < db_init.sql;
+./zipparse root ../zip.txt;
