@@ -1,2 +1,13 @@
-mysql -u root -p431w < db_init.sql;
+# build the database creation file
+printf "DROP DATABASE himalaya;\nCREATE DATABASE himalaya;\n" > db_init.sql
+cat relations.sql inserts.sql >> db_init.sql
+
+# remove Windows line endings
+sed -e 's///g' db_init.sql > temp; mv temp db_init.sql
+
+# relink db_init.sql in Dropbox
+rm -f ~/Dropbox/cmpsc431_project/db_init.sql
+link db_init.sql ~/Dropbox/cmpsc431_project/db_init.sql
+
+mysql -u root -p431w himalaya < db_init.sql;
 ./zipparse root ../zip.txt;
