@@ -126,138 +126,6 @@ function mysql_get_username_from_cookie( $c, $cookie_val )
     return null;
   }
 }
-
-// checks if this username is already in the database
-// (boolean)
-function mysql_username_unique($c, $username)
-{
-  global $MEMBERS_TABLE;
-  $username = sanitize($username);
-
-  $query = 'SELECT COUNT(*) FROM ' . $MEMBERS_TABLE . ' WHERE username="' 
-              . $username . '"';
-  
-  $db_answer = mysqli_query($c, $query);
-
-  $row = mysqli_fetch_row($db_answer);
-  return ($row[0] == 0);
-}
-
-// inserts a member into the database
-// (void)
-function mysql_create_member($c, $username, $password)
-{
-  $username = sanitize($username);
-  $password = sanitize($password);
-
-  global $MEMBERS_TABLE;
-
-  $query = 'INSERT INTO ' . $MEMBERS_TABLE . ' VALUES("' . $username . 
-              '", "' . $password . '", "0")';
-
-  $db_answer = mysqli_query($c, $query);
-
-  if($db_answer === false)
-  {
-    return false;
-  }
-  return true;
-}
-
-// inserts a member and a supplier into the database 
-// (boolean)
-function mysql_create_supplier($c, $username, $password, $company, $contact)
-{
-  $username = sanitize($username);
-  $company  = sanitize($company);
-  $contact  = sanitize($contact);
-
-  global $SUPPLIERS_TABLE, $MEMBERS_TABLE;
-  if(!mysql_create_member($c, $username, $password))
-  {
-    return false;
-  }
-  
-  $query = 'INSERT INTO ' . $SUPPLIERS_TABLE . ' VALUES("' . $username .
-              '", "' . $company . '", "' . $contact . '")';
-
-  $db_answer = mysqli_query($c, $query);
-
-  if($db_answer === false)
-  {
-    $query = 'DELETE FROM ' . $MEMBERS_TABLE . ' WHERE username="' . $username . '"';
-    mysqli_query($c, $query);
-    return false;
-  }
-
-  return true;
-}
-
-// inserts a registered user into the database
-// (boolean)
-function mysql_create_ru($c, $username, $password, $name, $email, $gender, $age, $income)
-{
-  global $RU_TABLE, $MEMBERS_TABLE;
-  
-  if(!mysql_create_member($c, $username, $password))
-  {
-    return false;
-  }
-
-  if(!mysql_add_email($c, $username, $email))
-  {
-    $query = 'DELETE FROM ' . $MEMBERS_TABLE . ' WHERE username="' . $username 
-                . '"';
-    mysqli_query($c, $query);
-    return false;
-  }
-
-  $username = sanitize($username);
-  $name     = sanitize($name);
-  $email    = sanitize($email);
-  $gender   = sanitize($gender);
-  $age      = sanitize($age);
-  $income   = sanitize($income);
-
-  $query = 'INSERT INTO ' . $RU_TABLE . ' VALUES("' . $username 
-              . '", "' . $name . '", "' . $gender . '", "' 
-              . $age . '", "' . $income . '", "0")';
-  
-  $db_answer = mysqli_query($c, $query);
-
-  if($db_answer === false)
-  {
-    $query = 'DELETE FROM ' . $MEMBERS_TABLE . ' WHERE username="' . $username 
-                . '"';
-    mysqli_query($c, $query);
-    $query = 'DELETE FROM ' . $EMAIL_TABLE   . ' WHERE username="' . $username 
-                . '" AND email="' . $email . '"';
-    mysqli_query($c, $query);
-    return false; 
-  }
-  return true;
-}
-
-// adds entry to the email table
-// (boolean)
-function mysql_add_email($c, $username, $email)
-{
-  global $EMAIL_TABLE;
-
-  $username = sanitize($username);
-  $email    = sanitize($email);
-
-  $query = 'INSERT INTO ' . $EMAIL_TABLE . ' VALUES("' . $username . '", "' 
-              . $email . '")';
-  $db_answer = mysqli_query($c, $query);
-  if($db_answer === false)
-  {
-    return false;
-  }
-
-  return true;
-}
-
 // ...
 // (string)
 function mysql_get_type_from_username($c, $username)
@@ -265,13 +133,13 @@ function mysql_get_type_from_username($c, $username)
   global $RU_TABLE, $SUPPLIERS_TABLE, $USER_TYPE_MAPPING;
 
   $username = sanitize($username);
-  
+
   $query[0] = 'SELECT COUNT(*) FROM ' . $RU_TABLE        . ' WHERE username="' . $username . '"';
   $query[1] = 'SELECT COUNT(*) FROM ' . $SUPPLIERS_TABLE . ' WHERE username="' . $username . '"';
 
   $db_answer[0] = mysqli_query($c, $query[0]);
   $db_answer[1] = mysqli_query($c, $query[1]);
-  
+
   $row[0] = mysqli_fetch_row($db_answer[0]);
   $row[1] = mysqli_fetch_row($db_answer[1]);
 
@@ -289,34 +157,6 @@ function mysql_get_type_from_username($c, $username)
   }
 }
 
-// updates RU info. Returns true on sucess, false on failure
-// (boolean)
-function mysql_update_ru($c, $username, $name, $email, $gender, $age, $income)
-{
-  $username = sanitize($username);
-  $name     = sanitize($name);
-  $email    = sanitize($email);
-  $gender   = sanitize($gender);
-  $age      = sanitize($age);
-  $income   = sanitize($income);
-
-  $query = 'UPDATE ' . $RU_TABLE . 'where ';
-}
-
-// ...
-// (boolean)
-function mysql_new_password($c, $username, $password)
-{
-  global $MEMBERS_TABLE;
-
-  $username = sanitize($username);
-  $password = sanitize($password);
-
-  $query = 'UPDATE ' . $MEMBERS_TABLE. ' SET password="' . $password . 
-              '" WHERE username="' . $username . '"';
-
-  return mysqli_query($c, $query);
-}
 /*******************/
 /** END FUNCTIONS **/
 /*******************/

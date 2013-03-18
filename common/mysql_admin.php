@@ -86,6 +86,11 @@ function mysql_admin_get_username_from_cookie( $c, $cookie_val )
               . $cookie_val . '"';
  
   $results = mysqli_query($c, $query);
+  if($results === false)
+  {
+    die('database error');
+  }
+
   $row = mysqli_fetch_row($results);
   if($row)
   {
@@ -353,12 +358,12 @@ function mysql_admin_get_address($c, $username)
   global $ADDRESS_TABLE;
 
   $query = 'SELECT street, zip FROM ' . $ADDRESS_TABLE . ' WHERE username="' . $username .'"';
-  
+ 
   $db_answer = mysqli_query($c, $query);
   
   if($db_answer === false || $db_answer === true)
   {
-    $row[0] = 'asdfasdfasdf'; // should never see this
+    $row[0] = 'could not find address'; // should never see this
     return $row;
   }
   else
@@ -506,6 +511,36 @@ function mysql_admin_recently_sold($c)
   return $row;
 }
 
+// ...
+// (string)
+function mysql_admin_get_email($c, $username)
+{
+  global $EMAIL_TABLE;
+
+  $username = sanitize($username);
+
+  $query = 'SELECT email FROM ' . $EMAIL_TABLE . ' WHERE username="' 
+              . $username . '"';
+
+  $db_answer = mysqli_query($c, $query);
+
+  if($db_answer === false)
+  {
+    return '';
+  }
+  else
+  {
+    $row = mysqli_fetch_row($db_answer);
+    if($row === null)
+    {
+      return '';
+    }
+    else
+    {
+      return $row[0];
+    }
+  }
+}
 /*******************/
 /** END FUNCTIONS **/
 /*******************/

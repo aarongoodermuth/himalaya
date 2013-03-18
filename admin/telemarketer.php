@@ -36,6 +36,7 @@ function print_report_row($c, $row)
   $phones = mysql_admin_phone($c, $row[0]);
   $address = mysql_admin_get_address($c, $row[0]);  
 
+  echo '<td>' . mysql_admin_get_email($c, $row[0]) . '</td>';
   echo '<td>' . disp_addresses($c, $address) . '</td>';
   echo '<td>' . disp_phones($phones) . '</td>';
   echo '</tr>';
@@ -118,7 +119,7 @@ if( $user_type == $ADMIN_USER_TYPE_MAPPING[1] ||
   echo '<h3 style="text-align:center">Telemarketer Report</h3>';
   echo '<table style="text-align:center" align="center" border="1">';
   echo '<tr style="font-weight:bold; text-align:center"><td>Username</td><td>Name</td>
-           <td>Email</td><td>Gender</td><td>Age</td><td>Income</td><td>Address</td>
+           <td>Gender</td><td>Age</td><td>Income</td><td>Email</td><td>Address</td>
            <td>Phone Numbers</td></tr>';
   // run telemarketer report
   //...
