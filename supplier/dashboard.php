@@ -7,6 +7,7 @@
 include_once '/home/goodermuth/dev/websites/himalaya/common/constants.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/mysql.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/functions.php';
+include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_members.php';
 
 /******************/
 /** END INCLUDES **/
@@ -44,7 +45,7 @@ $user = check_logged_in_user($c);
 
 if($user != null)
 {
-  $type = mysql_get_type_from_username($c, $user);
+  $type = mysql_members_get_type_from_username($c, $user);
   if($type == $USER_TYPE_MAPPING[1])
   {
     // is a RU

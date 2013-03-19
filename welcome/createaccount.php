@@ -7,6 +7,7 @@
 include_once '/home/goodermuth/dev/websites/himalaya/common/constants.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/mysql.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/functions.php';
+include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_members.php';
 
 /******************/
 /** END INCLUDES **/
@@ -47,7 +48,8 @@ function all_set()
     if($_POST['type'] == 0)
     {
       return valid('username') && valid('password') && valid('name') && 
-             valid('email') && valid('age') && valid('income');
+             valid('email') && valid('address') && valid('zip') && 
+             valid('phone') && valid('age') && valid('income');
     }
     else
     {
@@ -56,16 +58,24 @@ function all_set()
     }
   }
   else
-  {die("asdf");
+  {
     return false;
   } 
 }
 
 // see if some of the values are actually numbers
 // (boolean)
-function type_check()
+function type_check($c)
 {
-  return is_numeric($_POST['age']) && is_numeric($_POST['income']);
+  $retval = true;
+  $retval =  $retval && is_numeric($_POST['age']) && is_numeric($_POST['income']) && is_numeric($_POST['zip']);
+
+  if($retval)
+  {
+    $retval = $retval && mysql_member_zip_exists($c, $_POST['zip']);
+  }
+
+  return $retval && (strlen($_POST['phone']) < 16);
 }
 
 // checks if value is set and not blank
@@ -81,7 +91,7 @@ function valid($val)
       return true;
     }
   }
-die("qwer");
+
   return false;
 }
 
@@ -101,20 +111,21 @@ if( values_set() )
 {
   if(all_set())
   {
-    if(mysql_username_unique($c, $_POST['username']))
+    if(mysql_member_username_unique($c, $_POST['username']))
     {
       $goof = false;
  
       // create the user
       if($_POST['type'] == 0)
       {
-        if(!type_check())
+        if(!type_check($c))
         {
           $goof = true;
         }
         // registered user
-        elseif( !mysql_create_ru($c, $_POST['username'], $_POST['password'], 
+        elseif( !mysql_member_create_ru($c, $_POST['username'], $_POST['password'], 
                           $_POST['name'], $_POST['email'], $_POST['gender'], 
+                          $_POST['address'], $_POST['zip'], $_POST['phone'],
                           $_POST['age'], $_POST['income'])
               )
         {
@@ -128,7 +139,7 @@ if( values_set() )
       else
       {
         // supplier
-        if( !mysql_create_supplier($c, $_POST['username'], $_POST['password'],
+        if( !mysql_member_create_supplier($c, $_POST['username'], $_POST['password'],
                                  $_POST['company'], $_POST['contact'])
           )
         {
@@ -140,7 +151,7 @@ if( values_set() )
       {
         
         // redirect to user page
-        header('refresh:4; url=login.php');
+//        header('refresh:4; url=login.php');
         print_this_html_header();
         echo '<p style="color:red">Account Successfully Created. Redirecting</p>';
       }

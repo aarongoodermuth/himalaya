@@ -7,7 +7,7 @@
 include_once '/home/goodermuth/dev/websites/himalaya/common/constants.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/mysql.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/functions.php';
-
+include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_members.php';
 /******************/
 /** END INCLUDES **/
 /******************/
@@ -44,7 +44,7 @@ if( $username != null)
     // see if passwords match
     if($_POST['newpassword1'] == $_POST['newpassword2'])
     {
-      if( mysql_new_password($c, $username, $_POST['newpassword1']) )
+      if( mysql_member_new_password($c, $username, $_POST['newpassword1']) )
       {
         echo '<p style="color:red">Password had been updated</p>';
       }

@@ -16,6 +16,9 @@ submit button for adding user-->
 <input id="gender1" type="radio" name="gender" value="M">Male</input>
 <input id="gender2" type="radio" name="gender" value="F">Female</input>
 </p>
+<p>Street Address: <input type="text" name="address"></input></p>
+<p>ZIP Code: <input type="text" name="zip"></input></p>
+<p>Phone Number: <input type="text" name="phone"></input></p>
 <p>Age: <input type="text" name="age"></input></p>
 <p>Income: <input type="text" name="income"></input></p>
 <br /><!--supplier info-->
