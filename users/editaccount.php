@@ -7,6 +7,7 @@
 include_once '/home/goodermuth/dev/websites/himalaya/common/constants.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/functions.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/mysql.php';
+include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_members.php';
 
 /******************/
 /** END INCLUDES **/
@@ -17,6 +18,33 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/mysql.php';
 /***************/
 /** FUNCTIONS **/
 /***************/
+
+// creates custom html header
+// (void)
+function print_this_html_header($c, $username)
+{
+  echo '<html><head>';
+  echo '<script type="text/javascript" 
+           src="../common/javascript/editru.js">
+           </script>';
+  echo '</head>';
+  echo '<body onload="populate(' . get_ru_args($c, $username) . ')">';
+}
+
+// gets the args from the database for this user formatted as a comma seperated
+//     string
+// (string)
+function get_ru_args($c, $username)
+{
+  $row = mysql_member_get_ru_info($c, $username);
+  $retval = '';
+
+  for($i=0; $i<count($row) - 1; $i++)
+  {
+    $retval = $retval . "'" . $row[$i] . "', ";
+  }
+  return $retval . "'" . $row[$i] . "'";
+}
 
 // checks if all post values are set to non empty values
 // (boolean)
@@ -67,7 +95,7 @@ if($user != null)
   $type = mysql_get_type_from_username($c, $user);
   if($type == $USER_TYPE_MAPPING[0])
   {
-    print_html_header();
+    print_this_html_header($c, $user);
     if(all_set()) // post values found
     {
       // update DB
@@ -91,6 +119,7 @@ if($user != null)
       echo '<p style="color:red">All values must be entered</p>';
     }
     show_form('editregistereduser');
+    echo '<p><a href="dashboard.php">Return to Dashboard</a></p>';
     print_html_footer();
   }
   elseif($type == $USER_TYPE_MAPPING[1])

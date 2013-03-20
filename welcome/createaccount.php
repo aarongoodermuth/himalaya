@@ -151,7 +151,7 @@ if( values_set() )
       {
         
         // redirect to user page
-//        header('refresh:4; url=login.php');
+        header('refresh:4; url=login.php');
         print_this_html_header();
         echo '<p style="color:red">Account Successfully Created. Redirecting</p>';
       }

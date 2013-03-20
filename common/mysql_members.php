@@ -232,6 +232,29 @@ function mysql_member_insert_address($c, $street, $username, $zip)
   return mysqli_query($c, $query);
 }
 
+// gets all info related to a registered_user
+// string[]
+function mysql_member_get_ru_info($c, $username)
+{
+  global $RU_TABLE, $EMAIL_TABLE, $ADDRESS_TABLE, $PHONE_TABLE;
+
+  $username = sanitize($username);
+
+  $query = 'SELECT name, email, gender, street, zip, pnum, age, income FROM '
+              . $RU_TABLE . ' r, ' . $EMAIL_TABLE . ' e, ' . $ADDRESS_TABLE 
+              . ' a, ' . $PHONE_TABLE . ' p WHERE r.username=e.username AND ' . 
+              'r.username=p.username AND r.username=a.username AND r.username="'
+              . $username . '"';
+  $db_answer = mysqli_query($c, $query);
+
+  if($db_answer === false)
+  {
+    return array("", "", "", "", "", "", "", "");
+  }
+
+  return mysqli_fetch_row($db_answer);
+}
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/
