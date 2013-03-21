@@ -25,18 +25,18 @@ function print_this_html_header($c, $username)
 {
   echo '<html><head>';
   echo '<script type="text/javascript" 
-           src="../common/javascript/editru.js">
+           src="../common/javascript/editsupplier.js">
            </script>';
   echo '</head>';
-  echo '<body onload="populate(' . get_ru_args($c, $username) . ')">';
+  echo '<body onload="populate(' . get_supplier_args($c, $username) . ')">';
 }
 
 // gets the args from the database for this user formatted as a comma seperated
 //     string
 // (string)
-function get_ru_args($c, $username)
+function get_supplier_args($c, $username)
 {
-  $row = mysql_member_get_ru_info($c, $username);
+  $row = mysql_member_get_supplier_info($c, $username);
   $retval = '';
 
   for($i=0; $i<count($row) - 1; $i++)
@@ -51,15 +51,9 @@ function get_ru_args($c, $username)
 function all_set()
 {
   return 
-            isset($_POST['name']) && isset($_POST['email']) && 
-            isset($_POST['gender']) && isset($_POST['age']) && 
-            isset($_POST['income']) && isset($_POST['address']) &&
-            isset($_POST['zip']) && isset($_POST['phone'])
+            isset($_POST['contact']) && isset($_POST['company']) 
     &&
-            !empty($_POST['name']) && !empty($_POST['email']) &&
-            !empty($_POST['age']) &&  !empty($_POST['income']) &&
-            !empty($_POST['address']) && !empty($_POST['zip']) &&
-            !empty($_POST['phone']);
+            !empty($_POST['contact']) && !empty($_POST['company']); 
 }
 
 // checks to see if any post values are set and not empty
@@ -67,20 +61,10 @@ function all_set()
 function values_set()
 {
   return     
-         isset($_POST['gender'])
-    ||
         (
-           ( isset($_POST['name']) || isset($_POST['email']) || 
-             isset($_POST['age']) ||   isset($_POST['income']) ||
-             isset($_POST['address']) || isset($_POST['zip']) ||
-             isset($_POST['phone'])
-           )
+           ( isset($_POST['contact']) || isset($_POST['company']) ) 
         &&
-           ( !empty($_POST['name']) || !empty($_POST['email']) ||
-             !empty($_POST['age']) ||  !empty($_POST['income']) ||
-             !empty($_POST['address']) || !empty($_POST['zip']) ||
-             !empty($_POST['phone']) 
-           )
+           ( !empty($_POST['contact']) || !empty($_POST['company']) )
          );
 }
 
@@ -100,22 +84,18 @@ $user = check_logged_in_user($c);
 if($user != null)
 {
   $type = mysql_get_type_from_username($c, $user);
-  if($type == $USER_TYPE_MAPPING[0])
+  if($type == $USER_TYPE_MAPPING[1])
   {
     if(all_set()) // post values found
     {
       // update DB
-      $db_result = mysql_member_update_ru($c, $user, $_POST['name'], 
-                                       $_POST['email'], 
-                                       $_POST['gender'], $_POST['age'], 
-                                       $_POST['income'], $_POST['address'], 
-                                       $_POST['zip'], $_POST['phone']);
-      
+      $db_result = mysql_member_update_supplier($c, $user, $_POST['company'], $_POST['contact']); 
+
       print_this_html_header($c, $user);
       // print status message
       if($db_result === true) // success
       {
-        echo '<p style="color:red" onload="populate(' . get_ru_args($c, $user) . ')">Account successfully updated</p>';
+        echo '<p style="color:red">Account successfully updated</p>';
       }
       else // failure
       {
@@ -132,13 +112,13 @@ if($user != null)
     {
       print_this_html_header($c, $user);
     }
-    show_form('editregistereduser');
+    show_form('editsupplier');
     echo '<p><a href="dashboard.php">Return to Dashboard</a></p>';
     print_html_footer();
   }
-  elseif($type == $USER_TYPE_MAPPING[1])
+  elseif($type == $USER_TYPE_MAPPING[0])
   {
-    header('refresh:0; url=../supplier/editaccount.php');
+    header('refresh:0; url=../user/editaccount.php');
   }
   else
   {

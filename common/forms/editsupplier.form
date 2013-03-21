@@ -1,0 +1,8 @@
+<!--provides a username, password, type dropdown, other relevant info and 
+submit button for adding user-->
+<form name="editsupplier" action="editaccount.php" method="post">
+<h3>Edit Account</h3>
+<p>Company Name: <input type="text" name="company"></input></p>
+<p>Contact Name: <input type="text" name="contact"></input></p>
+<p><input value="Submit" type="submit"></input></p>
+</form>

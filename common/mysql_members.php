@@ -152,16 +152,83 @@ function mysql_member_add_email($c, $username, $email)
 
 // updates RU info. Returns true on sucess, false on failure
 // (boolean)
-function mysql_member_update_ru($c, $username, $name, $email, $gender, $age, $income)
+function mysql_member_update_ru($c, $username, $name, $email, $gender, $age, 
+                                    $income, $street, $zip, $phone )
 {
+  global $RU_TABLE, $ADDRESS_TABLE, $PHONE_TABLE, $EMAIL_TABLE;
+
   $username = sanitize($username);
   $name     = sanitize($name);
   $email    = sanitize($email);
   $gender   = sanitize($gender);
   $age      = sanitize($age);
   $income   = sanitize($income);
+  $street   = sanitize($street);
+  $zip      = sanitize($zip);
+  $phone    = sanitize($phone);
 
-  $query = 'UPDATE ' . $RU_TABLE . 'where ';
+  $query = 'UPDATE ' . $RU_TABLE . 
+          ' SET name="'   . $name   . '",' .
+          ' gender="' . $gender . '",' .
+          ' age="'    . $age    . '",' .
+          ' income="' . $income . '" ' .
+          ' WHERE username="' . $username . '"';
+  if( !mysqli_query($c, $query) ){ echo $query;return false;}
+
+  $query = 'UPDATE ' . $ADDRESS_TABLE . 
+          ' SET street="' . $street . '", ' . 
+          ' zip="'    . $zip    . '" ' .
+          ' WHERE username="' . $username . '"';
+  if( !mysqli_query($c, $query) )
+  {echo $query;
+    mysqli_rollback($c);
+    return false;
+  }
+
+  $query = 'UPDATE '. $PHONE_TABLE .
+          ' SET pnum="' . $phone . '" ' . 
+          ' WHERE username="' . $username . '"';
+  if( !mysqli_query($c, $query) )
+  {echo $query;
+    mysqli_rollback($c);
+    mysqli_rollback($c);
+    return false;
+  }  
+ 
+  $query = 'UPDATE ' . $EMAIL_TABLE .
+          ' SET email="' . $email . '"' .
+          ' WHERE username="' . $username . '"';
+  if( !mysqli_query($c, $query) )
+  {
+    mysqli_rollback($c);
+    mysqli_rollback($c);
+    mysqli_rollback($c);
+    return false;
+  }
+ 
+  return true;
+}
+
+// updates supplier info. returns true on success, false on failure
+// (boolean)
+function mysql_member_update_supplier($c, $username, $company, $contact)
+{
+  global $SUPPLIERS_TABLE;
+
+  $username = sanitize($username);
+  $company  = sanitize($company);
+  $contact  = sanitize($contact);
+
+  $query = 'UPDATE ' . $SUPPLIERS_TABLE . 
+          ' SET company_name="' . $company . '", ' . 
+               'contact_name="' . $contact . '"'  .
+          ' WHERE username="' . $username . '"';
+  if( !mysqli_query($c, $query) )
+  {
+    return false;
+  }
+  
+  return true;
 }
 
 // ...
@@ -255,9 +322,31 @@ function mysql_member_get_ru_info($c, $username)
   return mysqli_fetch_row($db_answer);
 }
 
+// gets all info related to a supplier
+// string[]
+function mysql_member_get_supplier_info($c, $username)
+{
+  global $SUPPLIERS_TABLE;
+
+  $username = sanitize($username);
+
+  $query = 'SELECT company_name, contact_name FROM ' . $SUPPLIERS_TABLE 
+              . ' WHERE username="' . $username . '"';
+  
+  $db_answer = mysqli_query($c, $query);
+
+  if($db_answer === false)
+  {
+    return array("done", "goofed");
+  }
+
+  return mysqli_fetch_row($db_answer);
+}
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/
 
 //----------------------------------------------------------------------------------------
 ?>
+

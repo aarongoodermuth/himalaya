@@ -1,6 +1,6 @@
 <!--provides a username, password, type dropdown, other relevant info and 
 submit button for adding user-->
-<form name="createuser" action="editaccount.php" method="post">
+<form name="edituser" action="editaccount.php" method="post">
 <h3>Edit Account</h3>
 <p>Full Name: <input type="text" name="name"></input></p>
 <p>Email: <input type="text" name="email"></input></p>

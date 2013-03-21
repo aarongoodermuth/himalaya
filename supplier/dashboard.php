@@ -24,7 +24,7 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_members.php';
 function show_links()
 {
   echo '<p><a href="selling.php">Items I am selling</a></p>';                // items I'm selling
-  echo '<p><a href="orders.php">My Unfullfilled Order</a></p>';              // items that have sold but need shipping
+  echo '<p><a href="orders.php">My Unfullfilled Orders</a></p>';              // items that have sold but need shipping
   echo '<p><a href="editaccount.php">Edit Account</a></p>';                  // edit account
   echo '<p><a href="../members/changepassword.php">Change Password</a></p>'; // change password
   echo '<p><a href="../welcome/logout.php">Log Out</a></p>';                 // log out
@@ -45,7 +45,7 @@ $user = check_logged_in_user($c);
 
 if($user != null)
 {
-  $type = mysql_members_get_type_from_username($c, $user);
+  $type = mysql_get_type_from_username($c, $user);
   if($type == $USER_TYPE_MAPPING[1])
   {
     // is a RU

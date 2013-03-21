@@ -9,3 +9,6 @@ welcome/createaccount.php      |     income does not have max value check
 multple                        |     make it pretty
 welcome/createaccount.php      |     change path of javascript file
 admin/telemarketer.php         |     table is screwy. related to emails being moved
+DATABASE -- Registered_Users   |     We store Age rather than date of birth, putting
+                               |        us in 1st NF
+
