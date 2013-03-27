@@ -42,7 +42,7 @@ static int add_row(MYSQL *conn, const char *zip, const char *city,
 			     "lon) VALUES ('%s', '%s', '%s', %s, %s)", 
 			     zip, city, state, lat, lon);
 
-	printf("%s\n", query);
+	/*printf("%s\n", query);*/
 
 	if (mysql_query(conn, query)) {
 		fprintf(stderr, "%s: error with query `%s': %s\n", 
