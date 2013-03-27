@@ -109,7 +109,7 @@ function mysql_get_username_from_cookie( $c, $cookie_val )
 
   $query = 'SELECT username FROM ' . $MEMBERS_TABLE . ' WHERE asession="'
               . $cookie_val . '"';
-echo $query;die();
+
   $results = mysqli_query($c, $query);
   if($results == null)
   {
