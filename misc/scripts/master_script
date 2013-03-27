@@ -6,6 +6,7 @@ set -e
 DBUSER=root
 DBNAME=himalaya
 DBPASS=431w
+DROPBOX=/home/goodermuth/Dropbox/cmpsc431_project
 DUMPFILE=/home/goodermuth/dev/websites/himalaya/dbdump/init_backup_`date +%s`.sql.gz
 INIT=db_init.sql
 
@@ -13,14 +14,14 @@ INIT=db_init.sql
 mysqldump -u $DBUSER -p${DBPASS} --opt $DBNAME | gzip > $DUMPFILE
 
 printf "DROP DATABASE $DBNAME;\nCREATE DATABASE $DBNAME;\n\nUSE $DBNAME;" > $INIT
-cat relations.sql inserts.sql >> $INIT
+cat $DROPBOX/phase3/relations.sql $DROPBOX/phase3/inserts.sql >> $INIT
 
 # remove Windows line endings
 sed -e 's///g' $INIT > temp; mv temp $INIT
 
 # relink INIT in Dropbox
-rm -f ~/Dropbox/cmpsc431_project/$INIT
-link $INIT ~/Dropbox/cmpsc431_project/$INIT
+rm -f $DROPBOX/$INIT
+link $INIT $DROPBOX/$INIT
 
 mysql -u $DBUSER -p${DBPASS} $DBNAME < $INIT
 echo created relations in $DBNAME db
