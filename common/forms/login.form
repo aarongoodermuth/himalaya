@@ -1,6 +1,29 @@
 <!--provides a username, password, and submit button for logging in-->
-<form action='login.php' method='post'>
-<p>Username: <input type="text" name="username"></input></p>
-<p>Password: <input type="password" name="password"></input></p>
-<p><input value="Login" type="submit"></input></p>
-</form>
+<div class="container">
+<div class="login">
+<!---->
+<div class="login-screen">
+  <div class="login-icon">
+    <img src="/design/images/illustrations/bag.png" alt="Welcome to Himalaya.biz" />
+    <h4>Welcome to <small>Himalaya.biz</small></h4>
+  </div>
+
+  <div class="login-form">
+  <form action='login.php' method='post'>
+    <div class="control-group">
+      <input type="text" class="login-field" value="" placeholder="username" id="login-name" name="username" />
+      <label class="login-field-icon fui-man-16" for="login-name"></label>
+    </div>
+
+    <div class="control-group">
+      <input type="password" class="login-field" value="" placeholder="password" id="login-pass" name="password" />
+      <label class="login-field-icon fui-lock-16" for="login-pass"></label>
+    </div>
+    <input class="btn btn-primary btn-large btn-block" value="Login" type="submit"></input>
+    <a class="login-link" href="/users/recover.php">Lost your password?</a>
+  </form>
+  </div>
+</div>
+<!--</form>-->
+</div>
+</div>

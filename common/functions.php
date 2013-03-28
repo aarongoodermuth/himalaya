@@ -23,9 +23,42 @@ function print_html_header()
 }
 
 // (void)
+function print_html_header2()
+{
+  echo file_get_contents('header2.html', true);
+}
+
+// (void)
+function print_html_header3()
+{
+  echo file_get_contents('header3.html', true);
+}
+
+// (void)
 function print_html_footer()
 {
   echo '</body></html>';
+}
+
+function print_html_footer_js()
+{
+  echo '
+    <!-- Load JS here for greater good =============================-->
+    <script src="/design/js/jquery-1.8.2.min.js"></script>
+    <script src="/design/js/jquery-ui-1.10.0.custom.min.js"></script>
+    <script src="/design/js/jquery.dropkick-1.0.0.js"></script>
+    <script src="/design/js/custom_checkbox_and_radio.js"></script>
+    <script src="/design/js/custom_radio.js"></script>
+    <script src="/design/js/jquery.tagsinput.js"></script>
+    <script src="/design/js/bootstrap-tooltip.js"></script>
+    <script src="/design/js/jquery.placeholder.js"></script>
+    <script src="http://vjs.zencdn.net/c/video.js"></script>
+    <script src="/design/js/application.js"></script>
+    <!--[if lt IE 8]>
+      <script src="js/icon-font-ie7.js"></script>
+      <script src="js/icon-font-ie7-24.js"></script>
+    <![endif]-->
+</body></html>';
 }
 
 // checks if there is a user logged in. If so, resets the cookie and returns

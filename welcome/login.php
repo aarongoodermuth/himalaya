@@ -52,7 +52,7 @@ if($username != null)
   // redirect
   header( 'Refresh:' . $REDIRECT_TIME . '; url=../users/dashboard.php' );
  
-  print_html_header();
+  print_html_header2();
   // show user information, give chance to log out, give chance to redirect 
   //    manually
   echo '<p>Welcome back ' . $username . '!</p>';
@@ -87,7 +87,7 @@ else
     }
     else
     {
-      print_html_header();
+      print_html_header2();
       // notify of failed login
       echo '<p style="color:red">Username or Password was not valid</p>';
 
@@ -101,21 +101,21 @@ else
   }
   else
   {
-    print_html_header();
+    print_html_header3();
     // no login was attempted
     // just show the password page
     show_form('login');
 
     // give link to create account
-    echo '<div><p>New to Himalaya.biz? <a href="createaccount.php">
+    echo '<div class=\'span2\'><p>New to Himalaya.biz? <a href="createaccount.php">
             Create an account</a></p></div>';
   }
 }
 
-print_html_footer();
+print_html_footer_js();
 
 mysql_disconnect($c);
-print_html_footer();
+print_html_footer_js();
 
 /******************/
 /** END PHP CODE **/

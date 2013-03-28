@@ -23,11 +23,10 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_members.php';
 // (void)
 function print_this_html_header($c, $username)
 {
-  echo '<html><head>';
+  print_html_header2();
   echo '<script type="text/javascript" 
-           src="../common/javascript/editru.js">
+           src="../common/javascript/editru2.js">
            </script>';
-  echo '</head>';
   echo '<body onload="populate(' . get_ru_args($c, $username) . ')">';
 }
 
@@ -52,12 +51,12 @@ function all_set()
 {
   return 
             isset($_POST['name']) && isset($_POST['email']) && 
-            isset($_POST['gender']) && isset($_POST['age']) && 
+            isset($_POST['gender']) && isset($_POST['dob']) && 
             isset($_POST['income']) && isset($_POST['address']) &&
             isset($_POST['zip']) && isset($_POST['phone'])
     &&
             !empty($_POST['name']) && !empty($_POST['email']) &&
-            !empty($_POST['age']) &&  !empty($_POST['income']) &&
+            !empty($_POST['dob']) &&  !empty($_POST['income']) &&
             !empty($_POST['address']) && !empty($_POST['zip']) &&
             !empty($_POST['phone']);
 }
@@ -71,13 +70,13 @@ function values_set()
     ||
         (
            ( isset($_POST['name']) || isset($_POST['email']) || 
-             isset($_POST['age']) ||   isset($_POST['income']) ||
+             isset($_POST['dob']) ||   isset($_POST['income']) ||
              isset($_POST['address']) || isset($_POST['zip']) ||
              isset($_POST['phone'])
            )
         &&
            ( !empty($_POST['name']) || !empty($_POST['email']) ||
-             !empty($_POST['age']) ||  !empty($_POST['income']) ||
+             !empty($_POST['dob']) ||  !empty($_POST['income']) ||
              !empty($_POST['address']) || !empty($_POST['zip']) ||
              !empty($_POST['phone']) 
            )
@@ -107,7 +106,7 @@ if($user != null)
       // update DB
       $db_result = mysql_member_update_ru($c, $user, $_POST['name'], 
                                        $_POST['email'], 
-                                       $_POST['gender'], $_POST['age'], 
+                                       $_POST['gender'], $_POST['dob'], 
                                        $_POST['income'], $_POST['address'], 
                                        $_POST['zip'], $_POST['phone']);
       
@@ -132,9 +131,9 @@ if($user != null)
     {
       print_this_html_header($c, $user);
     }
-    show_form('editregistereduser');
-    echo '<p><a href="dashboard.php">Return to Dashboard</a></p>';
-    print_html_footer();
+    show_form('editregistereduser2');
+    echo '<a href="dashboard.php">Return to Dashboard</a></div>';
+    print_html_footer_js();
   }
   elseif($type == $USER_TYPE_MAPPING[1])
   {
