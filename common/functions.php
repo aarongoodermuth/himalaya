@@ -17,27 +17,33 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/constants.php';
 /***************/
 
 // (void)
-function print_html_header()
+/*function print_html_header()
 {
   echo '<html><body>';
+}*/
+
+// (void)
+function print_html_header()
+{
+  echo file_get_contents('header.html', true);
 }
 
 // (void)
-function print_html_header2()
+function print_html_nav()
 {
-  echo file_get_contents('header2.html', true);
-}
-
-// (void)
-function print_html_header3()
-{
-  echo file_get_contents('header3.html', true);
+  echo file_get_contents('navigation.html', true);
 }
 
 // (void)
 function print_html_footer()
 {
   echo '</body></html>';
+}
+
+// (void)
+function print_html_footer2()
+{
+  echo file_get_contents('footer.html', true);
 }
 
 function print_html_footer_js()
@@ -57,8 +63,7 @@ function print_html_footer_js()
     <!--[if lt IE 8]>
       <script src="js/icon-font-ie7.js"></script>
       <script src="js/icon-font-ie7-24.js"></script>
-    <![endif]-->
-</body></html>';
+    <![endif]-->';
 }
 
 // checks if there is a user logged in. If so, resets the cookie and returns
