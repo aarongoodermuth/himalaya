@@ -16,6 +16,10 @@ $SUPPLIERS_TABLE     =     $DB_NAME . '.Suppliers';
 $MEMBERS_TABLE       =     $DB_NAME . '.Members';
 $RU_TABLE            =     $DB_NAME . '.Registered_Users';
 $EMAIL_TABLE         =     $DB_NAME . '.Emails';
+$PRODUCTS_TABLE      =     $DB_NAME . '.Products';
+$SALE_ITEMS_TABLE    =     $DB_NAME . '.Sale_Items';
+$AUCTIONS_TABLE      =     $DB_NAME . '.Auctions';
+$GIFT_CARDS_TABLE    =     $DB_NAME . '.Gift_Cards';
 
 $USER_TYPE_MAPPING       = array('Registered User', 'Supplier');
 $ADMIN_USER_TYPE_MAPPING = array('System', 'SysAdmin', 'Owner', 'Telemarketer',

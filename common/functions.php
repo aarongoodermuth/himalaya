@@ -58,7 +58,6 @@ function print_html_footer_js()
     <script src="/design/js/jquery.tagsinput.js"></script>
     <script src="/design/js/bootstrap-tooltip.js"></script>
     <script src="/design/js/jquery.placeholder.js"></script>
-    <script src="http://vjs.zencdn.net/c/video.js"></script>
     <script src="/design/js/application.js"></script>
     <!--[if lt IE 8]>
       <script src="js/icon-font-ie7.js"></script>

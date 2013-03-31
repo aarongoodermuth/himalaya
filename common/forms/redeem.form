@@ -1,0 +1,11 @@
+<div class="container-fluid">
+<form name="redeem" action="redeem.php" method="post">
+<h3>Redeem Gift Cards</h3>
+<table>
+<tr><td>Gift Card Code: </td><td><input type="text" value="" placeholder="Code" name="code"></input></td></tr>
+<tr><td>
+</td></tr>
+<tr><td><input class="btn btn-large btn-block btn-primary" value="Redeem" type="submit"></input></td></tr>
+</table>
+</form>
+</div>
