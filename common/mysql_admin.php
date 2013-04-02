@@ -541,6 +541,21 @@ function mysql_admin_get_email($c, $username)
     }
   }
 }
+
+// inserts gift card into database
+// returns success status of insert attempt
+// (boolean)
+function mysql_admin_insert_gift_card($c, $number, $amount)
+{
+  global $GIFT_CARD_TABLE;
+
+  $number = sanitize($number);
+  $amount = sanitize($amount);
+  
+  $query = 'INSERT INTO ' . $GIFT_CARD_TABLE . ' VALUES("' . $number . '", "' . $amount . '")' ;
+  return mysqli_query($c, $query);
+}
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/

@@ -49,6 +49,12 @@ function show_shipping_page()
 function show_accounting_page()
 {
   echo "<p><a href='accounting.php'>Accounting Page</a></p>";
+}
+
+// (void)
+function show_gift_card_page()
+{
+  echo '<p><a href="giftcard.php">Gift Card Page</a></p>';
 } 
 
 // (void)
@@ -58,6 +64,7 @@ function show_owner_page()
   show_sales_page();
   show_shipping_page();
   show_accounting_page();
+  show_gift_card_page();
 }
 
 // (void)

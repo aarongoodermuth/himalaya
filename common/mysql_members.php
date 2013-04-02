@@ -343,6 +343,65 @@ function mysql_member_get_supplier_info($c, $username)
   return mysqli_fetch_row($db_answer);
 }
 
+// ...
+// (boolean)
+function mysql_member_redeem_gift_card($c, $number, $username)
+{
+  global $GIFT_CARD_TABLE, $RU_TABLE;
+
+  $number   = sanitize($number);
+  $username = sanitize($username);
+
+  $query = 'SELECT amount FROM ' . $GIFT_CARD_TABLE . ' WHERE code="' . $number . '"';
+  $db_answer = mysqli_query($c, $query);
+  if($db_answer === false || $db_answer === null)
+  {
+    return false;
+  }
+
+  if(mysqli_num_rows($db_answer) <= 0)
+  {
+    return false;
+  }
+
+  $row = mysqli_fetch_row($db_answer);
+  if($row === null)
+  {
+    return false;
+  }
+
+  // prepare for query to update user's gift card balance
+  $query = 'UPDATE ' . $RU_TABLE 
+        . ' SET gift_card_balance=gift_card_balance + ' . $row[0] 
+        . ' WHERE username="' . $username .'"';
+  if( !mysqli_query($c, $query) )
+  {
+    return false;
+  }
+
+  $query = 'DELETE FROM ' . $GIFT_CARD_TABLE . 
+          ' WHERE code="' . $number . '"';
+  return mysqli_query($c, $query);
+}
+
+// ...
+// (int)
+function mysql_member_get_gift_card_balance($c, $username)
+{
+  global $RU_TABLE;
+
+  $username = sanitize($username);
+
+  $query = 'SELECT gift_card_balance FROM ' . $RU_TABLE 
+        . ' WHERE username="' . $username . '"';
+
+  $db_answer = mysqli_query($c, $query);
+  
+  $row = mysqli_fetch_row($db_answer);
+
+  return $row[0];
+}
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/

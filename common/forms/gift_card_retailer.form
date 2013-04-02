@@ -1,0 +1,5 @@
+<form action='giftcard.php' method='post'>
+<p>Card Number: <input type="text" name="number"></input></p>
+<p>Dollar Amount: <input type="text" name="amount"></input></p>
+<p><input value="Submit" type="submit"></input></p>
+</form>

@@ -16,6 +16,7 @@ $SUPPLIERS_TABLE     =     $DB_NAME . '.Suppliers';
 $MEMBERS_TABLE       =     $DB_NAME . '.Members';
 $RU_TABLE            =     $DB_NAME . '.Registered_Users';
 $EMAIL_TABLE         =     $DB_NAME . '.Emails';
+$GIFT_CARD_TABLE     =     $DB_NAME . '.Gift_Cards';
 
 $USER_TYPE_MAPPING       = array('Registered User', 'Supplier');
 $ADMIN_USER_TYPE_MAPPING = array('System', 'SysAdmin', 'Owner', 'Telemarketer',
