@@ -343,8 +343,29 @@ function mysql_member_get_supplier_info($c, $username)
   return mysqli_fetch_row($db_answer);
 }
 
-// returns true if a gift card code is found in the database
-// (boolean)
+// returns gift card balance for this user
+// (int)
+function mysql_member_gift_balance($c, $username)
+{
+  global $REG_USER_TABLE;
+  
+  $str = "SELECT gift_card_balance FROM $REG_USER_TABLE WHERE username=?";
+  if ($stmt = mysqli_prepare($c, $str)) {
+	mysqli_stmt_bind_param($stmt, 's', $username);
+	mysqli_stmt_execute($stmt);
+	mysqli_bind_result($stmt, $balance);
+	mysqli_stmt_fetch($stmt);
+	mysqli_stmt_close($stmt);
+  }
+
+  if ($balance > 0)
+    return $balance;
+
+  return -1;
+}
+
+// returns value of redeemed gift card if valid, -1 if invalid
+// (int)
 function mysql_member_gift_exists($c, $code)
 {
   global $GIFT_CARDS_TABLE;
@@ -370,7 +391,7 @@ function mysql_member_redeem_gift($c, $username, $code)
 
   if(!mysql_member_gift_exists($c, $code))
   {
-    return false;
+    return -1;
   }
   
   $str = "SELECT G.amount FROM $GIFT_CARDS_TABLE G WHERE G.code=?";
@@ -381,7 +402,7 @@ function mysql_member_redeem_gift($c, $username, $code)
 	mysqli_stmt_fetch($stmt);
 	mysqli_stmt_close($stmt);
   } else {
-	return false;
+	return -1;
   }
     
   // update user's balance and delete the record in Gift_Cards
@@ -391,7 +412,7 @@ function mysql_member_redeem_gift($c, $username, $code)
 	mysqli_stmt_execute($stmt);
 	mysqli_stmt_close($stmt);
   } else {
-	return false;
+	return -1;
   }
 
   $str = "DELETE FROM $GIFT_CARDS_TABLE WHERE code=?";
@@ -400,10 +421,10 @@ function mysql_member_redeem_gift($c, $username, $code)
 	mysqli_stmt_execute($stmt);
 	mysqli_stmt_close($stmt);
   } else {
-	return false;
+	return -1;
   }
   
-  return true;
+  return $amount;
 }
 
 /*******************/

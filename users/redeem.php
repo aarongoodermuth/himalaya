@@ -63,32 +63,33 @@ if($user != null)
     if(all_set()) // post values found
     {
       // update DB
-      $db_result = mysql_member_redeem_gift($c, $user, $_POST['code']);
+      $amount = mysql_member_redeem_gift($c, $user, $_POST['code']);
       
       print_this_html_header($c, $user);
       // print status message
-      if($db_result === true) // success
+      if($amount === -1) // failure
       {
-        echo '<p style="color:red">you good bro</p>';
+        echo '<p style="color:red">The code you entered is invalid. Please try again.</p>';
       }
-      else // failure
+      else                 // success
       {
-        echo '<p style="color:red">The database barfed at your values. It might
-                 be our fault, but it also might be yours.</p>';
+        $balance = mysql_member_gift_balance($c, $user);
+	printf ("<div class=\"container-fluid\"><p style=\"color:red\">Success! You have redeemed &#36;%.2f, and now have &#36;%.2f in gift card credit.</p></div>", 
+	        $amount / 100, $balance / 100);
       }
     }
     elseif(values_set())
     {
       print_this_html_header($c, $user);
-      echo '<p style="color:red">All values must be entered</p>';
+      echo '<p style="color:red">Please enter a gift card code.</p>';
     }
     else
     {
       print_this_html_header($c, $user);
     }
     show_form('redeem');
-    print_html_footer_js();
     print_html_footer2();
+    print_html_footer_js();
     print_html_footer();
   }
   elseif($type == $USER_TYPE_MAPPING[1])
