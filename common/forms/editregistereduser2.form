@@ -1,7 +1,7 @@
 <!--provides a username, password, type dropdown, other relevant info and 
 submit button for adding user-->
-<div class="span2">
-<form name="edituser2" action="editaccount2.php" method="post">
+<div class="container-fluid">
+<form name="edituser2" action="editaccount.php" method="post">
 <h3>Edit Account</h3>
 <table>
 <tr><td>Full Name: </td><td><input type="text" value="" placeholder="Full Name" name="name"></input></td></tr>
@@ -19,17 +19,18 @@ submit button for adding user-->
   </div>
 </div>
 </td></tr>
-<div>
+
 <tr><td>Street Address: </td><td><input type="text" value="" placeholder="Address" name="address"></input></td></tr>
 <tr><td>ZIP Code: </td><td><input type="text" value="" placeholder="ZIP code" name="zip"></input></td></tr>
 <tr><td>Phone Number: </td><td><input type="text" value="" placeholder="Phone Number" name="phone"></input></td></tr>
 <tr><td>Date of Birth: </td><td><input type="text" value="" placeholder="yyyy-mm-dd" name="dob"></input></td></tr>
 <tr><td>Income: </td><td><input type="text" value="" placeholder="Income ($)" name="income"></input></td></tr>
-</div>
+
 <!-- <tr><td><input value="Submit" type="submit"></input></td></tr> -->
 <!-- <a href="#" class="btn btn-large btn-block btn-primary">Primary Button</a> -->
 <tr><td><br></td></tr>
 <tr><td><input class="btn btn-large btn-block btn-primary" value="Submit" type="submit"></input></td></tr>
 </table>
 </form>
+</div>
 

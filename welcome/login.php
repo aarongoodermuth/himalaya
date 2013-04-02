@@ -52,7 +52,7 @@ if($username != null)
   // redirect
   header( 'Refresh:' . $REDIRECT_TIME . '; url=../users/dashboard.php' );
  
-  print_html_header2();
+  print_html_header();
   // show user information, give chance to log out, give chance to redirect 
   //    manually
   echo '<p>Welcome back ' . $username . '!</p>';
@@ -87,7 +87,7 @@ else
     }
     else
     {
-      print_html_header2();
+      print_html_header();
       // notify of failed login
       echo '<p style="color:red">Username or Password was not valid</p>';
 
@@ -95,26 +95,36 @@ else
       show_form('login');
 
       // give link to create account
+      echo '<div class="demo-icons-24"><span class="fui-plus-24"></span></div>';
       echo '<div><p>New to Himalaya.biz? <a href="createaccount.php">
               Create an account</a></p></div>';
+      echo '';
     }
   }
   else
   {
-    print_html_header3();
+    print_html_header();
+    echo '<body>';
     // no login was attempted
     // just show the password page
     show_form('login');
 
     // give link to create account
-    echo '<div class=\'span2\'><p>New to Himalaya.biz? <a href="createaccount.php">
-            Create an account</a></p></div>';
+    /*echo '<div class="demo-icons"><div class="span2"><p>New to Himalaya.biz? <a href="createaccount.php">
+            Create an account</a></p></div></div>';*/
+	    
+    echo '
+      <div class="demo-icons">
+        <div class="demo-icons-24">
+          <p style="text-indent: 1em"><span class="fui-plus-24"></span>New to Himalaya.biz? <a href="createaccount.php">
+            Create an account</a></p>
+        </div>
+      </div>';
   }
 }
 
-print_html_footer_js();
-
 mysql_disconnect($c);
+print_html_footer2();
 print_html_footer_js();
 
 /******************/

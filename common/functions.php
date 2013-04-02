@@ -17,21 +17,21 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/constants.php';
 /***************/
 
 // (void)
-function print_html_header()
+/*function print_html_header()
 {
   echo '<html><body>';
+}*/
+
+// (void)
+function print_html_header()
+{
+  echo file_get_contents('header.html', true);
 }
 
 // (void)
-function print_html_header2()
+function print_html_nav()
 {
-  echo file_get_contents('header2.html', true);
-}
-
-// (void)
-function print_html_header3()
-{
-  echo file_get_contents('header3.html', true);
+  echo file_get_contents('navigation.html', true);
 }
 
 // (void)
@@ -40,25 +40,30 @@ function print_html_footer()
   echo '</body></html>';
 }
 
+// (void)
+function print_html_footer2()
+{
+  echo file_get_contents('footer.html', true);
+}
+
 function print_html_footer_js()
 {
   echo '
-    <!-- Load JS here for greater good =============================-->
-    <script src="/design/js/jquery-1.8.2.min.js"></script>
-    <script src="/design/js/jquery-ui-1.10.0.custom.min.js"></script>
-    <script src="/design/js/jquery.dropkick-1.0.0.js"></script>
-    <script src="/design/js/custom_checkbox_and_radio.js"></script>
-    <script src="/design/js/custom_radio.js"></script>
-    <script src="/design/js/jquery.tagsinput.js"></script>
-    <script src="/design/js/bootstrap-tooltip.js"></script>
-    <script src="/design/js/jquery.placeholder.js"></script>
-    <script src="http://vjs.zencdn.net/c/video.js"></script>
-    <script src="/design/js/application.js"></script>
-    <!--[if lt IE 8]>
-      <script src="js/icon-font-ie7.js"></script>
-      <script src="js/icon-font-ie7-24.js"></script>
-    <![endif]-->
-</body></html>';
+<!-- Load JS here for greater good =============================-->
+<script src="/design/js/jquery-1.8.2.min.js"></script>
+<script src="/design/js/jquery-ui-1.10.0.custom.min.js"></script>
+<script src="/design/js/jquery.dropkick-1.0.0.js"></script>
+<script src="/design/js/custom_checkbox_and_radio.js"></script>
+<script src="/design/js/custom_radio.js"></script>
+<script src="/design/js/jquery.tagsinput.js"></script>
+<script src="/design/js/bootstrap-tooltip.js"></script>
+<script src="/design/js/jquery.placeholder.js"></script>
+<script src="/design/js/application.js"></script>
+<!--[if lt IE 8]>
+<script src="js/icon-font-ie7.js"></script>
+<script src="js/icon-font-ie7-24.js"></script>
+<![endif]-->
+';
 }
 
 // checks if there is a user logged in. If so, resets the cookie and returns
@@ -136,8 +141,23 @@ function show_form($form_name)
 // (string)
 function sanitize($input)
 {
-  //...
+  $input = addslashes($input);
   return $input;
+}
+
+function sanitize2($conn, $input)
+{
+  $data = mysqli_real_escape_string($conn, $input);
+  return $data;
+}
+
+// undo the effects of magic quotes, if it is enabled
+function get_post_var($var)
+{
+  $val = $_POST[$var];
+  if (get_magic_quotes_gpc())
+    $val = stripslashes($val);
+  return $val;
 }
 
 /*******************/

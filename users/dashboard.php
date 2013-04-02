@@ -22,7 +22,7 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/functions.php';
 // (void)
 function show_links()
 {
-  echo '<div class="span2">';
+  echo '<div class="pvl">';
   echo '<p><a href="selling.php">Items I am selling</a></p>';                // items I'm selling
   echo '<p><a href="bought.php">Items I am buying</a></p>';                  // items I have bought
   echo '<p><a href="highbidder.php">Items where I am high bidder</a></p>';   // items I am high bidder
@@ -55,12 +55,16 @@ if($user != null)
   if($type == $USER_TYPE_MAPPING[0])
   {
     // is a RU
-    print_html_header2();
+    print_html_header();
+    echo '<body>';
+    print_html_nav();
+    echo '<body><div class="container-fluid">';
     echo '<h3>Welcome to the User Dashboard, ' . $user . '!</h3>';
-    echo '<div class="span2">';
     show_links();
-    echo '</div>';
+    echo "</div></br>\n";
+    print_html_footer2();
     print_html_footer_js();
+    print_html_footer();
   }
   elseif($type == $USER_TYPE_MAPPING[1])
   {

@@ -23,7 +23,8 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_members.php';
 // (void)
 function print_this_html_header($c, $username)
 {
-  print_html_header2();
+  print_html_header();
+  print_html_nav();
   echo '<script type="text/javascript" 
            src="../common/javascript/editru2.js">
            </script>';
@@ -132,8 +133,9 @@ if($user != null)
       print_this_html_header($c, $user);
     }
     show_form('editregistereduser2');
-    echo '<a href="dashboard.php">Return to Dashboard</a></div>';
     print_html_footer_js();
+    print_html_footer2();
+    print_html_footer();
   }
   elseif($type == $USER_TYPE_MAPPING[1])
   {
