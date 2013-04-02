@@ -62,7 +62,8 @@ function print_html_footer_js()
 <!--[if lt IE 8]>
 <script src="js/icon-font-ie7.js"></script>
 <script src="js/icon-font-ie7-24.js"></script>
-<![endif]-->';
+<![endif]-->
+';
 }
 
 // checks if there is a user logged in. If so, resets the cookie and returns
@@ -140,7 +141,7 @@ function show_form($form_name)
 // (string)
 function sanitize($input)
 {
-  //...
+  $input = addslashes($input);
   return $input;
 }
 
@@ -150,6 +151,14 @@ function sanitize2($conn, $input)
   return $data;
 }
 
+// undo the effects of magic quotes, if it is enabled
+function get_post_var($var)
+{
+  $val = $_POST[$var];
+  if (get_magic_quotes_gpc())
+    $val = stripslashes($val);
+  return $val;
+}
 
 /*******************/
 /** END FUNCTIONS **/
