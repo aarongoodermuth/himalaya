@@ -144,6 +144,12 @@ function sanitize($input)
   return $input;
 }
 
+function sanitize2($conn, $input)
+{
+	$data = mysqli_real_escape_string($conn, $input);
+	return $data;
+}
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/

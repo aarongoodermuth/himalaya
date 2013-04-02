@@ -348,13 +348,19 @@ function mysql_member_get_supplier_info($c, $username)
 function mysql_member_gift_exists($c, $code)
 {
   global $GIFT_CARDS_TABLE;
-  $query = 'SELECT COUNT(*) FROM ' . $GIFT_CARDS_TABLE . ' WHERE code="' . $code . '"';
+  $str = "SELECT COUNT(*) FROM $GIFT_CARDS_TABLE WHERE code=?";
+  if ($stmt = mysqli_prepare($c, $str)) {
+	mysqli_stmt_bind_param($stmt, 's', $code);
+	mysqli_stmt_execute($stmt);
+	mysqli_bind_result($stmt, $count);
+	mysqli_stmt_fetch($stmt);
+	mysqli_stmt_close($stmt);
+  }
 
-  $db_answer = mysqli_query($c, $query);
+  if ($count == 1)
+    return true;
 
-  $row =  mysqli_fetch_row($db_answer);
-  
-  return $row[0][0];
+  return false;
 }
 
 // (boolean)
@@ -366,31 +372,35 @@ function mysql_member_redeem_gift($c, $username, $code)
   {
     return false;
   }
-    
-  $query = 'SELECT G.amount FROM ' . $GIFT_CARDS_TABLE . ' G WHERE G.code="' . $code . '"';
-  $db_answer = mysqli_query($c, $query);
-  if($db_answer === false)
-  {
-    return false;
-  }  
   
-  $row =  mysqli_fetch_row($db_answer);
-  $amount = $row[0];
+  $str = "SELECT G.amount FROM $GIFT_CARDS_TABLE G WHERE G.code=?";
+  if ($stmt = mysqli_prepare($c, $str)) {
+	mysqli_stmt_bind_param($stmt, 's', $code);
+	mysqli_stmt_execute($stmt);
+	mysqli_bind_result($stmt, $amount);
+	mysqli_stmt_fetch($stmt);
+	mysqli_stmt_close($stmt);
+  } else {
+	return false;
+  }
     
   // update user's balance and delete the record in Gift_Cards
-  $query = 'UPDATE ' . $REG_USER_TABLE .  ' SET gift_card_balance = gift_card_balance + ' . $amount 
-             . ' WHERE username = "' . $username .  '"';
-  $db_answer = mysqli_query($c, $query);
-  if($db_answer === false)
-  {
-    return false;
-  }  
-  
-  $query = 'DELETE FROM ' . $GIFT_CARDS_TABLE . ' WHERE code="' . $code . '"';
-  $db_answer = mysqli_query($c, $query);
-  if($db_answer === false)
-  {
-    return false;
+  $str = "UPDATE $REG_USER_TABLE SET gift_card_balance = gift_card_balance + ? WHERE username=?";
+  if ($stmt = mysqli_prepare($c, $str)) {
+	mysqli_stmt_bind_param($stmt, "is", $amount, $username);
+	mysqli_stmt_execute($stmt);
+	mysqli_stmt_close($stmt);
+  } else {
+	return false;
+  }
+
+  $str = "DELETE FROM $GIFT_CARDS_TABLE WHERE code=?";
+  if ($stmt = mysqli_prepare($c, $str)) {
+	mysqli_stmt_bind_param($stmt, 's', $code);
+	mysqli_stmt_execute($stmt);
+	mysqli_stmt_close($stmt);
+  } else {
+	return false;
   }
   
   return true;

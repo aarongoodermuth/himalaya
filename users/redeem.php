@@ -70,7 +70,6 @@ if($user != null)
       if($db_result === true) // success
       {
         echo '<p style="color:red">you good bro</p>';
-        //echo '<p style="color:red" onload="populate(' . get_ru_args($c, $user) . ')">Account successfully updated</p>';
       }
       else // failure
       {
