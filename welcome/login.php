@@ -114,7 +114,7 @@ else
 
       // give link to create account
       echo '<div class="demo-icons-24"><span class="fui-plus-24"></span></div>';
-      echo '<div><p>New to Himalaya.biz? <a href="createuser.php">
+      echo '<div><p>New to Himalaya.biz? <a href="createaccount.php">
               Create an account</a></p></div>';
       echo '';
     }
@@ -131,7 +131,7 @@ else
     echo '
       <div class="demo-icons">
         <div class="demo-icons-24">
-          <p style="text-indent: 1em"><span class="fui-plus-24"></span>New to Himalaya.biz? <a href="createuser.php">
+          <p style="text-indent: 1em"><span class="fui-plus-24"></span>New to Himalaya.biz? <a href="createaccount.php">
             Create an account</a></p>
         </div>
       </div>';
