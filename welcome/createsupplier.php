@@ -77,7 +77,7 @@ if (values_set()) {
 			$goof = false;
 
 			// create the user
-			if(!mysql_member_create_supplier2($c, get_post_var('username'), 
+			if(!mysql_member_create_supplier($c, get_post_var('username'), 
 					get_post_var('password'), get_post_var('name'), 
 					get_post_var('contact'))) {
 				$goof = true;

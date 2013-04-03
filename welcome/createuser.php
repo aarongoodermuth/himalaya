@@ -98,7 +98,7 @@ if( values_set() )
       // create the user
       if(!type_check($c)) {
         $goof = true;
-      } elseif(!mysql_member_create_ru2($c, get_post_var('username'), get_post_var('password'), 
+      } elseif(!mysql_member_create_ru($c, get_post_var('username'), get_post_var('password'), 
                         get_post_var('name'), get_post_var('email'), get_post_var('gender'), 
                         get_post_var('address'), get_post_var('zip'), get_post_var('phone'),
                         get_post_var('age'), get_post_var('income'))) {

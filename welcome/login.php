@@ -87,7 +87,7 @@ else
   if( isset($_POST['username']) && isset($_POST['password']) )
   {
     // if attempted check for success or failure
-    if(mysql_login_test2($c, get_post_var('username'), get_post_var('password')))
+    if(mysql_login_test($c, get_post_var('username'), get_post_var('password')))
     {
       // sucessful login
       // put cookie on computer and log value in database
