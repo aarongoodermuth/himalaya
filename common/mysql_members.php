@@ -89,86 +89,9 @@ function mysql_member_create_member($c, $username, $password)
   return false;
 }
 
-// inserts a member and a supplier into the database 
-// (boolean)
-function mysql_member_create_supplier($c, $username, $password, $company, $contact)
-{
-  $username = sanitize($username);
-  $company  = sanitize($company);
-  $contact  = sanitize($contact);
-
-  global $SUPPLIERS_TABLE, $MEMBERS_TABLE;
-  if(!mysql_member_create_member($c, $username, $password))
-  {
-    return false;
-  }
-  
-  $query = 'INSERT INTO ' . $SUPPLIERS_TABLE . ' VALUES("' . $username .
-              '", "' . $company . '", "' . $contact . '")';
-
-  $db_answer = mysqli_query($c, $query);
-
-  if($db_answer === false)
-  {
-    $query = 'DELETE FROM ' . $MEMBERS_TABLE . ' WHERE username="' . $username . '"';
-    mysqli_query($c, $query);
-    return false;
-  }
-
-  return true;
-}
-
 // inserts a registered user into the database
 // (boolean)
-function mysql_member_create_ru($c, $username, $password, $name, $email, $gender, $address, $zip, $phone, $age, $income)
-{
-  global $RU_TABLE, $MEMBERS_TABLE;
-  
-  if(!mysql_member_create_member($c, $username, $password))
-  {
-    return false;
-  }
-
-  if(!mysql_member_add_email($c, $username, $email))
-  {
-    $query = 'DELETE FROM ' . $MEMBERS_TABLE . ' WHERE username="' . $username 
-                . '"';
-    mysqli_query($c, $query);
-    return false;
-  }
-
-  $username = sanitize($username);
-  $name     = sanitize($name);
-  $email    = sanitize($email);
-  $gender   = sanitize($gender);
-  $age      = sanitize($age);
-  $income   = sanitize($income);
-
-  mysql_member_insert_phone($c, $username, $phone);
-  mysql_member_insert_address($c, $address, $username, $zip);
-
-  $query = 'INSERT INTO ' . $RU_TABLE . ' VALUES("' . $username 
-              . '", "' . $name . '", "' . $gender . '", "' 
-              . $age . '", "' . $income . '", "0")';
-  
-  $db_answer = mysqli_query($c, $query);
-
-  if($db_answer === false)
-  {
-    $query = 'DELETE FROM ' . $MEMBERS_TABLE . ' WHERE username="' . $username 
-                . '"';
-    mysqli_query($c, $query);
-    $query = 'DELETE FROM ' . $EMAIL_TABLE   . ' WHERE username="' . $username 
-                . '" AND email="' . $email . '"';
-    mysqli_query($c, $query);
-    return false; 
-  }
-  return true;
-}
-
-// inserts a registered user into the database
-// (boolean)
-function mysql_member_create_ru2($c, $username, $password, $name, $email, $gender, $address, $zip, 
+function mysql_member_create_ru($c, $username, $password, $name, $email, $gender, $address, $zip, 
                                  $phone, $age, $income)
 {
   global $RU_TABLE, $MEMBERS_TABLE;
@@ -225,7 +148,7 @@ function mysql_member_create_ru2($c, $username, $password, $name, $email, $gende
 
 // inserts a member and a supplier into the database 
 // (boolean)
-function mysql_member_create_supplier2($c, $username, $password, $company, $contact)
+function mysql_member_create_supplier($c, $username, $password, $company, $contact)
 {
 	/*$username = sanitize($username);
 	$company  = sanitize($company);
@@ -383,7 +306,7 @@ function mysql_member_zip_exists($c, $zip)
   if ($stmt = mysqli_prepare($c, $str)) {
 	mysqli_stmt_bind_param($stmt, 's', $zip);
 	mysqli_stmt_execute($stmt);
-	mysqli_bind_result($stmt, $count);
+	mysqli_stmt_bind_result($stmt, $count);
 	mysqli_stmt_fetch($stmt);
 	mysqli_stmt_close($stmt);
   }
@@ -494,7 +417,7 @@ function mysql_member_gift_balance($c, $username)
   if ($stmt = mysqli_prepare($c, $str)) {
 	mysqli_stmt_bind_param($stmt, 's', $username);
 	mysqli_stmt_execute($stmt);
-	mysqli_bind_result($stmt, $balance);
+	mysqli_stmt_bind_result($stmt, $balance);
 	mysqli_stmt_fetch($stmt);
 	mysqli_stmt_close($stmt);
   }
@@ -514,7 +437,7 @@ function mysql_member_gift_exists($c, $code)
   if ($stmt = mysqli_prepare($c, $str)) {
 	mysqli_stmt_bind_param($stmt, 's', $code);
 	mysqli_stmt_execute($stmt);
-	mysqli_bind_result($stmt, $count);
+	mysqli_stmt_bind_result($stmt, $count);
 	mysqli_stmt_fetch($stmt);
 	mysqli_stmt_close($stmt);
   }
@@ -539,7 +462,7 @@ function mysql_member_redeem_gift($c, $username, $code)
   if ($stmt = mysqli_prepare($c, $str)) {
 	mysqli_stmt_bind_param($stmt, 's', $code);
 	mysqli_stmt_execute($stmt);
-	mysqli_bind_result($stmt, $amount);
+	mysqli_stmt_bind_result($stmt, $amount);
 	mysqli_stmt_fetch($stmt);
 	mysqli_stmt_close($stmt);
   } else {

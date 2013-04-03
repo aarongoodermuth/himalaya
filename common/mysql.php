@@ -45,29 +45,7 @@ function mysql_disconnect( $mysqli_obj )
 
 // check if a usename and password combination are valid
 // (boolean)
-function mysql_login_test( $c, $username, $password )
-{
-  global $MEMBERS_TABLE;
-
-  $username = sanitize($username);
-  $password = sanitize($password);
-
-  $query = 'SELECT * FROM ' . $MEMBERS_TABLE . ' WHERE username="'
-              . $username . '" AND password="' . $password . '"';
-  
-  if( $results = mysqli_query($c, $query) )
-  {
-    return mysqli_num_rows($results);
-  }
-  else
-  {
-    return false;
-  }
-}
-
-// check if a usename and password combination are valid
-// (boolean)
-function mysql_login_test2($c, $username, $pass)
+function mysql_login_test($c, $username, $pass)
 {
   global $MEMBERS_TABLE, $dummy_salt, $hash_cost_log2, $hash_portable;
 
@@ -84,7 +62,7 @@ function mysql_login_test2($c, $username, $pass)
   if ($stmt = mysqli_prepare($c, "SELECT M.password FROM $MEMBERS_TABLE M WHERE username=?")) {
     mysqli_stmt_bind_param($stmt, 's', $username);
     mysqli_stmt_execute($stmt);
-    mysqli_bind_result($stmt, $hash);
+    mysqli_stmt_bind_result($stmt, $hash);
     mysqli_stmt_fetch($stmt);
   }
   
