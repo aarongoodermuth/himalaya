@@ -13,10 +13,12 @@ BKDIR=/home/goodermuth/dev/websites/himalaya/dbdump
 DUMPFILE=${BKDIR}/himalaya_`date +%Y-%m-%d`.sql.gz
 TAG=dbbackup
 
+cd /
+
 # create the backup directory if it doesn't already exist
 [ ! -d $BKDIR ] && mkdir -p $BKDIR || :
 
-RECENT=`ls -rt $BACKDIR | tail -1`
+RECENT=$BKDIR/`ls -rt $BKDIR | tail -1`
 
 $MYSQLDUMP -u $DBUSER -p${DBPASS} --opt $DBNAME | gzip > $DUMPFILE
 logger -t $TAG created database dump \`${DUMPFILE}\'

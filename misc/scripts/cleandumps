@@ -22,7 +22,7 @@ do
 	CURTIME=`date --date "${CURDATE}" +%s`
 
 	x=`expr $CURTIME + $DIFF`
-	if [ `expr "$x" \< "$THRESH"` -eq 1 ]
+	if [ `expr "$x" \<\= "$THRESH"` -eq 1 ]
 	then
 		rm ${FILENAME}
 	fi
