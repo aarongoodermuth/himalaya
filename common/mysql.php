@@ -5,6 +5,7 @@
 /**************/
 
 include_once '/home/goodermuth/dev/websites/himalaya/common/constants.php';
+include_once '/home/goodermuth/dev/websites/himalaya/common/PasswordHash.php';
 
 /******************/
 /** END INCLUDES **/
@@ -62,6 +63,46 @@ function mysql_login_test( $c, $username, $password )
   {
     return false;
   }
+}
+
+// check if a usename and password combination are valid
+// (boolean)
+function mysql_login_test2($c, $username, $pass)
+{
+  global $MEMBERS_TABLE, $dummy_salt, $hash_cost_log2, $hash_portable;
+
+  $hasher = new PasswordHash($hash_cost_log2, $hash_portable);
+
+  /* 
+   * Sanity-check the username, don't rely on our use of prepared statements
+   * alone to prevent attacks on the SQL server via malicious usernames. 
+   */
+  if (!preg_match('/^[a-zA-Z0-9_]{1,60}$/', $username))
+    return false;
+    
+  $hash = '*';
+  if ($stmt = mysqli_prepare($c, "SELECT M.password FROM $MEMBERS_TABLE M WHERE username=?")) {
+    mysqli_stmt_bind_param($stmt, 's', $username);
+    mysqli_stmt_execute($stmt);
+    mysqli_bind_result($stmt, $hash);
+    mysqli_stmt_fetch($stmt);
+  }
+  
+  /* mitigate timing attacks (probing for valid username) */
+
+  if (isset($dummy_salt) && strlen($hash) < 20)
+    $hash = $dummy_salt;
+    
+  if ($hasher->CheckPassword($pass, $hash)) {
+    $ret = true;
+  } else {
+    $ret = false;
+  }
+  
+  unset($hasher);
+  mysqli_stmt_close($stmt);
+  
+  return $ret;
 }
 
 // logs to cookie to the database

@@ -60,8 +60,8 @@ function print_html_footer_js()
 <script src="/design/js/jquery.placeholder.js"></script>
 <script src="/design/js/application.js"></script>
 <!--[if lt IE 8]>
-<script src="js/icon-font-ie7.js"></script>
-<script src="js/icon-font-ie7-24.js"></script>
+<script src="/design/js/icon-font-ie7.js"></script>
+<script src="/design/js/icon-font-ie7-24.js"></script>
 <![endif]-->
 ';
 }
@@ -141,7 +141,7 @@ function show_form($form_name)
 // (string)
 function sanitize($input)
 {
-  $input = addslashes($input);
+  //...
   return $input;
 }
 
