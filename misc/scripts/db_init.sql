@@ -1,6 +1,7 @@
 DROP DATABASE himalaya;
 CREATE DATABASE himalaya;
-/* C -> A */
+
+USE himalaya;/* C -> A */
 CREATE TABLE Gift_Cards
 (
 	code INT NOT NULL,
@@ -14,7 +15,7 @@ CREATE TABLE Admin_Users
 	username VARCHAR(32) NOT NULL, 
 	password VARCHAR(32) NOT NULL, 
 	atype TINYINT NOT NULL,
-	session_id INT,
+	asession INT, /* please stop changing this. it breaks everything */
 	CONSTRAINT pk_username PRIMARY KEY (username)
 );
 
@@ -46,7 +47,7 @@ CREATE TABLE Members
 (
 	username VARCHAR(32) NOT NULL, 
 	password VARCHAR(32) NOT NULL, /* if we are hashing this (using md5 for example) this will always be 32 chars */
-	session_id INT, 
+	asession INT, /* please stop changing this. it breaks everything */
 	CONSTRAINT pk_username PRIMARY KEY (username)
 );
 
@@ -134,7 +135,7 @@ CREATE TABLE Registered_Users
 	username VARCHAR(32) NOT NULL DEFAULT 'dummy', 
 	name VARCHAR(128) NOT NULL,
 	gender VARCHAR(16) NOT NULL,
-	age TINYINT NOT NULL,
+	dob DATE NOT NULL,
 	income INT NOT NULL,
 	gift_card_balance INT NOT NULL,
 	CONSTRAINT pk_username PRIMARY KEY (username),
@@ -248,24 +249,64 @@ CREATE TABLE Orders
 	CONSTRAINT fk_username FOREIGN KEY (username) REFERENCES Registered_Users (username)
 		ON DELETE SET DEFAULT
 );
-INSERT INTO Admin_Users VALUES("admin", "admin", "1", "0");
-INSERT INTO Admin_Users VALUES("test", "test", "1", "0");
+/* ***** Categories ***** */
+INSERT INTO Categories VALUES (1, "Home Improvement", 1);
 
-INSERT INTO Gift_Cards VALUES("12345", "1000");
-INSERT INTO Gift_Cards VALUES("67890", "2000");
-
-INSERT INTO Categories VALUES ("1", "Home Improvement", "1");
-
+/* ***** Suppliers ***** */
 INSERT INTO Members VALUES("homedepot", "supplier", NULL);
 INSERT INTO Suppliers VALUES("homedepot", "Home Depot", "John Smith");
 INSERT INTO Emails VALUES("homedepot", "sales@homedepot.com");
-INSERT INTO Phones VALUES("homedepot", "1800466333768");
+INSERT INTO Phones VALUES("homedepot", "18004663337");
 INSERT INTO Addresses VALUES("2615 Green Tech Drive", "16803", "homedepot");
-INSERT INTO Sells_In VALUES("homedepot", "1");
+INSERT INTO Sells_In VALUES("homedepot", 1);
 
+/* ***** Registered Users ***** */
+/* (username, name, gender, dob, income, gift_card_balance) */
 INSERT INTO Members VALUES("boyscout", "normalform", NULL);
-INSERT INTO Registered_Users VALUES("boyscout", "Boyce-Cott", "M", "30", "1000000", "0");
+INSERT INTO Registered_Users VALUES("boyscout", "Boyce-Cott", "M", '1980-07-08', 1000000, 0);
 INSERT INTO Emails VALUES("boyscout", "betterthan@3nf.org");
 INSERT INTO Phones VALUES("boyscout", "3141592645");
 INSERT INTO Credit_Cards VALUES("1234567890123456", "Visa", "2014-12-31");
 INSERT INTO Has_Card VALUES("1234567890123456", "boyscout");
+INSERT INTO Addresses VALUES('78 N Park Ave', '16802', 'boyscout');
+
+INSERT INTO Members VALUES("briang", "golden", NULL);
+INSERT INTO Registered_Users VALUES("briang", "Brian Golden", "M", '1992-05-09', 1000000, 2000);
+INSERT INTO Emails VALUES("briang", "brian.golden09@gmail.com");
+INSERT INTO Phones VALUES("briang", "7325762390");
+INSERT INTO Credit_Cards VALUES("8819567890729451", "Visa", "2015-05-31");
+INSERT INTO Has_Card VALUES("8819567890729451", "briang");
+INSERT INTO Addresses VALUES('123 Good St', '08873', 'briang');
+
+INSERT INTO Members VALUES("aaron", "goodermuth", NULL);
+INSERT INTO Registered_Users VALUES("aaron", "Aaron Goodermuth", "M", '1990-09-12', 100000, 0);
+INSERT INTO Emails VALUES("aaron", "aaron@goodermuth.com");
+INSERT INTO Phones VALUES("aaron", "8664389023");
+INSERT INTO Credit_Cards VALUES("6285767890572905", "Masetercard", "2014-10-31");
+INSERT INTO Has_Card VALUES("6285767890572905", "aaron");
+INSERT INTO Addresses VALUES('3 Sparks St', '16801', 'aaron');
+
+/* ***** Products ***** */
+INSERT INTO Products VALUES (0, "Craftsman C3 19.2-Volt Cordless 1/2\" Impact Wrench Kit", 
+			     'This is a drill.', 1); 
+
+/* ***** Sale Items ***** */
+/* (item_id, item_desc, product_id, username, scondition, url, posted_date, shipping_zip) */
+INSERT INTO Sale_Items VALUES(0, 'drill for sale!', 0, 'boyscout', 0, 
+	'http://www.craftsman.com/craftsman-c3-19.2-volt-cordless-1-2inch-wrench-kit/p-00917339000P', 
+	'2013-03-20 09:15:00', 16802);
+INSERT INTO Sale_Items VALUES(1, 'this is a better drill, trust me', 0, 'briang', 0, 
+	'http://www.craftsman.com/craftsman-c3-19.2-volt-cordless-1-2inch-wrench-kit/p-00917339000P', 
+	'2013-03-21 11:27:00', 08873);
+
+/* ***** Sales ***** */
+/* (item_id, price, purchased_user) */
+INSERT INTO Sales  VALUES (0, 98000, NULL);
+
+/* ***** Admin Users ***** */
+INSERT INTO Admin_Users VALUES("admin", "admin", 1, 0);
+INSERT INTO Admin_Users VALUES("test", "test", 1, 0);
+
+/* ***** Gift Cards ***** */
+INSERT INTO Gift_Cards VALUES(12345, 1000);
+INSERT INTO Gift_Cards VALUES(67890, 2000);

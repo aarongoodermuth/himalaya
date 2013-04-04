@@ -1,0 +1,4 @@
+<form action='redeem.php' method='post'>
+<p>Card Number: <input type="text" name="number"></input></p>
+<p><input value="Submit" type="submit"></input></p>
+</form>

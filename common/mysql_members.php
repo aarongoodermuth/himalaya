@@ -407,6 +407,65 @@ function mysql_member_get_supplier_info($c, $username)
   return mysqli_fetch_row($db_answer);
 }
 
+// ...
+// (boolean)
+function mysql_member_redeem_gift_card($c, $number, $username)
+{
+  global $GIFT_CARD_TABLE, $RU_TABLE;
+
+  $number   = sanitize($number);
+  $username = sanitize($username);
+
+  $query = 'SELECT amount FROM ' . $GIFT_CARD_TABLE . ' WHERE code="' . $number . '"';
+  $db_answer = mysqli_query($c, $query);
+  if($db_answer === false || $db_answer === null)
+  {
+    return false;
+  }
+
+  if(mysqli_num_rows($db_answer) <= 0)
+  {
+    return false;
+  }
+
+  $row = mysqli_fetch_row($db_answer);
+  if($row === null)
+  {
+    return false;
+  }
+
+  // prepare for query to update user's gift card balance
+  $query = 'UPDATE ' . $RU_TABLE 
+        . ' SET gift_card_balance=gift_card_balance + ' . $row[0] 
+        . ' WHERE username="' . $username .'"';
+  if( !mysqli_query($c, $query) )
+  {
+    return false;
+  }
+
+  $query = 'DELETE FROM ' . $GIFT_CARD_TABLE . 
+          ' WHERE code="' . $number . '"';
+  return mysqli_query($c, $query);
+}
+
+// ...
+// (int)
+function mysql_member_get_gift_card_balance($c, $username)
+{
+  global $RU_TABLE;
+
+  $username = sanitize($username);
+
+  $query = 'SELECT gift_card_balance FROM ' . $RU_TABLE 
+        . ' WHERE username="' . $username . '"';
+
+  $db_answer = mysqli_query($c, $query);
+  
+  $row = mysqli_fetch_row($db_answer);
+
+  return $row[0];
+}
+
 // returns gift card balance for this user
 // (int)
 function mysql_member_gift_balance($c, $username)
@@ -521,6 +580,74 @@ function mysql_change_password($c, $username, $newpass)
 	} 
 
 	return false;
+}  
+  
+// gets all items a user is selling along with all its info
+// (string[][])
+function mysql_member_get_sales($c, $user)
+{
+  global $SALE_ITEMS_TABLE, $SALES_TABLE;
+
+  $user = sanitize($user);
+
+  $query = 'SELECT SI.item_id, SI.item_desc, S.price 
+            FROM ' . $SALE_ITEMS_TABLE . ' SI, ' . $SALES_TABLE . ' S 
+            WHERE SI.item_id=S.item_id AND SI.username="' . $user . '"';
+  
+  $db_answer = mysqli_query($c, $query);
+
+  if($db_answer === false)
+  {
+    die('<p style="color:red">The database done goofed. This is definately our fault</p>');
+  }
+ 
+  if(0 === mysqli_num_rows($db_answer))
+  {
+    return null;
+  }
+
+  $i = 0;
+  while($temp = mysqli_fetch_row($db_answer))
+  {
+    $retval[$i] = $temp;
+    $i++;
+  }
+
+  return $retval;
+}
+
+// gets all items a user is selling along with all its info
+// (string[][])
+function mysql_member_get_auctions($c, $user)
+{
+  global $AUCTIONS_TABLE, $SALE_ITEMS_TABLE;
+
+  $user = sanitize($user);
+
+  $query = 'SELECT SI.item_id, SI.item_desc, A.recent_bid 
+            FROM ' . $SALE_ITEMS_TABLE . ' SI, ' . $AUCTIONS_TABLE . ' A 
+            WHERE SI.item_id=A.item_id AND SI.username="' . $user . '"';
+ 
+  $db_answer = mysqli_query($c, $query);
+
+  if($db_answer === false)
+  {
+    die('<p style="color:red">The database done goofed. This is definately our fault</p>');
+  }
+ 
+  if(0 === mysqli_num_rows($db_answer))
+  {
+    return null;
+  }
+
+  $i = 0;
+  while($temp = mysqli_fetch_row($db_answer))
+  {
+    $retval[$i] = $temp;
+    $i++;
+  }
+
+  return $retval;
 }
 
 /*******************/
