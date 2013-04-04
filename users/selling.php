@@ -21,14 +21,19 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_members.php';
 
 // prints the sale items table
 // (void)
-function print_sales_table($c)
+function print_sales_table($c, $user)
 {
   // print header
-  echo '<div>';
-  
+  echo '<div style="text-align:center">';
+  echo '<h4>Items I am selling</h4>';  
   // get info from db
-  //...
-  /*temp*/$rows[0] = array("test");
+  $rows = mysql_member_get_sales($c, $user);;
+
+  if($rows === null)
+  {
+    echo '<p>You are not selling any items.</p>';
+    return;
+  }
 
   for($i=0; $i<count($rows); $i++)
   {
@@ -43,25 +48,35 @@ function print_sales_table($c)
 // (void)
 function print_sale_item($c, $item)
 {
-  echo '<table border="1">';
+  echo '<table border="1" align="center">';
   
   echo '<tr><td style="font-weight:bold">Item ID</td>';
   echo '<td><a href="../items/view.php?id=' . $item[0] . '">' . $item[0] . '</a></td></tr>';
-  
+  echo '<tr><td style="font-weight:bold">Description</td>';
+  echo '<td>' . $item[1] . '</a></td></tr>';
+  echo '<tr><td style="font-weight:bold">Sale Price</td>';
+  echo '<td>' . sprintf('$%.2f', $item[2]/100) . '</a></td></tr>';
+
   echo '</table>';
 }
 
 // prints the auctions table
 // (void)
-function print_auctions_table($c)
+function print_auctions_table($c, $user)
 {
   // print header
-  echo '<div>';
-  
-  // get info from db
-  //...
-  /*temp*/$rows[0] = array("test");
+  echo '<div style="text-align:center">';
+  echo '<h4>Items I am auctioning</h4>';
 
+  // get info from db
+  $rows = mysql_member_get_auctions($c, $user);
+
+  if($rows === null)
+  {
+    echo '<p>You are not auctioning any items.</p>';
+    return;
+  }
+  
   for($i=0; $i<count($rows); $i++)
   {
     print_sale_item($c, $rows[$i]);
@@ -75,10 +90,14 @@ function print_auctions_table($c)
 // (void)
 function print_auction_item($c, $item)
 {
-  echo '<table>';
+  echo '<table border="1" align="center">';
 
   echo '<tr><td style="font-weight:bold">Item ID</td>';
   echo '<td><a href="../items/view.php?id=' . $item[0] . '">' . $item[0] . '</a></td></tr>';
+  echo '<tr><td style="font-weight:bold">Description</td>';
+  echo '<td>' . $item[1] . '</a></td></tr>';
+  echo '<tr><td style="font-weight:bold">Current Bid</td>';
+  echo '<td>' . $sprintf('$%.2f', $item[2]/100) . '</a></td></tr>';
   
   echo '</table>';
 }
@@ -103,12 +122,15 @@ if($user != null)
     print_html_header(); // will change to nav header later
 
     // print sales table
-    print_sales_table($c);
-    
+    print_sales_table($c, $user);
+   
+    echo '<br />';
+ 
     // print auctions table
-    print_auctions_table($c);
+    print_auctions_table($c, $user);
 
-    echo '<p><a href="dashboard.php">Return to Dashboard</a></p>';
+    echo '<br />';
+    echo '<p style="text-align:center"><a href="dashboard.php">Return to Dashboard</a></p>';
   }
   else
   {
