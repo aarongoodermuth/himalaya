@@ -40,8 +40,8 @@ rm -f $PARENTS
 mysql -u $DBUSER -p${DBPASS} -e "SELECT C.category_id, C.category_name FROM Categories C WHERE  C.parent_category_id = 0 INTO OUTFILE '$PARENTS' FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\\n'" $DBNAME
 
 echo -e "
-<select value=\"category\" class=\"span3\" name=\"catlist\">
-<option>Choose a Category</option>"
+<select value=\"category\" class=\"span4\" name=\"catlist\">
+<option>&nbsp;</option>"
 
 cat $PARENTS | while read LINE
 do
