@@ -491,6 +491,38 @@ function mysql_member_redeem_gift($c, $username, $code)
   return $amount;
 }
 
+// change a user's password, return true on success
+// assume username-password combination has already been checked
+// (boolean)
+function mysql_change_password($c, $username, $newpass)
+{
+	global $MEMBERS_TABLE;
+
+	$hasher = new PasswordHash($hash_cost_log2, $hash_portable);
+
+	/*if (($check = my_pwqcheck($password, '', $username)) != 'OK') {
+	unset($hasher);
+	return false;
+	}*/
+
+	$hash = $hasher->HashPassword($newpass);
+	if (strlen($hash) < 20) {
+		unset($hasher);
+		return false;
+	}
+	unset($hasher);
+
+	$str = "UPDATE $MEMBERS_TABLE SET password = ? WHERE username=?";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'ss', $hash, $username);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_close($stmt);
+		return true;
+	} 
+
+	return false;
+}
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/
