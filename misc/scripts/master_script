@@ -8,6 +8,8 @@ DBNAME=himalaya
 DBPASS=431w
 DROPBOX=/home/goodermuth/Dropbox/cmpsc431_project
 DUMPFILE=/home/goodermuth/dev/websites/himalaya/dbdump/init_backup_`date +%s`.sql.gz
+DROPFILE=/home/goodermuth/dev/websites/himalaya/common/forms/categories.html
+SELLFORM=/home/goodermuth/dev/websites/himalaya/common/forms/sellitem
 INIT=db_init.sql
 
 # dump db in case changes were unintentionally erased
@@ -25,8 +27,11 @@ link $INIT $DROPBOX/$INIT
 
 mysql -u $DBUSER -p${DBPASS} $DBNAME < $INIT
 echo created relations in $DBNAME db
-cd ..
+echo creating category dropdown menu...
+./catlist.sh > $DROPFILE
+cat ${SELLFORM}1.form $DROPFILE ${SELLFORM}2.form > $SELLFORM.form
 echo remaking zip code parser...
+cd ..
 make > /dev/null
 mv zipparse scripts
 cd - > /dev/null

@@ -1,29 +1,60 @@
 <!--provides a username, password, type dropdown, other relevant info and 
 submit button for adding user-->
-<form name="createuser" action="createaccount.php" method="post">
+<form name="createuser" action="createuser.php" method="post">
 <h3>Create Account</h3>
-<p>Username: <input type="text" name="username"></input></p>
-<p>Password: <input type="password" name="password"></input></p>
-<p>Member Type: <br />
-<input type="radio" name="type" value="0" onclick="Registered_User_selected()">User</input>
-<input type="radio" name="type" value="1" onclick="Supplier_selected()">Supplier</input>
-</p>
-<br /><!--registered user info-->
+<table>
+  <tr>
+    <td>Username:</td>
+    <td><input type="text" name="username"></input></td>
+  </tr>
+  <tr>
+    <td>Password:</td>
+    <td><input type="password" name="password"></input></td>
+  </tr>
+  <!--<tr>
+    <td>Confirm Password:</td>
+    <td><input type="conpassword" name="password"></input></td>
+  </tr>-->
+</table>
+<br><!--registered user info-->
 <h3>User Information</h3>
-<p>Full Name: <input type="text" name="name"></input></p>
-<p>Email: <input type="text" name="email"></input></p>
-<p>Gender: <br />
-<input id="gender1" type="radio" name="gender" value="M">Male</input>
-<input id="gender2" type="radio" name="gender" value="F">Female</input>
-</p>
-<p>Street Address: <input type="text" name="address"></input></p>
-<p>ZIP Code: <input type="text" name="zip"></input></p>
-<p>Phone Number: <input type="text" name="phone"></input></p>
-<p>Age: <input type="text" name="age"></input></p>
-<p>Income: <input type="text" name="income"></input></p>
-<br /><!--supplier info-->
-<h3>Supplier Information</h3>
-<p>Company Name: <input type="text" name="company"></input></p>
-<p>Contact Name: <input type="text" name="contact"></input></p>
-<p><input value="Submit" type="submit"></input></p>
+<table>
+  <tr>
+    <td>Full Name:</td>
+    <td><input type="text" name="name"/></td>
+  </tr>
+  <tr>
+    <td>Email:</td>
+    <td><input type="text" name="email"/></td>
+  </tr>
+  <tr>
+    <td><div class="row"><div class="span2">Gender:<label class="radio">
+    <input id="gender1" type="radio" name="gender" value="M">Male</input></label>
+    <label class="radio"><input id="gender2" type="radio" name="gender" value="F">Female</input></label>
+    </div></div></td>
+  </tr>
+  <tr>
+    <td>Street Address:</td>
+    <td><input type="text" name="address"/></td>
+  </tr>
+  <tr>
+    <td>ZIP Code:</td>
+    <td><input type="text" name="zip"/></td>
+  </tr>
+  <tr>
+    <td>Phone Number:</td>
+    <td><input type="text" name="phone"/></td>
+  </tr>
+  <tr>
+    <td>Age:</td>
+    <td><input type="text" name="age"/></td>
+  </tr>
+  <tr>
+    <td>Income:</td>
+    <td><input type="text" name="income"/></td>
+  </tr>
+  <tr>
+    <td><input class="btn btn-primary btn-large btn-block" value="Submit" type="submit"/></td>
+  </tr>
+</table>
 </form>

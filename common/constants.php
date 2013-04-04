@@ -27,4 +27,21 @@ $USER_TYPE_MAPPING       = array('Registered User', 'Supplier');
 $ADMIN_USER_TYPE_MAPPING = array('System', 'SysAdmin', 'Owner', 'Telemarketer',
                                'Sales Manager', 'Shipping', 'Accounting', 
                                'Gift Card');
+			       
+// Do we have the pwqcheck(1) program from the passwdqc package?
+$use_pwqcheck = TRUE;
+// We can override the default password policy
+$pwqcheck_args = '';
+// Base-2 logarithm of the iteration count used for password stretching
+$hash_cost_log2 = 8;
+// Do we require the hashes to be portable to older systems (less secure)?
+$hash_portable = FALSE;
+
+/* Dummy salt to waste CPU time on when a non-existent username is requested.
+ * This should use the same hash type and cost parameter as we're using for
+ * real/new hashes.  The intent is to mitigate timing attacks (probing for
+ * valid usernames).  This is optional - the line may be commented out if you
+ * don't care about timing attacks enough to spend CPU time on mitigating them
+ * or if you can't easily determine what salt string would be appropriate. */
+$dummy_salt = '$2a$08$1234567890123456789012';
 ?>

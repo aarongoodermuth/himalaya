@@ -5,6 +5,7 @@
 /**************/
 
 include_once '/home/goodermuth/dev/websites/himalaya/common/constants.php';
+include_once '/home/goodermuth/dev/websites/himalaya/common/PasswordHash.php';
 
 /******************/
 /** END INCLUDES **/
@@ -32,62 +33,69 @@ function mysql_member_username_unique($c, $username)
   return ($row[0] == 0);
 }
 
-// inserts a member into the database
-// (void)
-function mysql_member_create_member($c, $username, $password)
+function my_pwqcheck($newpass, $oldpass = '', $user = '')
 {
-  $username = sanitize($username);
-  $password = sanitize($password);
+        global $use_pwqcheck, $pwqcheck_args;
+        if ($use_pwqcheck)
+                return pwqcheck($newpass, $oldpass, $user, '', $pwqcheck_args);
 
-  global $MEMBERS_TABLE;
-
-  $query = 'INSERT INTO ' . $MEMBERS_TABLE . ' VALUES("' . $username . 
-              '", "' . $password . '", "0")';
-
-  $db_answer = mysqli_query($c, $query);
-
-  if($db_answer === false)
-  {
-    return false;
-  }
-  return true;
+	/* Some really trivial and obviously-insufficient password strength checks -
+	 * we ought to use the pwqcheck(1) program instead. */
+        $check = '';
+        if (strlen($newpass) < 7)
+                $check = 'way too short';
+        else if (stristr($oldpass, $newpass) ||
+            (strlen($oldpass) >= 4 && stristr($newpass, $oldpass)))
+                $check = 'is based on the old one';
+        else if (stristr($user, $newpass) ||
+            (strlen($user) >= 4 && stristr($newpass, $user)))
+                $check = 'is based on the username';
+        if ($check)
+                return "Bad password ($check)";
+        return 'OK';
 }
 
-// inserts a member and a supplier into the database 
+// inserts a member into the database
 // (boolean)
-function mysql_member_create_supplier($c, $username, $password, $company, $contact)
-{
-  $username = sanitize($username);
-  $company  = sanitize($company);
-  $contact  = sanitize($contact);
+function mysql_member_create_member($c, $username, $password)
+{  
+  global $MEMBERS_TABLE, $hash_cost_log2, $hash_portable;
 
-  global $SUPPLIERS_TABLE, $MEMBERS_TABLE;
-  if(!mysql_member_create_member($c, $username, $password))
-  {
+  if (!preg_match('/^[a-zA-Z0-9_]{1,60}$/', $username))
     return false;
-  }
   
-  $query = 'INSERT INTO ' . $SUPPLIERS_TABLE . ' VALUES("' . $username .
-              '", "' . $company . '", "' . $contact . '")';
-
-  $db_answer = mysqli_query($c, $query);
-
-  if($db_answer === false)
-  {
-    $query = 'DELETE FROM ' . $MEMBERS_TABLE . ' WHERE username="' . $username . '"';
-    mysqli_query($c, $query);
+  $hasher = new PasswordHash($hash_cost_log2, $hash_portable);
+  
+  /*if (($check = my_pwqcheck($password, '', $username)) != 'OK') {
+    unset($hasher);
+    return false;
+  }*/
+  
+  $hash = $hasher->HashPassword($password);
+  if (strlen($hash) < 20) {
+    unset($hasher);
     return false;
   }
+  unset($hasher);
+  
+  $str = "INSERT INTO $MEMBERS_TABLE VALUES(?, ?, NULL)";
+  if ($stmt = mysqli_prepare($c, $str)) {
+	mysqli_stmt_bind_param($stmt, 'ss', $username, $hash);
+	mysqli_stmt_execute($stmt);
+	mysqli_stmt_close($stmt);
+	return true;
+  }
 
-  return true;
+  return false;
 }
 
 // inserts a registered user into the database
 // (boolean)
-function mysql_member_create_ru($c, $username, $password, $name, $email, $gender, $address, $zip, $phone, $age, $income)
+function mysql_member_create_ru($c, $username, $password, $name, $email, $gender, $address, $zip, 
+                                 $phone, $age, $income)
 {
   global $RU_TABLE, $MEMBERS_TABLE;
-  
+
   if(!mysql_member_create_member($c, $username, $password))
   {
     return false;
@@ -95,9 +103,12 @@ function mysql_member_create_ru($c, $username, $password, $name, $email, $gender
 
   if(!mysql_member_add_email($c, $username, $email))
   {
-    $query = 'DELETE FROM ' . $MEMBERS_TABLE . ' WHERE username="' . $username 
-                . '"';
-    mysqli_query($c, $query);
+    $str = "DELETE FROM $MEMBERS_TABLE WHERE username=?";
+    if ($stmt = mysqli_prepare($c, $str)) {
+      mysqli_stmt_bind_param($stmt, 's', $username);
+      mysqli_stmt_execute($stmt);
+      mysqli_stmt_close($stmt);
+    }
     return false;
   }
 
@@ -111,23 +122,60 @@ function mysql_member_create_ru($c, $username, $password, $name, $email, $gender
   mysql_member_insert_phone($c, $username, $phone);
   mysql_member_insert_address($c, $address, $username, $zip);
 
-  $query = 'INSERT INTO ' . $RU_TABLE . ' VALUES("' . $username 
-              . '", "' . $name . '", "' . $gender . '", "' 
-              . $age . '", "' . $income . '", "0")';
-  
-  $db_answer = mysqli_query($c, $query);
-
-  if($db_answer === false)
-  {
-    $query = 'DELETE FROM ' . $MEMBERS_TABLE . ' WHERE username="' . $username 
-                . '"';
-    mysqli_query($c, $query);
-    $query = 'DELETE FROM ' . $EMAIL_TABLE   . ' WHERE username="' . $username 
-                . '" AND email="' . $email . '"';
-    mysqli_query($c, $query);
-    return false; 
+  $str = "INSERT INTO $RU_TABLE VALUES(?, ?, ?, ?, ?, 0)";
+  if ($stmt = mysqli_prepare($c, $str)) {
+    mysqli_stmt_bind_param($stmt, 'sssii', $username, $name, $gender, $age, $income);
+    
+    if (!mysqli_stmt_execute($stmt)) {
+      $str = "DELETE FROM $MEMBERS_TABLE WHERE username=?";
+      if ($stmt = mysqli_prepare($c, $str)) {
+        mysqli_stmt_bind_param($stmt, 's', $username);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+      }
+      if ($stmt = mysqli_prepare($c, $str)) {
+        mysqli_stmt_bind_param($stmt, 's', $username);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+      }
+    } else {
+      mysqli_stmt_close($stmt);
+    }
   }
+
   return true;
+}
+
+// inserts a member and a supplier into the database 
+// (boolean)
+function mysql_member_create_supplier($c, $username, $password, $company, $contact)
+{
+	/*$username = sanitize($username);
+	$company  = sanitize($company);
+	$contact  = sanitize($contact);*/
+
+	global $SUPPLIERS_TABLE, $MEMBERS_TABLE;
+
+	if (!mysql_member_create_member($c, $username, $password)) {
+		return false;
+	} else if (!mysql_member_add_email($c, $username, $email)) {
+		$str = "INSERT INTO $SUPPLIERS_TABLE VALUES(?, ?, ?)";
+		if ($stmt = mysqli_prepare($c, $str)) {
+			mysqli_stmt_bind_param($stmt, 'sss', $username, $company, $contact);
+			mysqli_stmt_execute($stmt);
+			mysqli_stmt_close($stmt);
+		} else {
+			$str = "DELETE FROM $MEMBERS_TABLE WHERE username=?";
+			if ($stmt = mysqli_prepare($c, $str)) {
+				mysqli_stmt_bind_param($stmt, 's', $username);
+				mysqli_stmt_execute($stmt);
+				mysqli_stmt_close($stmt);
+			}
+		}
+		return false;
+	}
+
+	return true;
 }
 
 // adds entry to the email table
@@ -139,15 +187,15 @@ function mysql_member_add_email($c, $username, $email)
   $username = sanitize($username);
   $email    = sanitize($email);
 
-  $query = 'INSERT INTO ' . $EMAIL_TABLE . ' VALUES("' . $username . '", "' 
-              . $email . '")';
-  $db_answer = mysqli_query($c, $query);
-  if($db_answer === false)
-  {
-    return false;
+  $str = "INSERT INTO $EMAIL_TABLE VALUES(?, ?)";
+  if ($stmt = mysqli_prepare($c, $str)) {
+	mysqli_stmt_bind_param($stmt, 'ss', $username, $email);
+	mysqli_stmt_execute($stmt);
+	mysqli_stmt_close($stmt);
+	return true;
   }
-
-  return true;
+  
+  return false;
 }
 
 // updates RU info. Returns true on sucess, false on failure
@@ -253,14 +301,20 @@ function mysql_member_zip_exists($c, $zip)
   global $ZIP_TABLE;
 
   $zip = sanitize($zip);
-
-  $query = 'SELECT COUNT(*) FROM ' . $ZIP_TABLE . ' WHERE zip="' . $zip . '"';
-
-  $db_answer = mysqli_query($c, $query);
-
-  $row =  mysqli_fetch_row($db_answer);
   
-  return $row[0][0];
+  $str = "SELECT COUNT(*) FROM $ZIP_TABLE WHERE zip=?";
+  if ($stmt = mysqli_prepare($c, $str)) {
+	mysqli_stmt_bind_param($stmt, 's', $zip);
+	mysqli_stmt_execute($stmt);
+	mysqli_stmt_bind_result($stmt, $count);
+	mysqli_stmt_fetch($stmt);
+	mysqli_stmt_close($stmt);
+  }
+
+  if ($count == 1)
+    return true;
+
+  return false;
 }
 
 // ...
@@ -272,10 +326,15 @@ function mysql_member_insert_phone($c, $username, $phone)
   $username = sanitize($username);
   $phone    = sanitize($phone);
 
-  $query = 'INSERT INTO ' . $PHONE_TABLE . ' VALUES("' . $username . '", "' 
-              . $phone . '")';
+  $str = "INSERT INTO $PHONE_TABLE VALUES(?, ?)";
+  if ($stmt = mysqli_prepare($c, $str)) {
+    mysqli_stmt_bind_param($stmt, 'ss', $username, $phone);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return true;
+  }
 
-  return mysqli_query($c, $query);
+  return false;
 }
 
 // ...
@@ -292,11 +351,16 @@ function mysql_member_insert_address($c, $street, $username, $zip)
   {
     return false;
   }
+  
+  $str = "INSERT INTO $ADDRESS_TABLE VALUES(?, ?, ?)";
+  if ($stmt = mysqli_prepare($c, $str)) {
+    mysqli_stmt_bind_param($stmt, 'sss', $street, $zip, $username);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return true;
+  }
 
-  $query = 'INSERT INTO ' . $ADDRESS_TABLE . ' VALUES("' . $street . '", "' 
-              . $zip . '", "' . $username . '")';
-
-  return mysqli_query($c, $query);
+  return false;
 }
 
 // gets all info related to a registered_user
@@ -412,7 +476,7 @@ function mysql_member_gift_balance($c, $username)
   if ($stmt = mysqli_prepare($c, $str)) {
 	mysqli_stmt_bind_param($stmt, 's', $username);
 	mysqli_stmt_execute($stmt);
-	mysqli_bind_result($stmt, $balance);
+	mysqli_stmt_bind_result($stmt, $balance);
 	mysqli_stmt_fetch($stmt);
 	mysqli_stmt_close($stmt);
   }
@@ -432,7 +496,7 @@ function mysql_member_gift_exists($c, $code)
   if ($stmt = mysqli_prepare($c, $str)) {
 	mysqli_stmt_bind_param($stmt, 's', $code);
 	mysqli_stmt_execute($stmt);
-	mysqli_bind_result($stmt, $count);
+	mysqli_stmt_bind_result($stmt, $count);
 	mysqli_stmt_fetch($stmt);
 	mysqli_stmt_close($stmt);
   }
@@ -457,7 +521,7 @@ function mysql_member_redeem_gift($c, $username, $code)
   if ($stmt = mysqli_prepare($c, $str)) {
 	mysqli_stmt_bind_param($stmt, 's', $code);
 	mysqli_stmt_execute($stmt);
-	mysqli_bind_result($stmt, $amount);
+	mysqli_stmt_bind_result($stmt, $amount);
 	mysqli_stmt_fetch($stmt);
 	mysqli_stmt_close($stmt);
   } else {

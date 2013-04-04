@@ -1,0 +1,36 @@
+<!--provides a username, password, type dropdown, other relevant info and 
+submit button for adding user-->
+<form name="createsupplier" action="createsupplier.php" method="post">
+<h3>Create Supplier Account</h3>
+<table>
+  <tr>
+    <td>Username:</td>
+    <td><input type="text" name="username"/></td>
+  </tr>
+  <tr>
+    <td>Password:</td>
+    <td><input type="password" name="password"/></td>
+  </tr>
+  <!--<tr>
+    <td>Confirm Password:</td>
+    <td><input type="conpassword" name="password"></input></td>
+  </tr>-->
+</table>
+<br><!--registered user info-->
+<h3>Supplier Information</h3>
+<table>
+  <tr>
+    <td>Company Name:</td>
+    <td><input type="text" name="name"/></td>
+  </tr>
+  <tr>
+    <td>Contact Name:</td>
+    <td><input type="text" name="contact"/></td>
+  </tr>
+  <tr>
+    <td><input class="btn btn-primary btn-large btn-block" value="Submit" type="submit"/></td>
+  </td>
+  </tr>
+</table>
+</form>
+
