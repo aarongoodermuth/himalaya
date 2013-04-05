@@ -21,19 +21,18 @@
 <td><input type="text" name="zip"/></td>
 </tr>
 <tr>
-<td>
 <div class="row">
   <div class="span2">
-    Sale Type:
+    <td>Sale Type: </td><td>
     <label class="radio">
       <input id="saletype1" type="radio" name="saletype" value="A">Auction</input>
     </label>
     <label class="radio">
       <input id="saletype2" type="radio" name="saletype" value="S">Sale</input>
     </label>
+	</td>
   </div>
 </div>
-</td>
 </tr>
 </table>
 <input value="Submit" type="submit"/>
