@@ -160,6 +160,35 @@ function get_post_var($var)
   return $val;
 }
 
+function int_to_condition($cond) {
+	switch(intval($cond))
+	{
+	case 0: 
+		$s = 'New';
+		break;
+	case 1: 
+		$s = 'Used - Like New';
+		break;
+	case 2: 
+		$s = 'Used - Very Good';
+		break;
+	case 3: 
+		$s = 'Used - Good';
+		break;
+	case 4: 
+		$s = 'Used - Acceptable';
+		break;
+	case 5: 
+		$s = 'Used - For Parts Only';
+		break;
+	default:
+		$s = NULL;
+		break;
+	}
+	
+	return $s;
+}
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/
