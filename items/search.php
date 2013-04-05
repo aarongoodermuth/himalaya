@@ -65,12 +65,11 @@ function print_message($s)
   echo '<p style="color:red">' . $s . '</p>';
 }
 
-// builds and executes query to get search results
+// builds query string for search results
 // assumes all POST values are set
-// $c - mysql database link
-// returns query results
+// returns query string for a prepared statement
 // seatbelts, everyone
-function mysql_get_search_results($c)
+function mysql_get_search_query()
 {
   global $PRODUCTS_TABLE;
   global $SALE_ITEMS_TABLE;
@@ -79,10 +78,9 @@ function mysql_get_search_results($c)
   global $REG_USER_TABLE;
   global $SUPPLIERS_TABLE;
 
-  $searchterm  = sanitize($_POST['searchterm']); // search term via text field
-  $itemtypes   = $_POST['itemtype'];             // sale item types array (values: sale | auction)
-  $itemconds   = $_POST['itemcond'];             // item condition array  (values: 0-5)
-  $sellertypes = $_POST['sellertype'];           // seller types array    (values: supplier | user)
+  $itemtypes   = $_POST['itemtype'];   // sale item types array (values: sale | auction)
+  $itemconds   = $_POST['itemcond'];   // item condition array  (values: 0-5)
+  $sellertypes = $_POST['sellertype']; // seller types array    (values: supplier | user)
 
   $i = 0;
 
@@ -98,8 +96,7 @@ function mysql_get_search_results($c)
   $where_clause .= 'S.username = M.username AND P.product_id = S.product_id ';
 
   // find search term matches from product name or description
-  $where_clause .= 'AND (P.p_name LIKE \'%' . $searchterm . '%\' OR
-                         P.p_desc LIKE \'%' . $searchterm . '%\') ';
+  $where_clause .= "AND (P.p_name LIKE ? OR P.p_desc LIKE ?) ";
 
   // ensure items in results have of one of the selected item conditions
   $where_clause .= 'AND (';
@@ -126,7 +123,7 @@ function mysql_get_search_results($c)
     // item ids corresponding to auctions are a subset of those corresponding to sale items.
     // to ensure there are no duplicates shown (i.e. one record for the sale item entry, one
     // for the auction entry), left join sale items with auctions on the item_id attribute.
-    // requires rewrite from clause
+    // requires rewrite of from clause
     $select_clause .= ', A.recent_bid, A.end_date';
     $from_clause    = ' FROM ' . $PRODUCTS_TABLE . ' P, ' . $MEMBERS_TABLE . ' M, ' .
                                  $SALE_ITEMS_TABLE . ' S LEFT JOIN ' . 
@@ -144,7 +141,7 @@ function mysql_get_search_results($c)
                       $AUCTIONS_TABLE . ')) ';
   }
 
-  return mysqli_query($c, $select_clause . $from_clause . $where_clause);
+  return $select_clause . $from_clause . $where_clause;
 } 
 
 /*******************/
@@ -169,72 +166,97 @@ if($user != null)
 
   if(all_set()) // execute search
   {
-    if($results = mysql_get_search_results($c)) // successful query
+    if($stmt = mysqli_prepare($c, mysql_get_search_query())) // query successfully prepared
     {
-      if(mysqli_num_rows($results) < 1)
-      {
-        echo '<p>No items match your search.</p>';
-      }
-      else // show results in a table
+      $searchterm = '%' . $_POST['searchterm'] . '%';
+      mysqli_stmt_bind_param($stmt, 'ss', $searchterm, $searchterm);
+
+      if(mysqli_stmt_execute($stmt)) // successful query
       {
         $item_types = $_POST['itemtype'];
         $only_sales = (count($item_types) === 1 && $item_types[0] == 'sale');
 
-        // table header row
-        echo '<table cellpadding="5">
-              <tr align="center">
-                <td><b>Product name</b></td>
-                <td><b>Item condition</b></td>
-                <td><b>Seller</b></td>';
-        if(!$only_sales)
-        {
-          echo '<td><b>Recent bid</b></td>
-                <td><b>Auction end time</b></td>';
-        } 
-        echo '</tr>';
+        // apparently this is needed to make result data immediately available
+        mysqli_stmt_store_result($stmt);
 
-        $n = $only_sales ? 3 : 5; // if only sales specified, ignore auction attributes
-        while($row = mysqli_fetch_row($results))
+        if($only_sales) // only show product name, item cond., and seller
         {
-          echo '<tr align="center">';
-          for($i = 0; $i < $n; $i++) // get each attribute for the current record
-          {
-            $s = null;
-            
-            if($i == 1) // display correct string for item condition
-            {
-              switch(intval($row[$i]))
-              {
-              case 0: $s = 'New';
-              break;
-              case 1: $s = 'Used - Like New';
-              break;
-              case 2: $s = 'Used - Very Good';
-              break;
-              case 3: $s = 'Used - Good';
-              break;
-              case 4: $s = 'Used - Acceptable';
-              break;
-              case 5: $s = 'Used - For Parts Only';
-              break;
-              }
-
-              echo '<td>' . $s . '</td>';
-            }
-            else
-            {
-              echo '<td>' . $row[$i] . '</td>';
-            }
-          }
-          echo '</tr>';
+          mysqli_stmt_bind_result($stmt, $prod_name, $i_cond, $seller_name);
+        }
+        else // also show most recent bid amount and end time of the auction
+        {
+          mysqli_stmt_bind_result($stmt, $prod_name, $i_cond, $seller_name, 
+                                         $recent_bid, $auc_end_time);
         }
 
-        echo '</table>';
+        if(mysqli_stmt_num_rows($stmt) < 1)
+        {
+          echo '<p>No items match your search.</p>';
+        }
+        else // show results in a table
+        {
+          echo '<table cellpadding="5">
+                <tr align="center">
+                  <td><b>Product name</b></td>
+                  <td><b>Item condition</b></td>
+                  <td><b>Seller</b></td>';
+          if(!$only_sales)
+          {
+            echo '<td><b>Recent bid</b></td>
+                  <td><b>Auction end time</b></td>';
+          } 
+          echo '</tr>';
+
+          while(mysqli_stmt_fetch($stmt))
+          {
+            echo '<tr align="center">';
+            echo '<td>' . $prod_name . '</td>';
+            
+            switch(intval($i_cond)) // display correct string for item condition
+            {
+            case 0: $s = 'New';
+            break;
+            case 1: $s = 'Used - Like New';
+            break;
+            case 2: $s = 'Used - Very Good';
+            break;
+            case 3: $s = 'Used - Good';
+            break;
+            case 4: $s = 'Used - Acceptable';
+            break;
+            case 5: $s = 'Used - For Parts Only';
+            break;
+            default: $s = 'New';
+            break;
+            }
+            echo '<td>' . $s . '</td>';
+
+            echo '<td>' . $seller_name . '</td>';
+
+            if(!$only_sales) // display auction information
+            {
+              echo '<td>' . $recent_bid . '</td>';
+              echo '<td>' . $auc_end_time . '</td>';
+            }
+
+            echo '</tr>';
+          }
+
+          echo '</table>';
+        }
       }
+      else // unsuccessful query
+      {
+        print_message('Ow! Query failed.');
+      }
+
+      // cleanup
+      mysqli_stmt_free_result($stmt);
+      mysqli_stmt_close($stmt);
     }
-    else // query failed
+    else // query couldn't be built
     {
-      print_message('Query failed');
+      print_message('Query build failed. Nice try.');
     }
   }
   else if(values_set()) // user missed some form input
@@ -254,7 +276,6 @@ if($user != null)
     echo '<script src="search.js"></script>';
     echo '<script>populate_defaults();</script>';
     echo '<body OnLoad="document.search.searchterm.focus();">'; // give textbox focus
-    //echo '</body>';
   }
 
   print_html_footer_js();
