@@ -22,6 +22,8 @@ $SALE_ITEMS_TABLE    =     $DB_NAME . '.Sale_Items';
 $AUCTIONS_TABLE      =     $DB_NAME . '.Auctions';
 $GIFT_CARDS_TABLE    =     $DB_NAME . '.Gift_Cards';
 $SALES_TABLE         =     $DB_NAME . '.Sales';
+$ORDERS_TABLE        =     $DB_NAME . '.Orders';
+
 
 $USER_TYPE_MAPPING       = array('Registered User', 'Supplier');
 $ADMIN_USER_TYPE_MAPPING = array('System', 'SysAdmin', 'Owner', 'Telemarketer',
