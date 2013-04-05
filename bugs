@@ -10,4 +10,5 @@ multiple                       |     make it pretty
 admin/telemarketer.php         |     table is screwy. related to emails being moved
 DATABASE -- Registered_Users   |     We store Age rather than date of birth, putting
                                |        us in 1st NF
-
+users/selling.php              |     would prefer to have different fields shown, but
+                               |        that is too much work for now

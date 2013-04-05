@@ -25,7 +25,7 @@ function print_sales_table($c, $user)
 {
   // print header
   echo '<div style="text-align:center">';
-  echo '<h4>Items I am selling</h4>';  
+  echo '<h3>Items I am selling</h3>';  
   // get info from db
   $rows = mysql_member_get_sales($c, $user);;
 
@@ -38,6 +38,10 @@ function print_sales_table($c, $user)
   for($i=0; $i<count($rows); $i++)
   {
     print_sale_item($c, $rows[$i]);
+    if($i < count($rows) - 1)
+    {
+      echo '<br />';
+    }
   }
 
   // print footer
@@ -48,9 +52,9 @@ function print_sales_table($c, $user)
 // (void)
 function print_sale_item($c, $item)
 {
-  echo '<table border="1" align="center">';
+  echo '<table border="1" align="center" width="60%">';
   
-  echo '<tr><td style="font-weight:bold">Item ID</td>';
+  echo '<tr><td style="font-weight:bold" width="20%">Item ID</td>';
   echo '<td><a href="../items/view.php?id=' . $item[0] . '">' . $item[0] . '</a></td></tr>';
   echo '<tr><td style="font-weight:bold">Description</td>';
   echo '<td>' . $item[1] . '</a></td></tr>';
@@ -66,7 +70,7 @@ function print_auctions_table($c, $user)
 {
   // print header
   echo '<div style="text-align:center">';
-  echo '<h4>Items I am auctioning</h4>';
+  echo '<h3>Items I am auctioning</h3>';
 
   // get info from db
   $rows = mysql_member_get_auctions($c, $user);
@@ -79,7 +83,11 @@ function print_auctions_table($c, $user)
   
   for($i=0; $i<count($rows); $i++)
   {
-    print_sale_item($c, $rows[$i]);
+    print_auction_item($c, $rows[$i]);
+    if($i < count($rows) - 1)
+    {
+      echo '<br />';
+    }
   }
 
   // print footer
@@ -90,14 +98,14 @@ function print_auctions_table($c, $user)
 // (void)
 function print_auction_item($c, $item)
 {
-  echo '<table border="1" align="center">';
+  echo '<table border="1" align="center" width="60%">';
 
-  echo '<tr><td style="font-weight:bold">Item ID</td>';
+  echo '<tr><td style="font-weight:bold" width="20%">Item ID</td>';
   echo '<td><a href="../items/view.php?id=' . $item[0] . '">' . $item[0] . '</a></td></tr>';
   echo '<tr><td style="font-weight:bold">Description</td>';
   echo '<td>' . $item[1] . '</a></td></tr>';
   echo '<tr><td style="font-weight:bold">Current Bid</td>';
-  echo '<td>' . $sprintf('$%.2f', $item[2]/100) . '</a></td></tr>';
+  echo '<td>' . sprintf('$%.2f', $item[2]/100) . '</a></td></tr>';
   
   echo '</table>';
 }
