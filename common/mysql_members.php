@@ -650,6 +650,53 @@ function mysql_member_get_auctions($c, $user)
   return $retval;
 }
 
+// ...
+// (void)
+function mysql_member_get_orders($c, $user)
+{
+  global $ORDERS_TABLE, $SALE_ITEMS_TABLE;
+
+  $str = "SELECT O.item_id, SI.item_desc, O.status, O.action_date  
+          FROM $SALE_ITEMS_TABLE SI, $ORDERS_TABLE O 
+          WHERE SI.item_id = O.item_id
+          AND O.username = ?";
+  if ($stmt = mysqli_prepare($c, $str)) 
+  {
+    mysqli_stmt_bind_param($stmt, 's', $user);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $row[0], $row[1], $row[2], $row[3]);
+    mysqli_stmt_store_result($stmt);
+    
+    if(0 === mysqli_stmt_num_rows($stmt))
+    {
+      return null;
+    }
+
+    mysqli_stmt_free_result($stmt);
+
+    $i = 0;
+    while(mysqli_stmt_fetch($db_answer))
+    {
+      for($j=0; $j<4; $j++)
+        $retval[$i][$j] = $row[$j];
+      $i++;
+    }
+
+    mysqli_stmt_close($stmt);
+  } else {
+	return $row = false;
+  }
+
+
+  if($row === false)
+  {
+    die('<p style="color:red">The database done goofed. This is definately our fault</p>');
+  }
+ 
+
+  return $retval;
+}
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/
