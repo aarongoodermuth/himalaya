@@ -43,16 +43,16 @@ function mysql_get_item_info($c, $id)
 	$id = sanitize($id);  
 
 	$str = "SELECT si.item_desc, si.product_id, si.username, 
-		 si.scondition, si.url, si.posted_date, 
-		 p.p_name, p.p_desc, p.category_id, 
-		 c.category_name,
-		 addr.zip,
-		 z.city, z.zstate
-	  FROM   $SALE_ITEMS_TABLE si, $PRODUCTS_TABLE p, $CATEGORY_TABLE c, 
-		 $ADDRESS_TABLE addr, $ZIP_TABLE z
-	  WHERE  si.item_id = ? AND si.product_id = p.product_id 
-		 AND p.category_id = c.category_id 
-		 AND si.username = addr.username AND addr.zip = z.zip";
+		       si.scondition, si.url, si.posted_date, 
+		       p.p_name, p.p_desc, p.category_id, 
+		       c.category_name,
+		       addr.zip,
+		       z.city, z.zstate
+	        FROM   $SALE_ITEMS_TABLE si, $PRODUCTS_TABLE p, 
+		       $CATEGORY_TABLE c, $ADDRESS_TABLE addr, $ZIP_TABLE z
+	        WHERE  si.item_id = ? AND si.product_id = p.product_id 
+		       AND p.category_id = c.category_id 
+		       AND si.username = addr.username AND addr.zip = z.zip";
 
 	if ($stmt = mysqli_prepare($c, $str)) {
 		mysqli_stmt_bind_param($stmt, 'i', $id);
@@ -197,23 +197,46 @@ if($user != NULL) {
 	         * $category_name, $zip, $city, $zstate);
 	         */
 		$condition = int_to_condition($item_info[3]);
-		echo 
-		"<h3>$item_info[6]</h3>
+		echo "<h3>$item_info[6]</h3>\n";
+		
+		if ($price_info[0] == 's') {  /* sale */
+			echo "<form name=\"purchase\" action=\"/users/purchase.php\" method=\"post\">";
+		} else {                      /* auction */
+			echo "<form name=\"placebid\" action=\"/users/placebid.php\" method=\"post\">";
+		}
+
+		echo
+		"<input id=\"item_id\" type=\"hidden\" name=\"item_id\"/>
+		<script>document.getElementById(\"item_id\").value=$id;</script>
 		<table>
 		  <tr>
 		    <td height=\"30\">Item Condition:</td>
+		    <td>&nbsp;</td>
 		    <td height=\"30\">$condition</td>
 		  </tr>
 		  <tr>
+		    <td>Product Id:</td>
+		    <td>&nbsp;</td>
+		    <td>$item_info[1]</td>
+		  </tr>
+		  <tr>
+		    <td>Item Id:</td>
+		    <td>&nbsp;</td>
+		    <td>$id</td>
+		  </tr>
+		  
+		  <tr>
 		    <td height=\"30\">Seller:</td>
+		    <td>&nbsp;</td>
 		    <td height=\"30\">
-		      <a href=\"/users/view?username=$item_info[2]\">$item_info[2]</a>";
+		      <a href=\"/users/view.php?username=$item_info[2]\">$item_info[2]</a>";
 		
 		if (($rating_info = mysql_get_avg_rating($c, $item_info[2])) != NULL) {
 			printf("&nbsp;&nbsp;(%.1f/10 rating)", $rating_info[0]);
 			echo "</td></tr>
 			<tr>
-			  <td></td>
+			  <td>&nbsp;</td>
+			  <td>&nbsp;</td>
 			  <td>based on $rating_info[1] customer reviews";
 		}
 		
@@ -221,49 +244,64 @@ if($user != NULL) {
 		
 		/****** TODO: proper currency displaying ******/
 		if ($price_info[0] == 's') {  // sale
-			$price = $price_info[1] / 100;
 			echo 
 			"<tr>
 			  <td height=\"30\">Price:</td>
-			  <td height=\"30\">$$price</td>
-			</tr>
+			  <td>&nbsp;</td>
+			  ";
+			printf("<td height=\"30\">$%.2f</td>", $price_info[1] / 100);
+			echo 
+			"</tr>
 			<tr>
+			  <td>&nbsp;</td>
+			  <td>&nbsp;</td>
 			  <td height=\"30\">
-			    <input class=\"btn btn-primary btn-large btn-block\" value=\"Purchase\" type=\"submit\"></input>
+			    <input class=\"btn btn-primary btn-large btn-block\" value=\"Purchase\" type=\"submit\"/>
 			  </td>
 			</tr>";
 		} elseif ($price_info[3]){    // auction, no bids yet
 			echo 
 			"<tr>
 			  <td height=\"30\">Starting Bid:</td>
-			  <td height=\"30\">$$price_info[1]</td>
-			</tr>
+			  <td>&nbsp;</td>
+			  ";
+			printf("<td height=\"30\">$%.2f</td>", $price_info[1] / 100);
+			echo
+			"</tr>
 			<tr>
-			  <td height=\"30\"><input type=\"text\" name=\"newbid\"/></td>
-			  <td height=\"30\"><input class=\"btn btn-primary btn-large btn-block\" value=\"Place Bid\" type=\"submit\"></input></td>
-			</tr>
-			<tr>
-			  <td height=\"30\">($$price_info[1] or above)</td>
-			  <td height=\"30\"></td>
+			  <td><input type=\"text\" name=\"newbid\"/></td>
+			  <td>&nbsp;</td>
+			  <td>
+			    <div class=\"span2\">
+			    <input class=\"btn btn-primary btn-large btn-block\" value=\"Place Bid\" type=\"submit\"/>
+			    </div>
+			  </td>
+			  <td>&nbsp;</td>
 			</tr>";
 		} else {                      // auction, bids exist
-			$next_bid = ($price_info[1] + 200) / 100; /* 200 cents = $2.00 */
 			echo 
 			"<tr>
 			  <td height=\"30\">Current Bid:</td>
-			  <td height=\"30\">$price_info[1]</td>
-			</tr>
+			  <td>&nbsp;</td>
+			";
+			printf("<td height=\"30\">%.2f</td>", ($price_info[1] + 200) / 100);
+			echo
+			"</tr>
 			<tr>
 			  <td height=\"30\"><input type=\"text\" name=\"newbid\"/></td>
 			  <td height=\"30\"><input class=\"btn btn-primary btn-large btn-block\" value=\"Place Bid\" type=\"submit\"></input></td>
+			  <td>&nbsp;</td>
 			</tr>
 			<tr>
-			  <td height=\"30\">($$next_bid or above)</td>
+			";
+			printf("<td height=\"30\">($%.2f or above)</td>", ($price_info[1] + 200) / 100);
+			echo
+			" <td>&nbsp;</td>
 			  <td height=\"30\"></td>
 			</tr>";
 		}
 		
-		echo "</table><br><br>";
+		echo "</table></form><br><br>";
 		
 		echo "<h4>Product Description</h4>";
 		echo "$item_info[7]<br><br>";
