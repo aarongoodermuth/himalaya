@@ -7,7 +7,7 @@ function populate_defaults()
 }
 
 // sets all form values for the nav search option
-function populate_all()
+function search_populate_all()
 {
   // sales & auctions
   document.getElementById("navsale").checked = true;

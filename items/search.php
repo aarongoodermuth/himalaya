@@ -68,7 +68,6 @@ function print_message($s)
 // builds query string for search results
 // assumes all POST values are set
 // returns query string for a prepared statement
-// seatbelts, everyone
 function mysql_get_search_query()
 {
   global $PRODUCTS_TABLE;
@@ -86,9 +85,8 @@ function mysql_get_search_query()
 
   // note: this select clause will return bogus values for auction attributes when only
   //       sale items are specified, but these attributes are just ignored anyway
-  $select_clause = 'SELECT P.p_name, S.scondition, M.username';
-  $from_clause   = ' FROM ' . $PRODUCTS_TABLE . ' P, ' . $SALE_ITEMS_TABLE . ' S, ' .
-                              $MEMBERS_TABLE . ' M';
+  $select_clause = 'SELECT P.p_name, S.scondition, M.username, S.item_id';
+  $from_clause   = " FROM $PRODUCTS_TABLE P, $SALE_ITEMS_TABLE S, $MEMBERS_TABLE M";
 
   $where_clause  = ' WHERE ';
 
@@ -102,19 +100,19 @@ function mysql_get_search_query()
   $where_clause .= 'AND (';
   for($i = 0; $i < count($itemconds) - 1; $i++) // stop after second to last element
   {
-    $where_clause .= 'S.scondition = ' . $itemconds[$i] . ' OR ';
+    $where_clause .= "S.scondition = $itemconds[$i] OR ";
   }
-  $where_clause .= 'S.scondition = ' . $itemconds[$i] . ') ';
+  $where_clause .= "S.scondition = $itemconds[$i]) ";
 
   // ensure results match seller types specified
   // (if both specified, no clause needed)
   if(count($sellertypes) === 1 && $sellertypes[0] == 'supplier') // suppliers only
   {
-    $where_clause .= 'AND (S.username IN (SELECT username FROM ' . $SUPPLIERS_TABLE . ')) ';
+    $where_clause .= "AND (S.username IN (SELECT username FROM $SUPPLIERS_TABLE)) ";
   }
   else if(count($sellertypes) === 1 && $sellertypes[0] == 'user') // registered users only
   {
-    $where_clause .= 'AND (S.username IN (SELECT username FROM ' . $REG_USER_TABLE . ')) ';
+    $where_clause .= "AND (S.username IN (SELECT username FROM $REG_USER_TABLE)) ";
   }
 
   // ensure results are only sales or auctions, depending on choice
@@ -125,20 +123,19 @@ function mysql_get_search_query()
     // for the auction entry), left join sale items with auctions on the item_id attribute.
     // requires rewrite of from clause
     $select_clause .= ', A.recent_bid, A.end_date';
-    $from_clause    = ' FROM ' . $PRODUCTS_TABLE . ' P, ' . $MEMBERS_TABLE . ' M, ' .
-                                 $SALE_ITEMS_TABLE . ' S LEFT JOIN ' . 
-                                 $AUCTIONS_TABLE . ' A ON S.item_id = A.item_id ';
+    $from_clause    = " FROM $PRODUCTS_TABLE  P, $MEMBERS_TABLE M, " .
+                      "$SALE_ITEMS_TABLE S LEFT JOIN $AUCTIONS_TABLE A ON S.item_id = A.item_id ";
   }
   else if(count($itemtypes) === 1 && $itemtypes[0] == 'sale') // get matches only from sales
   {
-    $where_clause .= 'AND (S.item_id NOT IN (SELECT item_id FROM ' . $AUCTIONS_TABLE . ')) ';
+    $where_clause .= "AND (S.item_id NOT IN (SELECT item_id FROM $AUCTIONS_TABLE )) ";
   }
   else // get matches only from auctions
   {
     $select_clause .= ', A.recent_bid, A.end_date';
-    $from_clause   .= ', ' . $AUCTIONS_TABLE . ' A';
-    $where_clause  .= ' AND A.item_id = S.item_id AND (S.item_id IN (SELECT item_id FROM ' . 
-                      $AUCTIONS_TABLE . ')) ';
+    $from_clause   .= ", $AUCTIONS_TABLE A";
+    $where_clause  .= " AND A.item_id = S.item_id AND " .
+                      "(S.item_id IN (SELECT item_id FROM $AUCTIONS_TABLE)) ";
   }
 
   return $select_clause . $from_clause . $where_clause;
@@ -166,6 +163,8 @@ if($user != null)
 
   if(all_set()) // execute search
   {
+    echo '<h3>Search Results</h3>';
+
     if($stmt = mysqli_prepare($c, mysql_get_search_query())) // query successfully prepared
     {
       $searchterm = '%' . $_POST['searchterm'] . '%';
@@ -181,11 +180,11 @@ if($user != null)
 
         if($only_sales) // only show product name, item cond., and seller
         {
-          mysqli_stmt_bind_result($stmt, $prod_name, $i_cond, $seller_name);
+          mysqli_stmt_bind_result($stmt, $prod_name, $i_cond, $seller_name, $item_id);
         }
         else // also show most recent bid amount and end time of the auction
         {
-          mysqli_stmt_bind_result($stmt, $prod_name, $i_cond, $seller_name, 
+          mysqli_stmt_bind_result($stmt, $prod_name, $i_cond, $seller_name, $item_id,
                                          $recent_bid, $auc_end_time);
         }
 
@@ -210,33 +209,14 @@ if($user != null)
           while(mysqli_stmt_fetch($stmt))
           {
             echo '<tr align="center">';
-            echo '<td>' . $prod_name . '</td>';
-            
-            switch(intval($i_cond)) // display correct string for item condition
-            {
-            case 0: $s = 'New';
-            break;
-            case 1: $s = 'Used - Like New';
-            break;
-            case 2: $s = 'Used - Very Good';
-            break;
-            case 3: $s = 'Used - Good';
-            break;
-            case 4: $s = 'Used - Acceptable';
-            break;
-            case 5: $s = 'Used - For Parts Only';
-            break;
-            default: $s = 'New';
-            break;
-            }
-            echo '<td>' . $s . '</td>';
-
-            echo '<td>' . $seller_name . '</td>';
+            echo "<td><a href=\"/items/view.php?id=$item_id\">$prod_name</a></td>";
+            echo '<td>' . int_to_condition($i_cond) . '</td>';
+            echo "<td><a href=\"/users/view.php?username=$seller_name\">$seller_name</a></td>";
 
             if(!$only_sales) // display auction information
             {
-              echo '<td>' . $recent_bid . '</td>';
-              echo '<td>' . $auc_end_time . '</td>';
+              echo "<td>$recent_bid</td>";
+              echo "<td>$auc_end_time</td>";
             }
 
             echo '</tr>';
@@ -247,7 +227,7 @@ if($user != null)
       }
       else // unsuccessful query
       {
-        print_message('Ow! Query failed.');
+        print_message('Bad search term. Nice try.');
       }
 
       // cleanup
@@ -256,7 +236,7 @@ if($user != null)
     }
     else // query couldn't be built
     {
-      print_message('Query build failed. Nice try.');
+      print_message('Ow! Query failed.');
     }
   }
   else if(values_set()) // user missed some form input
