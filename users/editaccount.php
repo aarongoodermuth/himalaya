@@ -24,11 +24,11 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_members.php';
 function print_this_html_header($c, $username)
 {
   print_html_header();
+  echo '<body onload="populate(' . get_ru_args($c, $username) . ')">';
   print_html_nav();
   echo '<script type="text/javascript" 
            src="../common/javascript/editru2.js">
            </script>';
-  echo '<body onload="populate(' . get_ru_args($c, $username) . ')">';
 }
 
 // gets the args from the database for this user formatted as a comma seperated
