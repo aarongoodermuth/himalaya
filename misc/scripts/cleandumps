@@ -1,0 +1,29 @@
+#!/bin/bash
+
+DBNAME=himalaya
+BKDIR="/home/goodermuth/dev/websites/himalaya/dbdump"
+BACK=14
+THRESH=`date --date "${BACK} days ago" +%s`
+DIFF=`expr ${BACK} \* 8600`
+count=0
+
+ls -1t $BKDIR/${DBNAME}* | while read FILENAME
+do
+	let "count++"
+
+	# only delete when more than THRESH backups
+	[ $count -lt $THRESH ] && continue 
+
+	CUR=`echo "$FILENAME" | sed -e "s/.*${DBNAME}_//" -e "s/.sql.gz//"`
+	CURYEAR=`echo "${CUR}" | cut -d'-' -f1`
+	CURMON=`echo "${CUR}" | cut -d'-' -f2`
+	CURDAY=`echo "${CUR}" | cut -d'-' -f3`
+	CURDATE="${CURYEAR}/${CURMON}/${CURDAY}"
+	CURTIME=`date --date "${CURDATE}" +%s`
+
+	x=`expr $CURTIME + $DIFF`
+	if [ `expr "$x" \<\= "$THRESH"` -eq 1 ]
+	then
+		rm ${FILENAME}
+	fi
+done
