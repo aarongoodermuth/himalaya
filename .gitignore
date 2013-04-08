@@ -1,8 +1,5 @@
 misc/scripts/db_init.sql
 zip.txt
-misc/scripts/cleandumps
-misc/scripts/dbbackup
-misc/scripts/emaildump
 misc/scripts/zipparse
 dbdump/
 *.old
