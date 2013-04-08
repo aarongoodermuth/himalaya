@@ -259,7 +259,7 @@ if($user != NULL) {
 			    <input class=\"btn btn-primary btn-large btn-block\" value=\"Purchase\" type=\"submit\"/>
 			  </td>
 			</tr>";
-		} elseif ($price_info[3]){    // auction, no bids yet
+		} elseif ($price_info[3] == NULL){    // auction, no bids yet
 			echo 
 			"<tr>
 			  <td height=\"30\">Starting Bid:</td>
@@ -269,7 +269,7 @@ if($user != NULL) {
 			echo
 			"</tr>
 			<tr>
-			  <td><input type=\"text\" name=\"newbid\"/></td>
+			  <td><input type=\"text\" name=\"newbid\" placeholder=\"Bid Amount (USD)\"/></td>
 			  <td>&nbsp;</td>
 			  <td>
 			    <div class=\"span2\">
@@ -284,11 +284,11 @@ if($user != NULL) {
 			  <td height=\"30\">Current Bid:</td>
 			  <td>&nbsp;</td>
 			";
-			printf("<td height=\"30\">%.2f</td>", ($price_info[1] + 200) / 100);
+			printf("<td height=\"30\">%.2f</td>", $price_info[1] / 100);
 			echo
 			"</tr>
 			<tr>
-			  <td height=\"30\"><input type=\"text\" name=\"newbid\"/></td>
+			  <td height=\"30\"><input type=\"text\" name=\"newbid\" placeholder=\"Bid Amount (USD)\"/></td>
 			  <td height=\"30\"><input class=\"btn btn-primary btn-large btn-block\" value=\"Place Bid\" type=\"submit\"></input></td>
 			  <td>&nbsp;</td>
 			</tr>

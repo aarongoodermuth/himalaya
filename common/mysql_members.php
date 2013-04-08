@@ -550,6 +550,58 @@ function mysql_member_redeem_gift($c, $username, $code)
   return $amount;
 }
 
+// place a bid on an item for a user
+// (boolean)
+function mysql_member_place_bid($c, $user, $item_id, $newbid)
+{
+	global $AUCTIONS_TABLE;
+	
+	$str = "UPDATE $AUCTIONS_TABLE SET recent_bid=?, recent_bidder=? WHERE item_id=?";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'isi', $newbid, $user, $item_id);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_fetch($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		return false;
+	}
+	
+	return true;
+}
+
+// check if new bid is at least $2.00 more than the previous bid, or the
+//   bid is >= to the starting bid if no bids have been placed yet
+// (boolean)
+function mysql_member_check_bid($c, $item_id, $newbid)
+{
+	global $AUCTIONS_TABLE;
+	
+	$str = "SELECT A.recent_bid, A.recent_bidder
+	        FROM   $AUCTIONS_TABLE A WHERE A.item_id = ?";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'i', $item_id);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_bind_result($stmt, $recent_bid, $recent_bidder);
+		mysqli_stmt_fetch($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		return false;
+	}
+		
+	/* no bid has been placed yet, new bid must match 
+	 * at least the starting bid */
+	if ($recent_bidder == NULL && $newbid >= $recent_bid) {
+		return true;
+	}
+	
+	/* there has been at least one bid */
+	if ($newbid >= $recent_bid + 200) {
+		return true;
+	}
+	
+	return false;
+}
+
 // change a user's password, return true on success
 // assume username-password combination has already been checked
 // (boolean)
@@ -687,13 +739,11 @@ function mysql_member_get_orders($c, $user)
 	return $row = false;
   }
 
-
   if($row === false)
   {
     die('<p style="color:red">The database done goofed. This is definately our fault</p>');
   }
  
-
   return $retval;
 }
 
