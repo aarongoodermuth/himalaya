@@ -4,7 +4,6 @@ function populate(name, email, gender, address, zip, phone, age, income)
   document.edituser.email.value   = email;
   if(gender === 'M')
   {
-alert('bitches');
     document.getElementById("gender1").checked = true;
     document.getElementById("gender2").checked = false;
   }
