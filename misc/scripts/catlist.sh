@@ -48,8 +48,8 @@ do
 	count=$((count+1))
 	[ $count -eq 1 ] && continue
 
-	ID=`echo "$LINE" | cut -d',' -f1 | sed s/\"//g`
-	CAT=`echo "$LINE" | cut -d',' -f2 | sed s/\"//g`
+	ID=`echo "$LINE" | cut -d',' -f1 | sed "s/\"//g"`
+	CAT=`echo "$LINE" | cut -d',' -f2 | sed -e "s/\"//g" -e "s/\&/\&amp;/g"`
 	echo -e "<option value=\"$ID\">$CAT</option>"
 	children $depth $ID 
 done
