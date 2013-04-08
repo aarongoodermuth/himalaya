@@ -9,6 +9,7 @@ DBPASS=431w
 DROPBOX=/home/goodermuth/Dropbox/cmpsc431_project
 DUMPFILE=/home/goodermuth/dev/websites/himalaya/dbdump/init_backup_`date +%s`.sql.gz
 DROPFILE=/home/goodermuth/dev/websites/himalaya/common/forms/categories.html
+XMLFILE=/home/goodermuth/dev/websites/himalaya/common/categories.xml
 SELLFORM=/home/goodermuth/dev/websites/himalaya/common/forms/sellitem
 INIT=db_init.sql
 
@@ -30,6 +31,8 @@ echo created relations in $DBNAME db
 echo creating category dropdown menu...
 ./catlist.sh > $DROPFILE
 cat ${SELLFORM}1.form $DROPFILE ${SELLFORM}2.form > $SELLFORM.form
+echo creating categories XML file...
+./catxml.sh > $XMLFILE
 echo remaking zip code parser...
 cd ..
 make > /dev/null
