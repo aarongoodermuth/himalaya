@@ -15,6 +15,6 @@ function populate(name, email, gender, address, zip, phone, age, income)
   document.edituser.address.value = address;
   document.edituser.zip.value     = zip;
   document.edituser.phone.value   = phone;
-  document.edituser.age.value     = age;
+  document.edituser.dob.value     = age;
   document.edituser.income.value  = income;
 }

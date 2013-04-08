@@ -24,11 +24,11 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_members.php';
 function print_this_html_header($c, $username)
 {
   print_html_header();
+  echo '<script type="text/javascript" 
+           src="../common/javascript/editru.js">
+           </script>';
   echo '<body onload="populate(' . get_ru_args($c, $username) . ')">';
   print_html_nav();
-  echo '<script type="text/javascript" 
-           src="../common/javascript/editru2.js">
-           </script>';
 }
 
 // gets the args from the database for this user formatted as a comma seperated
@@ -132,7 +132,7 @@ if($user != null)
     {
       print_this_html_header($c, $user);
     }
-    show_form('editregistereduser2');
+    show_form('editregistereduser');
     print_html_footer_js();
     print_html_footer2();
     print_html_footer();

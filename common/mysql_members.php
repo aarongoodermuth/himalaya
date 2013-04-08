@@ -371,7 +371,7 @@ function mysql_member_get_ru_info($c, $username)
 
   $username = sanitize($username);
 
-  $query = 'SELECT name, email, gender, street, zip, pnum, age, income FROM '
+  $query = 'SELECT name, email, gender, street, zip, pnum, dob, income FROM '
               . $RU_TABLE . ' r, ' . $EMAIL_TABLE . ' e, ' . $ADDRESS_TABLE 
               . ' a, ' . $PHONE_TABLE . ' p WHERE r.username=e.username AND ' . 
               'r.username=p.username AND r.username=a.username AND r.username="'

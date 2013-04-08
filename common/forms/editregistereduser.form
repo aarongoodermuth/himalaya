@@ -1,17 +1,36 @@
 <!--provides a username, password, type dropdown, other relevant info and 
 submit button for adding user-->
+<div class="container-fluid">
 <form name="edituser" action="editaccount.php" method="post">
 <h3>Edit Account</h3>
-<p>Full Name: <input type="text" name="name"></input></p>
-<p>Email: <input type="text" name="email"></input></p>
-<p>Gender: <br />
-<input id="gender1" type="radio" name="gender" value="M">Male</input>
-<input id="gender2" type="radio" name="gender" value="F">Female</input>
-</p>
-<p>Street Address: <input type="text" name="address"></input></p>
-<p>ZIP Code: <input type="text" name="zip"></input></p>
-<p>Phone Number: <input type="text" name="phone"></input></p>
-<p>Age: <input type="text" name="age"></input></p>
-<p>Income: <input type="text" name="income"></input></p>
-<p><input value="Submit" type="submit"></input></p>
+<table>
+<tr><td>Full Name: </td><td><input type="text" value="" placeholder="Full Name" name="name"></input></td></tr>
+<tr><td>Email: </td><td><input type="text" value="" placeholder="Email" name="email"></input></td></tr>
+<tr><td>
+<div class="row">
+  <div class="span2">
+    Gender:
+    <label class="radio">
+      <input id="gender1" type="radio" name="gender" value="M">Male</input>
+    </label>
+    <label class="radio">
+      <input id="gender2" type="radio" name="gender" value="F">Female</input> 
+    </label>
+  </div>
+</div>
+</td></tr>
+
+<tr><td>Street Address: </td><td><input type="text" value="" placeholder="Address" name="address"></input></td></tr>
+<tr><td>ZIP Code: </td><td><input type="text" value="" placeholder="ZIP code" name="zip"></input></td></tr>
+<tr><td>Phone Number: </td><td><input type="text" value="" placeholder="Phone Number" name="phone"></input></td></tr>
+<tr><td>Date of Birth: </td><td><input type="text" value="" placeholder="yyyy-mm-dd" name="dob"></input></td></tr>
+<tr><td>Income: </td><td><input type="text" value="" placeholder="Income ($)" name="income"></input></td></tr>
+
+<!-- <tr><td><input value="Submit" type="submit"></input></td></tr> -->
+<!-- <a href="#" class="btn btn-large btn-block btn-primary">Primary Button</a> -->
+<tr><td><br></td></tr>
+<tr><td><input class="btn btn-large btn-block btn-primary" value="Submit" type="submit"></input></td></tr>
+</table>
 </form>
+</div>
+
