@@ -218,7 +218,7 @@ function mysql_member_update_ru($c, $username, $name, $email, $gender, $age,
   $query = 'UPDATE ' . $RU_TABLE . 
           ' SET name="'   . $name   . '",' .
           ' gender="' . $gender . '",' .
-          ' age="'    . $age    . '",' .
+          ' dob="'    . $age    . '",' .
           ' income="' . $income . '" ' .
           ' WHERE username="' . $username . '"';
   if( !mysqli_query($c, $query) ){ echo $query;return false;}
