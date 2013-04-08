@@ -302,10 +302,8 @@ if($user != NULL) {
 		}
 		
 		echo "</table></form><br><br>";
-		
 		echo "<h4>Product Description</h4>";
 		echo "$item_info[7]<br><br>";
-		
 		echo "<h4>Item Description</h4>";
 		echo "<p>$item_info[0]</p>
 		      </div>";
@@ -314,8 +312,8 @@ if($user != NULL) {
     header('refresh:0; url=/notfound.html');
   }
 
-  print_html_footer_js();
   print_html_footer2();
+  print_html_footer_js();
   print_html_footer();
 } else { // user not logged in
   header('refresh:0; url=/welcome/login.php');
