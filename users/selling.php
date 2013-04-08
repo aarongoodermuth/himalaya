@@ -128,6 +128,9 @@ if($user != null)
   if(mysql_get_type_from_username($c, $user) == $USER_TYPE_MAPPING[0])
   {
     print_html_header(); // will change to nav header later
+    echo '<body>';
+    print_html_nav();
+    echo '<div class="container-fluid">';
 
     // print sales table
     print_sales_table($c, $user);
@@ -137,8 +140,7 @@ if($user != null)
     // print auctions table
     print_auctions_table($c, $user);
 
-    echo '<br />';
-    echo '<p style="text-align:center"><a href="dashboard.php">Return to Dashboard</a></p>';
+    echo '<br /><br />';
   }
   else
   {
@@ -150,6 +152,9 @@ else
   header('refresh:0; url=../welcome/login.php');
 }
 
+echo '</div>';
+print_html_footer_js();
+print_html_footer2();
 print_html_footer();
 mysql_disconnect($c);
 

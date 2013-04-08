@@ -8,6 +8,7 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/constants.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/mysql.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/functions.php';
 include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_members.php';
+
 /******************/
 /** END INCLUDES **/
 /******************/
@@ -18,7 +19,52 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_members.php';
 /** FUNCTIONS **/
 /***************/
 
+// creates custom html header
+// (void)
+function print_this_html_header()
+{
+  print_html_header();
+  echo '<body>';
+  print_html_nav();
+}
 
+// sees if at least one value is set
+// (boolean)
+function values_set()
+{
+	return isset($_POST['oldpass']) || isset($_POST['newpass']) || isset($_POST['connewpass']);
+}
+
+// see is all values are set
+// (boolean)
+function all_set()
+{
+	return valid('oldpass') && valid('newpass') && valid('connewpass');
+}
+
+// checks if value is set and not blank
+// (boolean)
+function valid($val)
+{
+  $val = $_POST[$val];
+
+  if(isset($val))
+  {
+    if(!empty($val))
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// check if new passwords match each other
+// (boolean)
+function pass_match($newpass, $connnewpass)
+{
+	return $newpass == $connnewpass;
+}
 
 /*******************/
 /** END FUNCTIONS **/
@@ -31,46 +77,47 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/mysql_members.php';
 /**************/
 
 $c = mysql_make_connection();
-
-// check for valid cookie
 $username = check_logged_in_user($c);
 
-if( $username != null)
-{
-  print_html_header();
-
-  if( isset($_POST['newpassword1']) && isset($_POST['newpassword2']) )
-  {
-    // see if passwords match
-    if($_POST['newpassword1'] == $_POST['newpassword2'])
-    {
-      if( mysql_member_new_password($c, $username, $_POST['newpassword1']) )
-      {
-        echo '<p style="color:red">Password had been updated</p>';
-      }
-      else
-      {
-        echo '<p style="color:red">Invalid Password</p>';
-      }
-    }
-    else
-    {
-      echo '<p style="color:red">Passwords did not match</p>';
-    }
-  }
-  
-  // always show the change password form
-  echo '<h3>Change password for account name: ' . $username . '</h3>';
-  show_form('changepassword');
-
-  echo '<p><a href="../users/dashboard.php">Return to Dashboard</a></p>';
-}
-else
-{
-  header('Refresh:0; url=../welcome/login.php');
+if (values_set()) {
+	if (all_set()) {
+	/* 	echo get_post_var('oldpass') . ', ';
+		echo get_post_var('newpass') . ', ';
+		echo get_post_var('connewpass') */;
+		if (!mysql_login_test($c, $username, get_post_var('oldpass'))) {
+			print_this_html_header();
+			echo '<div class="container-fluid">';
+			echo '<p style="color:red">Your old password was incorrect.</p>';
+		} elseif (!pass_match(get_post_var('newpass'), get_post_var('connewpass'))) {
+			print_this_html_header();
+			echo '<div class="container-fluid">';
+			echo '<p style="color:red">New passwords do not match.</p>';
+		} elseif (!mysql_change_password($c, $username, get_post_var('newpass'))) {
+			print_this_html_header();
+			echo '<div class="container-fluid">';
+			echo '<p style="color:red">There was an error changing your password. Please try again.</p>';
+		} else {  //all good
+			print_this_html_header();
+			echo '<div class="container-fluid">';
+			echo '<p style="color:red">Password Successfully Changed!</p>';
+		}
+	} else {
+		print_this_html_header();
+		echo '<div class="container-fluid">';
+		// error message not allowing to be blank
+		echo '<p style="color:red">All values must be filled out</p>';
+	}
+} else {
+	print_this_html_header();
+	echo '<div class="container-fluid">';
 }
 
+show_form('changepassword');
+echo '</div>';
+print_html_footer2();
+print_html_footer_js();
 print_html_footer();
+
 mysql_disconnect($c);
 
 /******************/
@@ -79,4 +126,3 @@ mysql_disconnect($c);
 
 //------------------------------------------------------------------------------
 ?>
-

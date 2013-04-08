@@ -23,7 +23,7 @@
 	      </a>
 	      <ul>
 		<li>
-		  <a href="/items/search.php">Search & Browse</a>
+		  <a href="/items/search.php">Search</a>
 		  <ul>
 		    <li> 
 		    <div class="row"><div class="span4"><div class="todo-search">
@@ -41,16 +41,19 @@
                       <input id="navuser" type="hidden" name="sellertype[]" value="user"/>
 		      <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
 		      </form>
-          <script>populate_all();</script>
+          <script>search_populate_all();</script>
         </div></div></div>
 		    </li>
 		  </ul>
 		</li>
+    <li>
+      <a href="/items/browse.php">Browse</a>
+    </li>
 		<li>
 		  <a href="#">Account</a>
 		  <ul>
 		    <li><a href="/users/editaccount.php">Edit Account Info</a></li>
-		    <li><a href="/users/changepassword.php">Change Password</a></li>
+		    <li><a href="/members/changepassword.php">Change Password</a></li>
 		    <li><a href="/users/redeem.php">Redeem Gift Cards</a></li>
 		  </ul> <!-- /Sub menu -->
 		</li>
