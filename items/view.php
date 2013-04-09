@@ -284,7 +284,7 @@ if($user != NULL) {
 			  <td height=\"30\">Current Bid:</td>
 			  <td>&nbsp;</td>
 			";
-			printf("<td height=\"30\">%.2f</td>", $price_info[1] / 100);
+			printf("<td height=\"30\">$%.2f</td>", $price_info[1] / 100);
 			echo
 			"</tr>
 			<tr>
