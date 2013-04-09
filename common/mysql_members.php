@@ -91,8 +91,8 @@ function mysql_member_create_member($c, $username, $password)
 
 // inserts a registered user into the database
 // (boolean)
-function mysql_member_create_ru($c, $username, $password, $name, $email, $gender, $address, $zip, 
-                                 $phone, $age, $income)
+function mysql_member_create_ru($c, $username, $password, $name, $email, 
+                                $gender, $address, $zip, $phone, $dob, $income)
 {
   global $RU_TABLE, $MEMBERS_TABLE;
 
@@ -116,7 +116,7 @@ function mysql_member_create_ru($c, $username, $password, $name, $email, $gender
   $name     = sanitize($name);
   $email    = sanitize($email);
   $gender   = sanitize($gender);
-  $age      = sanitize($age);
+  $dob      = sanitize($dob);
   $income   = sanitize($income);
 
   mysql_member_insert_phone($c, $username, $phone);
@@ -124,7 +124,7 @@ function mysql_member_create_ru($c, $username, $password, $name, $email, $gender
 
   $str = "INSERT INTO $RU_TABLE VALUES(?, ?, ?, ?, ?, 0)";
   if ($stmt = mysqli_prepare($c, $str)) {
-    mysqli_stmt_bind_param($stmt, 'sssii', $username, $name, $gender, $age, $income);
+    mysqli_stmt_bind_param($stmt, 'ssssi', $username, $name, $gender, $dob, $income);
     
     if (!mysqli_stmt_execute($stmt)) {
       $str = "DELETE FROM $MEMBERS_TABLE WHERE username=?";
@@ -158,19 +158,19 @@ function mysql_member_create_supplier($c, $username, $password, $company, $conta
 
 	if (!mysql_member_create_member($c, $username, $password)) {
 		return false;
-	} else if (!mysql_member_add_email($c, $username, $email)) {
-		$str = "INSERT INTO $SUPPLIERS_TABLE VALUES(?, ?, ?)";
+	} 
+	
+	$str = "INSERT INTO $SUPPLIERS_TABLE VALUES(?, ?, ?)";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'sss', $username, $company, $contact);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		$str = "DELETE FROM $MEMBERS_TABLE WHERE username=?";
 		if ($stmt = mysqli_prepare($c, $str)) {
-			mysqli_stmt_bind_param($stmt, 'sss', $username, $company, $contact);
+			mysqli_stmt_bind_param($stmt, 's', $username);
 			mysqli_stmt_execute($stmt);
 			mysqli_stmt_close($stmt);
-		} else {
-			$str = "DELETE FROM $MEMBERS_TABLE WHERE username=?";
-			if ($stmt = mysqli_prepare($c, $str)) {
-				mysqli_stmt_bind_param($stmt, 's', $username);
-				mysqli_stmt_execute($stmt);
-				mysqli_stmt_close($stmt);
-			}
 		}
 		return false;
 	}
