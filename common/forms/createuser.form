@@ -5,27 +5,39 @@ submit button for adding user-->
 <table>
   <tr>
     <td>Username:</td>
-    <td><input type="text" name="username"></input></td>
+    <td><input type="text" name="username" id="username"/></td>
   </tr>
   <tr>
     <td>Password:</td>
-    <td><input type="password" name="password"></input></td>
+    <td><input type="password" name="password" id="password"/></td>
+    <script>
+      var password = new LiveValidation('password');
+      password.add(Validate.Length, {minimum: 8});
+    </script>
   </tr>
-  <!--<tr>
+  <tr>
     <td>Confirm Password:</td>
-    <td><input type="conpassword" name="password"></input></td>
-  </tr>-->
+    <td><input type="password" name="password" id="conpassword"/></td>
+    <script>
+      var conpassword = new LiveValidation('conpassword');
+      conpassword.add(Validate.Confirmation, {match: 'password'});
+    </script>
+  </tr>
 </table>
 <br><!--registered user info-->
 <h3>User Information</h3>
 <table>
   <tr>
     <td>Full Name:</td>
-    <td><input type="text" name="name"/></td>
+    <td><input type="text" name="name" id="name"/></td>
   </tr>
   <tr>
     <td>Email:</td>
-    <td><input type="text" name="email"/></td>
+    <td><input id="email" type="text" name="email"/></td>
+    <script type="text/javascript">
+      var email = new LiveValidation('email');
+      email.add(Validate.Email);
+    </script>
   </tr>
   <tr>
     <td><div class="row"><div class="span2">Gender:<label class="radio">
@@ -35,26 +47,55 @@ submit button for adding user-->
   </tr>
   <tr>
     <td>Street Address:</td>
-    <td><input type="text" name="address"/></td>
+    <td><input type="text" name="address" id="address"/></td>
   </tr>
   <tr>
     <td>ZIP Code:</td>
-    <td><input type="text" name="zip"/></td>
+    <td><input type="text" name="zip" id="zip"/></td>
+    <script>
+      var zip = new LiveValidation('zip');
+      zip.add(Validate.Numericality, { onlyInteger: true, minimum: 1 });
+      zip.add(Validate.Length, { is: 5 });
+    </script>
   </tr>
   <tr>
     <td>Phone Number:</td>
-    <td><input type="text" name="phone"/></td>
+    <td><input type="text" name="phone" id="phone"/></td>
   </tr>
   <tr>
-    <td>Age:</td>
-    <td><input type="text" name="age"/></td>
+    <td>Date of birth:</td>
+    <td><input type="date" name="dob" placeholder="yyyy-mm-dd" id="dob"/></td>
   </tr>
   <tr>
     <td>Income:</td>
-    <td><input type="text" name="income"/></td>
+    <td><input type="text" name="income" id="income" placeholder="(USD)"/></td>
+    <script>
+      var income = new LiveValidation('income');
+      income.add(Validate.Numericality, { onlyInteger: true, minimum: 1 });
+    </script>
   </tr>
   <tr>
     <td><input class="btn btn-primary btn-large btn-block" value="Submit" type="submit"/></td>
   </tr>
 </table>
 </form>
+<script>
+  var subpassword = new LiveValidation('password', {onlyOnSubmit: true});
+  subpassword.add(Validate.Presence);
+  var subusername = new LiveValidation('username', {onlyOnSubmit: true});
+  subusername.add(Validate.Presence);  
+  var subname = new LiveValidation('name', {onlyOnSubmit: true});
+  subname.add(Validate.Presence);
+  var subemail = new LiveValidation('email', {onlyOnSubmit: true});
+  subemail.add(Validate.Presence);
+  var subaddress = new LiveValidation('address', {onlyOnSubmit: true});
+  subaddress.add(Validate.Presence);
+  var subzip = new LiveValidation('zip', {onlyOnSubmit: true});
+  subzip.add(Validate.Presence);
+  var subphone = new LiveValidation('phone', {onlyOnSubmit: true});
+  subphone.add(Validate.Presence);
+  var subdob = new LiveValidation('dob', {onlyOnSubmit: true});
+  subdob.add(Validate.Presence);
+  var subincome = new LiveValidation('income', {onlyOnSubmit: true});
+  subincome.add(Validate.Presence);  
+</script>

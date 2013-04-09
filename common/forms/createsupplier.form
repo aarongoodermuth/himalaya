@@ -5,32 +5,49 @@ submit button for adding user-->
 <table>
   <tr>
     <td>Username:</td>
-    <td><input type="text" name="username"/></td>
+    <td><input type="text" name="username" id="username"/></td>
   </tr>
   <tr>
     <td>Password:</td>
-    <td><input type="password" name="password"/></td>
+    <td><input type="password" name="password" id="password"/></td>
+    <script>
+      var password = new LiveValidation('password');
+      password.add(Validate.Length, {minimum: 8});
+    </script>
   </tr>
-  <!--<tr>
+  <tr>
     <td>Confirm Password:</td>
-    <td><input type="conpassword" name="password"></input></td>
-  </tr>-->
+    <td><input type="password" name="conpassword" id="conpassword"/></td>
+    <script>
+      var conpassword = new LiveValidation('conpassword');
+      conpassword.add(Validate.Confirmation, {match: 'password'});
+    </script>
+  </tr>
 </table>
 <br><!--registered user info-->
 <h3>Supplier Information</h3>
 <table>
   <tr>
     <td>Company Name:</td>
-    <td><input type="text" name="name"/></td>
+    <td><input type="text" name="name" id="name"/></td>
   </tr>
   <tr>
     <td>Contact Name:</td>
-    <td><input type="text" name="contact"/></td>
+    <td><input type="text" name="contact" id="contact"/></td>
   </tr>
   <tr>
     <td><input class="btn btn-primary btn-large btn-block" value="Submit" type="submit"/></td>
-  </td>
+    <td>&nbsp;</td>
   </tr>
 </table>
 </form>
-
+<script>
+  var subpassword = new LiveValidation('password', {onlyOnSubmit: true});
+  subpassword.add(Validate.Presence);
+  var subusername = new LiveValidation('username', {onlyOnSubmit: true});
+  subusername.add(Validate.Presence);  
+  var subname = new LiveValidation('name', {onlyOnSubmit: true});
+  subname.add(Validate.Presence);
+  var subcontact = new LiveValidation('contact', {onlyOnSubmit: true});
+  subcontact.add(Validate.Presence);
+</script>

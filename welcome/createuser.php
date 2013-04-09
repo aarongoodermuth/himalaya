@@ -40,7 +40,7 @@ function all_set()
 {
   return valid('username') && valid('password') && valid('name') && 
          valid('email') && valid('address') && valid('zip') && 
-         valid('phone') && valid('age') && valid('income');
+         valid('phone') && valid('dob') && valid('income');
 }
 
 // see if some of the values are actually numbers
@@ -48,7 +48,7 @@ function all_set()
 function type_check($c)
 {
   $retval = true;
-  $retval =  $retval && is_numeric($_POST['age']) && is_numeric($_POST['income']) && is_numeric($_POST['zip']);
+  $retval =  $retval && is_numeric($_POST['income']) && is_numeric($_POST['zip']);
 
   if($retval)
   {
@@ -90,55 +90,47 @@ $c = mysql_make_connection();
 if( values_set() )
 {
   if(all_set())
-  {
-    if(mysql_member_username_unique($c, $_POST['username']))
-    {
+  {  
+    if(mysql_member_username_unique($c, $_POST['username'])) {
       $goof = false;
  
       // create the user
-      if(!type_check($c)) {
+      if (!type_check($c)) {
+        $goof = true;
+      } elseif (!is_valid_date(get_post_var('dob'))) {  // check date format
         $goof = true;
       } elseif(!mysql_member_create_ru($c, get_post_var('username'), get_post_var('password'), 
                         get_post_var('name'), get_post_var('email'), get_post_var('gender'), 
                         get_post_var('address'), get_post_var('zip'), get_post_var('phone'),
-                        get_post_var('age'), get_post_var('income'))) {
+                        get_post_var('dob'), get_post_var('income'))) {
         $goof = true;
       } else {
         $goof = false;
       }
      
-      if(!$goof)
-      {
+      if(!$goof) {
         // redirect to user page
         header('refresh:4; url=login.php');
         print_this_html_header();
 	echo '<div class="container-fluid">';
         echo '<p style="color:red">Account Successfully Created. Redirecting</p>';
-      }
-      else
-      {
+      } else {
         print_this_html_header();
 	echo '<div class="container-fluid">';
         echo '<p style="color:red">Not all entries were valid</p>';
       }
-    }
-    else
-    {
+    } else {
       print_this_html_header();
       echo '<div class="container-fluid">';
       echo '<p style="color:red">That username is already taken</p>';
     }
-  }
-  else
-  {
+  } else {
     print_this_html_header();
     echo '<div class="container-fluid">';
     // error message not allowing to be blank
     echo '<p style="color:red">All values must be filled out</p>';
   }
-}
-else
-{
+} else {
   print_this_html_header();
   echo '<div class="container-fluid">';
 }
