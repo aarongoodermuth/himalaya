@@ -777,11 +777,6 @@ function mysql_member_get_orders($c, $user)
   {
     die('<p style="color:red">The database done goofed. This is definately our fault</p>');
   }
-<<<<<<< HEAD
- 
-=======
-
->>>>>>> a5e2879c87b54a3a741155b3503b1c24aa7653ca
   return $retval;
 }
 
