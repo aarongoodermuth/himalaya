@@ -46,6 +46,11 @@ function print_html_footer2()
   echo file_get_contents('footer.html', true);
 }
 
+function print_html_footer_liveval()
+{
+  echo '';
+}
+
 function print_html_footer_js()
 {
   echo '
@@ -154,13 +159,14 @@ function sanitize2($conn, $input)
 // undo the effects of magic quotes, if it is enabled
 function get_post_var($var)
 {
-  $val = $_POST[$var];
-  if (get_magic_quotes_gpc())
-    $val = stripslashes($val);
-  return $val;
+	$val = $_POST[$var];
+	if (get_magic_quotes_gpc())
+		$val = stripslashes($val);
+	return $val;
 }
 
-function int_to_condition($cond) {
+function int_to_condition($cond) 
+{
 	switch(intval($cond))
 	{
 	case 0: 
@@ -187,6 +193,23 @@ function int_to_condition($cond) {
 	}
 	
 	return $s;
+}
+
+// check if a date is properly formed
+// (boolean)
+function is_valid_date($dob) 
+{
+	if (($year = strtok($dob, '-')) === false) {
+		return false;
+	} elseif (($month = strtok('-')) === false) {
+		return false;
+	} elseif(($day = strtok('-')) === false) {
+		return false;
+	} elseif (!checkdate($month, $day, $year)) {
+		return false;
+	}
+	
+	return true;
 }
 
 /*******************/
