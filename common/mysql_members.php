@@ -720,19 +720,19 @@ function mysql_member_get_bidding($c, $user)
   {
     die('<p style="color:red">The database done goofed. This is definately our fault</p>');
   }
- 
+echo 'got here'; 
   if(0 === mysqli_num_rows($db_answer))
   {
     return null;
   }
-
+echo 'got here';
   $i = 0;
   while($temp = mysqli_fetch_row($db_answer))
   {
     $retval[$i] = $temp;
     $i++;
   }
-
+echo 'got here';
   return $retval;
 }
 
