@@ -40,10 +40,11 @@ submit button for adding user-->
     </script>
   </tr>
   <tr>
-    <td><div class="row"><div class="span2">Gender:<label class="radio">
+    <div class="row"><div class="span2">
+    <td>Gender:<label class="radio">
     <input id="gender1" type="radio" name="gender" value="M">Male</input></label>
-    <label class="radio"><input id="gender2" type="radio" name="gender" value="F">Female</input></label>
-    </div></div></td>
+    <label class="radio"><input id="gender2" type="radio" name="gender" value="F">Female</input></label></td>
+    </div></div>
   </tr>
   <tr>
     <td>Street Address:</td>
