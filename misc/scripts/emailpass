@@ -1,0 +1,32 @@
+#!/usr/bin/python
+# usage: ./emailpass emailaddress pathtomessage
+
+import smtplib
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEBase import MIMEBase
+from email.MIMEText import MIMEText
+from email import Encoders
+import os, sys, syslog
+
+gmail_user = "himalaya.biz431@gmail.com"
+gmail_pwd = "himalaya431w"
+
+def mail(to, subject, filepath):
+   fp = open(filepath, 'rb')
+   msg = MIMEText(fp.read(), 'html')
+   fp.close()
+
+   msg['From'] = gmail_user
+   msg['To'] = to
+   msg['Subject'] = subject
+
+   mailServer = smtplib.SMTP("smtp.gmail.com", 587)
+   mailServer.ehlo()
+   mailServer.starttls()
+   mailServer.ehlo()
+   mailServer.login(gmail_user, gmail_pwd)
+   mailServer.sendmail(gmail_user, to, msg.as_string())
+   mailServer.close()
+
+mail(str(sys.argv[1]), "new temporary password", str(sys.argv[2]))
+syslog.syslog('emailed a passowrd recovery email to ' + str(sys.argv[1]));
