@@ -786,8 +786,6 @@ function mysql_member_get_auctions($c, $user)
   return $retval;
 }
 
-<<<<<<< HEAD
-=======
 // gets all items where a user is high bidder along with all its info
 // (string[][])
 function mysql_member_get_bidding($c, $user)
@@ -822,7 +820,6 @@ echo 'got here';
   return $retval;
 }
 
->>>>>>> 5c5dc415b4c544bdbc86623d4a57478916dfdd70
 // ...
 // (void)
 function mysql_member_get_orders($c, $user)
