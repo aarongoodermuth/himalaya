@@ -623,7 +623,22 @@ function mysql_member_redeem_gift($c, $username, $code)
 // (boolean)
 function mysql_member_place_bid($c, $user, $item_id, $newbid)
 {
-	global $AUCTIONS_TABLE;
+	global $AUCTIONS_TABLE, $SALE_ITEMS_TABLE;
+	
+	$str = "SELECT S.username $SALE_ITEMS_TABLE S WHERE item_id=?";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'i', $item_id);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_bind_result($stmt, $seller);
+		mysqli_stmt_fetch($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		return false;
+	}
+	
+	if ($seller == $user) {  /* the seller of the item is trying to bid on this item */
+		return false;
+	}
 	
 	$str = "UPDATE $AUCTIONS_TABLE SET recent_bid=?, recent_bidder=? WHERE item_id=?";
 	if ($stmt = mysqli_prepare($c, $str)) {
