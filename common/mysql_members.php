@@ -786,6 +786,43 @@ function mysql_member_get_auctions($c, $user)
   return $retval;
 }
 
+<<<<<<< HEAD
+=======
+// gets all items where a user is high bidder along with all its info
+// (string[][])
+function mysql_member_get_bidding($c, $user)
+{
+  global $AUCTIONS_TABLE, $SALE_ITEMS_TABLE;
+
+  $user = sanitize($user);
+
+  $query = 'SELECT SI.item_id, SI.item_desc, A.recent_bid, A.end_date 
+            FROM ' . $SALE_ITEMS_TABLE . ' SI, ' . $AUCTIONS_TABLE . ' A 
+            WHERE SI.item_id=A.item_id AND SI.username="' . $user . '"';
+ 
+  $db_answer = mysqli_query($c, $query);
+
+  if($db_answer === false)
+  {
+    die('<p style="color:red">The database done goofed. This is definately our fault</p>');
+  }
+echo 'got here'; 
+  if(0 === mysqli_num_rows($db_answer))
+  {
+    return null;
+  }
+echo 'got here';
+  $i = 0;
+  while($temp = mysqli_fetch_row($db_answer))
+  {
+    $retval[$i] = $temp;
+    $i++;
+  }
+echo 'got here';
+  return $retval;
+}
+
+>>>>>>> 5c5dc415b4c544bdbc86623d4a57478916dfdd70
 // ...
 // (void)
 function mysql_member_get_orders($c, $user)
