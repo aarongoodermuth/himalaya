@@ -1,0 +1,112 @@
+<!--provides a username, password, type dropdown, other relevant info and 
+submit button for adding user-->
+<h3>Billing Info</h3>
+<table>
+  <tr>
+    <td>Card Number:</td>
+    <td><input type="text" name="cardnumber" id="cardnumber"/></td>
+    <script>
+      var cardnumber = new LiveValidation('cardnumber');
+      cardnumber.add(Validate.Numericality, {onlyInteger: true, is: 16});
+    </script>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>Name on Card:</td>
+    <td><input type="text" name="cardname" id="cardname"/></td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>Expiration Date:&nbsp;</td>
+    <td>
+      <select class="span2" name="expmonth">
+      <option value="01">01</option>
+      <option value="02">02</option>
+      <option value="03">03</option>
+      <option value="04">04</option>
+      <option value="05">05</option>
+      <option value="06">06</option>
+      <option value="07">07</option>
+      <option value="08">08</option>
+      <option value="09">09</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+      </select>
+    </td>
+    <td>
+      <select class="span2" name="expyear">
+      <option value="2013">2013</option>
+      <option value="2014">2014</option>
+      <option value="2015">2015</option>
+      <option value="2016">2016</option>
+      <option value="2017">2017</option>
+      <option value="2018">2018</option>
+      <option value="2019">2019</option>
+      <option value="2020">2020</option>
+      <option value="2021">2021</option>
+      <option value="2022">2022</option>
+      <option value="2023">2023</option>
+      <option value="2024">2024</option>
+      <option value="2025">2025</option>
+      <option value="2026">2026</option>
+      <option value="2027">2027</option>
+      <option value="2028">2028</option>
+      <option value="2029">2029</option>
+      <option value="2030">2030</option>
+      <option value="2031">2031</option>
+      <option value="2032">2032</option>
+      <option value="2033">2033</option>
+      </select>
+    </td>
+  </tr>
+</table>
+<br><!--registered user info-->
+<h3>Shipping Address</h3>
+<table>
+  <tr>
+    <td>Full Name:</td>
+    <td><input type="text" name="shiptoname" id="shiptoname"/></td>
+  </tr>
+  <tr>
+    <td>Street Address:</td>
+    <td><input id="shiptostreet" type="text" name="shiptostreet"/></td>
+  </tr>
+  <tr>
+    <td>ZIP Code:</td>
+    <td><input type="text" name="shiptozip" id="shiptozip"/></td>
+    <script>
+      var shiptozip = new LiveValidation('shiptozip');
+      shiptozip.add(Validate.Numericality, { onlyInteger: true, minimum: 1 });
+      shiptozip.add(Validate.Length, { is: 5 });
+    </script>
+  </tr>
+  <tr>
+    <td>Phone Number:</td>
+    <td><input type="text" name="shiptophone" id="shiptophone"/></td>
+    <script>
+      var shiptophone = new LiveValidation('shiptophone');
+      shiptophone.add(Validate.Length, { minimum: 10, maximum: 16 });
+    </script>
+  </tr>
+  <tr>
+    <td><input class="btn btn-primary btn-large btn-block" value="Submit" type="submit"/></td>
+  </tr>
+</table>
+</form>
+<script>
+  var subcardnumber = new LiveValidation('cardnumber', {onlyOnSubmit: true});
+  subcardnumber.add(Validate.Presence);
+  var subcardname = new LiveValidation('cardname', {onlyOnSubmit: true});
+  subcardname.add(Validate.Presence);
+  var subshiptoname = new LiveValidation('shiptoname', {onlyOnSubmit: true});
+  subshiptoname.add(Validate.Presence);
+  
+  var subshiptostreet = new LiveValidation('shiptostreet', {onlyOnSubmit: true});
+  subshiptostreet.add(Validate.Presence);
+  var subshiptozip = new LiveValidation('shiptozip', {onlyOnSubmit: true});
+  subshiptozip.add(Validate.Presence);
+  var subshiptophone = new LiveValidation('shiptophone', {onlyOnSubmit: true});
+  subshiptophone.add(Validate.Presence);
+
+</script>
