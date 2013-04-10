@@ -76,6 +76,7 @@ function mysql_get_search_query()
   global $MEMBERS_TABLE;
   global $REG_USER_TABLE;
   global $SUPPLIERS_TABLE;
+  global $SALES_TABLE;
 
   $itemtypes   = $_POST['itemtype'];   // sale item types array (values: sale | auction)
   $itemconds   = $_POST['itemcond'];   // item condition array  (values: 0-5)
@@ -122,13 +123,18 @@ function mysql_get_search_query()
     // to ensure there are no duplicates shown (i.e. one record for the sale item entry, one
     // for the auction entry), left join sale items with auctions on the item_id attribute.
     // requires rewrite of from clause
-    $select_clause .= ', A.recent_bid, A.end_date';
+    // also need another left join to get sale prices
+    $select_clause .= ', SALES.price, A.recent_bid, A.end_date';
     $from_clause    = " FROM $PRODUCTS_TABLE  P, $MEMBERS_TABLE M, " .
-                      "$SALE_ITEMS_TABLE S LEFT JOIN $AUCTIONS_TABLE A ON S.item_id = A.item_id ";
+                      "$SALE_ITEMS_TABLE S LEFT JOIN $AUCTIONS_TABLE A ON S.item_id = A.item_id " .
+                      "LEFT JOIN $SALES_TABLE SALES ON S.item_id = SALES.item_id";
   }
   else if(count($itemtypes) === 1 && $itemtypes[0] == 'sale') // get matches only from sales
   {
-    $where_clause .= "AND (S.item_id NOT IN (SELECT item_id FROM $AUCTIONS_TABLE )) ";
+    $select_clause .= ', SALES.price';
+    $from_clause   .= ", $SALES_TABLE SALES";
+    $where_clause  .= "AND (S.item_id NOT IN (SELECT item_id FROM $AUCTIONS_TABLE )) " .
+                      "AND S.item_id = SALES.item_id ";
   }
   else // get matches only from auctions
   {
@@ -174,17 +180,23 @@ if($user != null)
       {
         $item_types = $_POST['itemtype'];
         $only_sales = (count($item_types) === 1 && $item_types[0] == 'sale');
+        $only_aucts = (count($item_types) === 1 && $item_types[0] == 'auction');
 
         // apparently this is needed to make result data immediately available
         mysqli_stmt_store_result($stmt);
 
-        if($only_sales) // only show product name, item cond., and seller
+        if($only_sales) // only show product name, item cond., seller, and price
         {
-          mysqli_stmt_bind_result($stmt, $prod_name, $i_cond, $seller_name, $item_id);
+          mysqli_stmt_bind_result($stmt, $prod_name, $i_cond, $seller_name, $item_id, $sale_price);
         }
-        else // also show most recent bid amount and end time of the auction
+        else if($only_aucts) // show auction information
         {
-          mysqli_stmt_bind_result($stmt, $prod_name, $i_cond, $seller_name, $item_id,
+          mysqli_stmt_bind_result($stmt, $prod_name, $i_cond, $seller_name, $item_id, $recent_bid,
+                                         $auc_end_time);
+        }
+        else // show auction or sale information where appropriate
+        {
+          mysqli_stmt_bind_result($stmt, $prod_name, $i_cond, $seller_name, $item_id, $sale_price,
                                          $recent_bid, $auc_end_time);
         }
 
@@ -199,9 +211,18 @@ if($user != null)
                   <td><b>Product name</b></td>
                   <td><b>Item condition</b></td>
                   <td><b>Seller</b></td>';
-          if(!$only_sales)
+          if($only_sales)
           {
-            echo '<td><b>Recent bid</b></td>
+            echo '<td><b>Sale price</b></td>';
+          }
+          else if($only_aucts)
+          {
+            echo '<td><b>Recent bid</b></td>';
+            echo '<td><b>Auction end time</b></td>';
+          }
+          else
+          {
+            echo '<td><b>Sale price/recent bid</b></td>
                   <td><b>Auction end time</b></td>';
           } 
           echo '</tr>';
@@ -213,9 +234,26 @@ if($user != null)
             echo '<td>' . int_to_condition($i_cond) . '</td>';
             echo "<td><a href=\"/users/view.php?username=$seller_name\">$seller_name</a></td>";
 
-            if(!$only_sales) // display auction information
+            if($only_sales) // show sale price
             {
-              echo "<td>$recent_bid</td>";
+              printf('<td>$%.2f</td>', $sale_price/100);
+            }
+            else if($only_aucts) // show auction information
+            {
+              printf('<td>$%.2f</td>', $recent_bid/100);
+              echo "<td>$auc_end_time</td>";
+            }
+            else
+            {
+              if($auc_end_time == null) // item is a sale
+              {
+                printf('<td>$%.2f</td>', $sale_price/100);
+              }
+              else // item is an auction
+              {
+                printf('<td>$%.2f</td>', $recent_bid/100);
+              }
+
               echo "<td>$auc_end_time</td>";
             }
 
