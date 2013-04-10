@@ -4,3 +4,4 @@ misc/scripts/zipparse
 dbdump/
 *.old
 TODO
+*.swp
