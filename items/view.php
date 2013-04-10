@@ -193,8 +193,8 @@ if($user != NULL) {
 		// array('a', recent_bid, end_date, recent_bidder) or array('s', price)
 		/* 
 		 * array($item_desc, $product_id, $seller, $condition, $url, 
-                 * $posted_date, $p_name, $p_desc, $category_id, 
-	         * $category_name, $zip, $city, $zstate);
+                 *       $posted_date, $p_name, $p_desc, $category_id, 
+	         *       $category_name, $zip, $city, $zstate);
 	         */
 		$condition = int_to_condition($item_info[3]);
 		echo "<h3>$item_info[6]</h3>\n";
@@ -208,6 +208,10 @@ if($user != NULL) {
 		echo
 		"<input id=\"item_id\" type=\"hidden\" name=\"item_id\"/>
 		<script>document.getElementById(\"item_id\").value=$id;</script>
+		<input id=\"item_name\" type=\"hidden\" name=\"item_name\"/>
+		<script>document.getElementById(\"item_name\").value=\"$item_info[6]\";</script>
+		<input id=\"shipping_zip\" type=\"hidden\" name=\"shipping_zip\"/>
+		<script>document.getElementById(\"shipping_zip\").value=$item_info[10];</script>
 		<table>
 		  <tr>
 		    <td height=\"30\">Item Condition:</td>
@@ -242,7 +246,6 @@ if($user != NULL) {
 		
 		echo '</td></tr>';
 		
-		/****** TODO: proper currency displaying ******/
 		if ($price_info[0] == 's') {  // sale
 			echo 
 			"<tr>
@@ -251,7 +254,9 @@ if($user != NULL) {
 			  ";
 			printf("<td height=\"30\">$%.2f</td>", $price_info[1] / 100);
 			echo 
-			"</tr>
+			"<input id=\"price\" type=\"hidden\" name=\"price\"/>
+			<script>document.getElementById(\"price\").value=$price_info[1];</script>
+			</tr>
 			<tr>
 			  <td>&nbsp;</td>
 			  <td>&nbsp;</td>
