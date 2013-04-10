@@ -85,7 +85,7 @@ if ($user != null) {
 		print_html_footer_js();
 		print_html_footer();
 	} elseif ($type == $USER_TYPE_MAPPING[1]) {
-		header('refresh:0; url=../supplier/redeem.php');
+		header('refresh:0; url=../supplier/dashboard.php');
 	} else {
 		header('refresh:0; url=../welcome/login.php');
 	}
