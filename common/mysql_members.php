@@ -33,6 +33,75 @@ function mysql_member_username_unique($c, $username)
   return ($row[0] == 0);
 }
 
+function reset_password($c, $username)
+{
+	global $MEMBERS_TABLE, $EMAIL_TABLE;
+	
+	$newpass = rand(1000000000, getrandmax());   /* 10-character random password */
+	
+	$hasher = new PasswordHash($hash_cost_log2, $hash_portable);
+	$hash = $hasher->HashPassword($newpass);
+	if (strlen($hash) < 20) {
+		unset($hasher);
+		return false;
+	}
+	unset($hasher);
+
+	/* generate html and send the message */
+	$message = 
+	"<html>
+	<head>
+	  <title>Himalaya.biz - temporary password</title>
+	</head>
+	<body>
+	  <h2>Himalaya.biz - temporary password</h2>
+	  You are receiving this message because you indicated that you forgot your password, 
+	  and submitted a request to reset your password. If you did not submit this request, 
+	  we recommend you look into any possible breaches in security.<br><br>
+	  Here is your new password for 
+	  <a href=\"himalaya.goodermuth.com/members/changepassword.php\">himalaya.biz</a>:
+	  <strong>$newpass</strong><br><br>
+	  
+	  We recommend that you immediately log in and 
+	  <a href=\"himalaya.goodermuth.com/\">reset your password</a>. <br>
+	  Be careful not to lose it again!<br><br>
+	  
+	  See you soon at Himalaya.biz,<br><br>
+	  
+	  -- The Himalaya Team<br>
+	</body>
+	</html>";
+	
+	if (file_put_contents("/tmp/recoverpass_$username.html", $message) === false) {
+		return false;
+	}
+	
+	$str = "SELECT E.email FROM $EMAIL_TABLE E WHERE username=?";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 's', $username);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_bind_result($stmt, $email);
+		mysqli_stmt_fetch($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		return false;
+	}
+	
+	$str = "UPDATE $MEMBERS_TABLE SET password=? WHERE username=?";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'ss', $hash, $username);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		return false;
+	}
+
+	/* send the email */
+	shell_exec("/usr/local/bin/emailpass $email /tmp/recoverpass_$username.html");
+	
+	return true;
+}
+
 function my_pwqcheck($newpass, $oldpass = '', $user = '')
 {
         global $use_pwqcheck, $pwqcheck_args;
@@ -668,7 +737,7 @@ function mysql_member_get_sales($c, $user)
   return $retval;
 }
 
-// gets all items a user is auctioning along with all its info
+// gets all items a user is selling along with all its info
 // (string[][])
 function mysql_member_get_auctions($c, $user)
 {
@@ -677,40 +746,6 @@ function mysql_member_get_auctions($c, $user)
   $user = sanitize($user);
 
   $query = 'SELECT SI.item_id, SI.item_desc, A.recent_bid 
-            FROM ' . $SALE_ITEMS_TABLE . ' SI, ' . $AUCTIONS_TABLE . ' A 
-            WHERE SI.item_id=A.item_id AND SI.username="' . $user . '"';
- 
-  $db_answer = mysqli_query($c, $query);
-
-  if($db_answer === false)
-  {
-    die('<p style="color:red">The database done goofed. This is definately our fault</p>');
-  }
- 
-  if(0 === mysqli_num_rows($db_answer))
-  {
-    return null;
-  }
-
-  $i = 0;
-  while($temp = mysqli_fetch_row($db_answer))
-  {
-    $retval[$i] = $temp;
-    $i++;
-  }
-
-  return $retval;
-}
-
-// gets all items where a user is high bidder along with all its info
-// (string[][])
-function mysql_member_get_bidding($c, $user)
-{
-  global $AUCTIONS_TABLE, $SALE_ITEMS_TABLE;
-
-  $user = sanitize($user);
-
-  $query = 'SELECT SI.item_id, SI.item_desc, A.recent_bid, A.end_date 
             FROM ' . $SALE_ITEMS_TABLE . ' SI, ' . $AUCTIONS_TABLE . ' A 
             WHERE SI.item_id=A.item_id AND SI.username="' . $user . '"';
  
@@ -777,6 +812,7 @@ function mysql_member_get_orders($c, $user)
   {
     die('<p style="color:red">The database done goofed. This is definately our fault</p>');
   }
+ 
   return $retval;
 }
 
