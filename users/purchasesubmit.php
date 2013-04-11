@@ -34,10 +34,10 @@ function print_this_html_header()
 function all_set()
 {
   return 
-            isset($_POST['item_id'])    && isset($_POST['item_name']) && 
+            isset($_POST['item_id'])    && isset($_POST['item_name'])    && 
             isset($_POST['price'])      && isset($_POST['shipping_zip']) &&
-            isset($_POST['cardnumber']) && isset($_POST['cardname']) &&
-            isset($_POST['expmonth'])   && isset($_POST['expyear']) &&
+            isset($_POST['cardnumber']) && isset($_POST['cardname'])     &&
+            isset($_POST['expmonth'])   && isset($_POST['expyear'])      &&
             isset($_POST['shiptoname']) && isset($_POST['shiptostreet']) &&
             isset($_POST['shiptozip'])  && isset($_POST['shiptophone'])
     &&
@@ -45,7 +45,7 @@ function all_set()
 	    !empty($_POST['shipping_zip'])  && !empty($_POST['cardnumber'])    && 
 	    !empty($_POST['cardname'])      && !empty($_POST['expmonth'])      &&
             !empty($_POST['expyear'])       && !empty($_POST['shiptoname'])    && 
-	    !empty($_POST['shiptostreet'])  &&     !empty($_POST['shiptozip']) &&
+	    !empty($_POST['shiptostreet'])  && !empty($_POST['shiptozip'])     &&
 	    !empty($_POST['shiptophone']);
 }
 
@@ -95,11 +95,12 @@ if ($user != null) {
 	
 	print_this_html_header();
 	
-	if (all_set()) { // post values found
+	if (all_set() && values_set()) { // post values found
 		// update DB
 		$item_id = get_post_var('item_id');
 		$item_name = get_post_var('item_name');
-		$price = get_post_var('price'); 
+		$price = get_post_var('price');
+		$seller = get_post_var('seller');
 		$shipping_zip = get_post_var('shipping_zip');
 		$cardnumber = get_post_var('cardnumber');
 		$cardname = get_post_var('cardname');
@@ -114,11 +115,15 @@ if ($user != null) {
 		if (($shipfrom = get_zip_info($c, $shipping_zip)) == NULL) {
 			/* unable to get city and state for this ZIP code */
 			echo '<p style="color:red">There was a problem. Please try again.</p>';
-		} elseif(($shipto = get_zip_info($c, $shiptozip)) == NULL) {
+		} elseif (($shipto = get_zip_info($c, $shiptozip)) == NULL) {
 			/* unable to get city and state for this ZIP code */
 			echo '<p style="color:red">The address you provided seems to be invalid. 
 			      Please try again.</p>';
-		} else {
+		} /*elseif (!mysql_member_insert_address($c, $shiptostreet, $username, $shiptozip)) {
+		
+		} elseif () {
+		
+		} */else {
 			echo "
 			<h2>Order Summary</h2>
 			<h3>Item Information</h3>
@@ -126,6 +131,10 @@ if ($user != null) {
 			  <tr>
 			    <td>Item Name:</td>
 			    <td>$item_name</td>
+			  </tr>
+			  <tr>
+			    <td>Seller:</td>
+			    <td>$seller</td>
 			  </tr>
 			  <tr>
 			    <td>Item Price:</td>
@@ -192,21 +201,25 @@ if ($user != null) {
 			<input id=\"item_name\" type=\"hidden\" name=\"item_name\"/>
 			<script>document.getElementById(\"item_name\").value=\"$item_name\";</script>
 			<input id=\"shipping_zip\" type=\"hidden\" name=\"shipping_zip\"/>
-			<script>document.getElementById(\"shipping_zip\").value=$shipping_zip;</script>
+			<input id=\"price\" type=\"hidden\" name=\"price\"/>
+			<script>document.getElementById(\"price\").value=$price;</script>
+			<input id=\"seller\" type=\"hidden\" name=\"seller\"/>
+			<script>document.getElementById(\"seller\").value=\"$seller\";</script>
+			<script>document.getElementById(\"shipping_zip\").value=\"$shipping_zip\";</script>
 			<input id=\"cardnumber\" type=\"hidden\" name=\"cardnumber\"/>
-			<script>document.getElementById(\"cardnumber\").value=$cardnumber;</script>
+			<script>document.getElementById(\"cardnumber\").value=\"$cardnumber\";</script>
 			<input id=\"cardname\" type=\"hidden\" name=\"cardname\"/>
-			<script>document.getElementById(\"cardname\").value=$cardname;</script>
+			<script>document.getElementById(\"cardname\").value=\"$cardname\";</script>
 			<input id=\"expmonth\" type=\"hidden\" name=\"expmonth\"/>
-			<script>document.getElementById(\"expmonth\").value=$expmonth;</script>
+			<script>document.getElementById(\"expmonth\").value=\"$expmonth\";</script>
 			<input id=\"expyear\" type=\"hidden\" name=\"expyear\"/>
-			<script>document.getElementById(\"expyear\").value=$expyear;</script>
+			<script>document.getElementById(\"expyear\").value=\"$expyear\";</script>
 			<input id=\"shiptoname\" type=\"hidden\" name=\"shiptoname\"/>
-			<script>document.getElementById(\"shiptoname\").value=$shiptoname;</script>
+			<script>document.getElementById(\"shiptoname\").value=\"$shiptoname\";</script>
 			<input id=\"shiptostreet\" type=\"hidden\" name=\"shiptostreet\"/>
-			<script>document.getElementById(\"shiptostreet\").value=$shiptostreet;</script>
+			<script>document.getElementById(\"shiptostreet\").value=\"$shiptostreet\";</script>
 			<input id=\"shiptozip\" type=\"hidden\" name=\"shiptozip\"/>
-			<script>document.getElementById(\"shiptozip\").value=$shiptozip;</script>
+			<script>document.getElementById(\"shiptozip\").value=\"$shiptozip\";</script>
 			<input id=\"shiptophone\" type=\"hidden\" name=\"shiptophone\"/>
 			<script>document.getElementById(\"shiptophone\").value=$shiptophone;</script>
 			<table>
@@ -232,7 +245,7 @@ if ($user != null) {
 			      ", name = " . get_post_var('item_name') . ", price = " . get_post_var('price') . ", zip = " . 
 			      get_post_var('shipping_zip') . "</p>";*/
 		}
-	} elseif (!values_set()) {
+	} else {
 		echo '<p style="color:red">There was a problem. Please try again.</p>';
 	}
 	echo "<a href=\"/items/view.php?id=" . get_post_var('item_id') . 
