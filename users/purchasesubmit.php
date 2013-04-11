@@ -123,11 +123,7 @@ if ($user != null) {
 			/* unable to get city and state for this ZIP code */
 			echo '<p style="color:red">The address you provided seems to be invalid. 
 			      Please try again.</p>';
-		} /*elseif (!mysql_member_insert_address($c, $shiptostreet, $username, $shiptozip)) {
-		
-		} elseif () {
-		
-		} */else {
+		} else {
 			echo "
 			<h2>Order Summary</h2>
 			<h3>Item Information</h3>
@@ -239,21 +235,6 @@ if ($user != null) {
 			</table>
 			</form>
 			";
-			
-			/*if (!mysql_member_check_bid($c, get_post_var('item_id'), get_post_var('newbid') * 100)) {
-				echo '<p style="color:red">The bid you entered was not at least $2.00 
-					greater than the current bid (or was not at least the starting 
-					bid). Please try again.</p>';
-			} elseif (!mysql_member_place_bid($c, $user, get_post_var('item_id'), get_post_var('newbid') * 100)) {
-				// unable to place bid
-				echo '<p style="color:red">Unable to place bid. Please try again.</p>';
-			} else {  // success
-				printf("<p style=\"color:red\">Bid of $%.2f successfully placed!</p>", 
-				       get_post_var('newbid'));
-			}*/
-			/*echo "<p style=\"color:red\">vals: id = " . get_post_var('item_id') .
-			      ", name = " . get_post_var('item_name') . ", price = " . get_post_var('price') . ", zip = " . 
-			      get_post_var('shipping_zip') . "</p>";*/
 		}
 	} else {
 		echo '<p style="color:red">There was a problem. Please try again.</p>';

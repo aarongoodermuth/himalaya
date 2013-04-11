@@ -100,7 +100,7 @@ if ($user != null) {
 
 	$item_id = get_post_var('item_id');
 
-	if (all_set() && values_set()) { // post values found
+	if (all_set() && values_set()) { // post values found, order has been submitted
 		// update DB
 		$item_name = get_post_var('item_name');
 		$price = get_post_var('price');
@@ -133,6 +133,13 @@ if ($user != null) {
 		} elseif (!mysql_member_insert_credit_card($c, $user, $cardnumber, $cardtype, 
 		                                           $cardname, $expmonth, $expyear)) {
 			echo '<p style="color:red">There was a problem adding your credit card. 
+			      Please try again.</p>';
+		} elseif(!mysql_create_order($c, $item_id, $user, $price,
+		                             $shiptostreet, $shiptozip, $cardnumber)) {
+			echo '<p style="color:red">There was a problem submitting your order. 
+			      Please try again.</p>';
+		} elseif (!mysql_remove_sales_record($c, $item_id)) {
+			echo '<p style="color:red">There was a problem removing the Sales record. 
 			      Please try again.</p>';
 		} else {
 			echo "
@@ -208,21 +215,11 @@ if ($user != null) {
 			</table>
 			<br>
 			";
-			
-			/*if (!mysql_member_check_bid($c, get_post_var('item_id'), get_post_var('newbid') * 100)) {
-				echo '<p style="color:red">The bid you entered was not at least $2.00 
-					greater than the current bid (or was not at least the starting 
-					bid). Please try again.</p>';
-			} elseif (!mysql_member_place_bid($c, $user, get_post_var('item_id'), get_post_var('newbid') * 100)) {
-				// unable to place bid
-				echo '<p style="color:red">Unable to place bid. Please try again.</p>';
-			} else {  // success
-				printf("<p style=\"color:red\">Bid of $%.2f successfully placed!</p>", 
-				       get_post_var('newbid'));
-			}*/
-			/*echo "<p style=\"color:red\">vals: id = " . get_post_var('item_id') .
-			      ", name = " . get_post_var('item_name') . ", price = " . get_post_var('price') . ", zip = " . 
-			      get_post_var('shipping_zip') . "</p>";*/
+
+			if (!send_order_email($c, $item_id, $user, $cardname)) {
+				echo '<p style="color:red">There was a problem sending your confirmation email. 
+					It may be that there is no email associated with your account.</p>';
+			}
 		}
 	} else {
 		echo '<p style="color:red">There was a problem. Please try again.</p>';
