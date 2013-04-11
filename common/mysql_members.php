@@ -97,7 +97,7 @@ function reset_password($c, $username)
 	}
 
 	/* send the email */
-	shell_exec("/usr/local/bin/emailpass $email /tmp/recoverpass_$username.html");
+	shell_exec("/usr/local/bin/messagesend $email /tmp/recoverpass_$username.html \"temporary password\"");
 	
 	return true;
 }
@@ -923,6 +923,171 @@ function mysql_member_get_orders($c, $user)
  
   return $retval;
 }
+
+function send_order_email($c, $item_id, $username, $cname)
+{
+	global $ORDERS_TABLE, $SALE_ITEMS_TABLE, $PRODUCTS_TABLE, $HAS_CARD_TABLE,
+	       $CREDIT_CARDS_TABLE, $PHONE_TABLE, $EMAIL_TABLE, $ADDRESS_TABLE, 
+	       $SITE_URL;
+	
+	$str = "SELECT R.action_date, R.price, R.street, R.zip, R.cnumber, 
+                       P.p_name, S.username, S.shipping_zip,
+                       C.ctype, C.cname, C.expiration
+                FROM   $ORDERS_TABLE R, $SALE_ITEMS_TABLE S, $PRODUCTS_TABLE P, 
+		       $HAS_CARD_TABLE H, $CREDIT_CARDS_TABLE C
+                WHERE  R.item_id=? AND H.username=? AND H.cnumber=C.cnumber AND 
+                       R.item_id = S.item_id AND P.product_id = S.product_id AND
+                       C.cname=?;";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'iss', $item_id, $username, $cname);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_bind_result($stmt, $action_date, $price, $shiptostreet, $shiptozip, $cardnumber, 
+		                               $product_name, $seller, $shipfromzip, 
+					       $cardtype, $cardname, $cardexp);
+		mysqli_stmt_fetch($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		printf("Errormessage: %s\n", mysqli_error($c));
+		return false;
+	}
+	
+	if ($action_date == NULL || $price == NULL || $shiptostreet == NULL || $shiptozip == NULL || 
+	    $cardnumber == NULL || $product_name == NULL || $seller == NULL || $shipfromzip == NULL ||
+	    $cardtype == NULL || $cardname == NULL || $cardexp == NULL) {
+		/*echo "action_date = $action_date, pr = $price, tostreet = $shiptostreet, tozip  = $shiptozip,
+	       cardnum = $cardnumber, pname = $product_name, seller = $seller, fromzip =  $shipfromzip,
+	       ctype =  $cardtype, cname = $cardname, cexp = $cardexp, tophone = $shiptophone";*/
+		return false;
+	}
+	
+	if (($shipfrom = get_zip_info($c, $shipfromzip)) == NULL) {
+		echo "problem with from zip";
+		return false;
+	} elseif (($shipto = get_zip_info($c, $shiptozip)) == NULL) {
+		echo "problem with to zip";
+		return false;
+	}
+		
+	$str = "SELECT A.name FROM $ADDRESS_TABLE A WHERE A.street=? AND A.zip=? AND A.username=?";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'sss', $shiptostreet, $shiptozip, $username);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_bind_result($stmt, $shiptoname);
+		mysqli_stmt_fetch($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		echo 'problem with second stmt';
+		return false;
+	}
+	
+	/* generate html and send the message */
+	$message = "
+	<html>
+	<head>
+	  <title>Himalaya.biz - order confirmation</title>
+	</head>
+	<body>
+	  <h2>Himalaya.biz - order confirmation</h2>
+	  You are receiving this message because you have purchased an item from 
+	  <a href=\"$SITE_URL\">himalaya.biz</a>.<br><br>
+	  
+	  Here are your order details:
+	  <h2>Order Summary</h2>
+	  <h3>Item Information</h3>
+	  <table>
+	    <tr>
+	      <td>Item Name:</td>
+	      <td>$product_name</td>
+	    </tr>
+	    <tr>
+	      <td>Seller:</td>
+	      <td>$seller</td>
+	    </tr>
+	    <tr>
+	      <td>Item Price:</td>
+	";
+	$message .= sprintf("<td>$%.2f</td>", $price / 100);
+	$message .= "
+	    </tr>
+	    <tr>
+	      <td>Shipping from:</td>
+	      <td>$shipfrom[0], $shipfrom[1] $shipfromzip</td>
+	    </tr>
+	  </table>
+	
+	  <h3>Billing Information</h3>
+	  <table>
+	    <tr> 
+	      <td>Name on Card:</td>
+	      <td>$cardname</td>
+	    </tr>
+	    <tr>
+	      <td>Card Type:</td>
+	      <td>$cardtype</td>
+	    </tr>
+	    <tr>
+	      <td>Card Number:</td>
+	      <td>$cardnumber</td>
+	    </tr>
+	    <tr>
+	      <td>Expiration Date:</td>
+	      <td>$cardexp</td>
+	    </tr>
+	  </table>
+	
+	  <h3>Shipping Information</h3>
+	  <table>
+	    <tr>
+	      <td>Full Name:</td>
+	      <td>$shiptoname</td>
+	    </tr>
+	    <tr>
+	      <td>Street Address:</td>
+	      <td>$shiptostreet</td>
+	    </tr>
+	    <tr>
+	      <td>City, State:</td>
+	      <td>$shipto[0], $shipto[1]</td>
+	    </tr> 
+	    <tr>
+	      <td>ZIP code:</td>
+	      <td>$shiptozip</td>
+	    </tr>
+	  </table>
+	  <br><br>
+	  
+	  Be on the lookout for more emails as your order progresses. 
+	  Thanks for shopping with Himalaya.biz!<br><br>
+	  
+	  -- The Himalaya Team<br>
+	</body>
+	</html>";
+	
+	$filepath = "/tmp/order_". $item_id . "_" . "$username.html";
+	
+	if (file_put_contents("$filepath", $message) === false) {
+		echo 'problem with put file contents';
+		return false;
+	}
+	
+	$str = "SELECT E.email FROM $EMAIL_TABLE E WHERE username=?";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 's', $username);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_bind_result($stmt, $email);
+		mysqli_stmt_fetch($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		echo 'problem with email stmt';
+		return false;
+	}
+
+	/* send the email */
+	shell_exec("/usr/local/bin/messagesend $email $filepath \"order confirmation\"");
+	
+	return true;
+}
+
 
 /*******************/
 /** END FUNCTIONS **/
