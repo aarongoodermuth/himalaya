@@ -176,6 +176,30 @@ function mysql_get_type_from_username($c, $username)
   }
 }
 
+//  get the corresponding city and state for a ZIP code
+// (array[city, state] on success, NULL failure)
+function get_zip_info($c, $zip)
+{
+	global $ZIP_TABLE;
+
+	$str = "SELECT Z.city, Z.zstate FROM $ZIP_TABLE Z WHERE zip=?";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 's', $zip);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_bind_result($stmt, $city, $zstate);
+		mysqli_stmt_fetch($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		return false;
+	}
+	
+	if ($city == NULL || $zstate == NULL) {
+		return false;
+	}
+	
+	return array($city, $zstate);
+}
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/
