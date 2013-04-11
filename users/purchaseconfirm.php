@@ -97,17 +97,18 @@ if ($user != null) {
 	}
 	
 	print_this_html_header();
-	
+
+	$item_id = get_post_var('item_id');
+
 	if (all_set() && values_set()) { // post values found
 		// update DB
-		$item_id = get_post_var('item_id');
 		$item_name = get_post_var('item_name');
 		$price = get_post_var('price');
 		$seller = get_post_var('seller');
 		$shipping_zip = get_post_var('shipping_zip');
-		$cardtype = get_post_var('cardtype');
 		$cardnumber = get_post_var('cardnumber');
 		$cardname = get_post_var('cardname');
+		$cardtype = get_post_var('cardtype');
 		$expmonth = get_post_var('expmonth');
 		$expyear = get_post_var('expyear');
 		$shiptoname = get_post_var('shiptoname');
@@ -123,13 +124,19 @@ if ($user != null) {
 			/* unable to get city and state for this ZIP code */
 			echo '<p style="color:red">The address you provided seems to be invalid. 
 			      Please try again.</p>';
-		} /*elseif (!mysql_member_insert_address($c, $shiptostreet, $username, $shiptozip)) {
-		
-		} elseif () {
-		
-		} */else {
+		} elseif (!mysql_member_insert_address($c, $shiptostreet, $user, $shiptozip, $shiptoname)) {
+			echo '<p style="color:red">There was a problem adding your address. 
+			      Please try again.</p>';
+		} elseif (!mysql_member_insert_phone($c, $user, $shiptophone)) {
+			echo '<p style="color:red">There was a problem adding your phone number. 
+			      Please try again.</p>';
+		} elseif (!mysql_member_insert_credit_card($c, $user, $cardnumber, $cardtype, 
+		                                           $cardname, $expmonth, $expyear)) {
+			echo '<p style="color:red">There was a problem adding your credit card. 
+			      Please try again.</p>';
+		} else {
 			echo "
-			<h2>Order Summary</h2>
+			<h2>Order Submitted!</h2>
 			<h3>Item Information</h3>
 			<table>
 			  <tr>
@@ -154,7 +161,7 @@ if ($user != null) {
 			
 			<h3>Billing Information</h3>
 			<table>
-			  <tr> 
+			  <tr>
 			    <td>Name on Card:</td>
 			    <td>$cardname</td>
 			  </tr>
@@ -200,44 +207,6 @@ if ($user != null) {
 			  </tr>
 			</table>
 			<br>
-			";
-			
-			echo "
-			<form name=\"purchase_billingshipping\" action=\"purchaseconfirm.php\" method=\"post\">
-			<input id=\"item_id\" type=\"hidden\" name=\"item_id\"/>
-			<script>document.getElementById(\"item_id\").value=$item_id;</script>
-			<input id=\"item_name\" type=\"hidden\" name=\"item_name\"/>
-			<script>document.getElementById(\"item_name\").value=\"$item_name\";</script>
-			<input id=\"shipping_zip\" type=\"hidden\" name=\"shipping_zip\"/>
-			<script>document.getElementById(\"shipping_zip\").value=$shipping_zip;</script>
-			<input id=\"price\" type=\"hidden\" name=\"price\"/>
-			<script>document.getElementById(\"price\").value=$price;</script>
-			<input id=\"seller\" type=\"hidden\" name=\"seller\"/>
-			<script>document.getElementById(\"seller\").value=\"$seller\";</script>
-			<input id=\"cardtype\" type=\"hidden\" name=\"cardtype\"/>
-			<script>document.getElementById(\"cardtype\").value=\"$cardtype\";</script>
-			<input id=\"cardnumber\" type=\"hidden\" name=\"cardnumber\"/>
-			<script>document.getElementById(\"cardnumber\").value=\"$cardnumber\";</script>
-			<input id=\"cardname\" type=\"hidden\" name=\"cardname\"/>
-			<script>document.getElementById(\"cardname\").value=\"$cardname\";</script>
-			<input id=\"expmonth\" type=\"hidden\" name=\"expmonth\"/>
-			<script>document.getElementById(\"expmonth\").value=\"$expmonth\";</script>
-			<input id=\"expyear\" type=\"hidden\" name=\"expyear\"/>
-			<script>document.getElementById(\"expyear\").value=\"$expyear\";</script>
-			<input id=\"shiptoname\" type=\"hidden\" name=\"shiptoname\"/>
-			<script>document.getElementById(\"shiptoname\").value=\"$shiptoname\";</script>
-			<input id=\"shiptostreet\" type=\"hidden\" name=\"shiptostreet\"/>
-			<script>document.getElementById(\"shiptostreet\").value=\"$shiptostreet\";</script>
-			<input id=\"shiptozip\" type=\"hidden\" name=\"shiptozip\"/>
-			<script>document.getElementById(\"shiptozip\").value=\"$shiptozip\";</script>
-			<input id=\"shiptophone\" type=\"hidden\" name=\"shiptophone\"/>
-			<script>document.getElementById(\"shiptophone\").value=$shiptophone;</script>
-			<table>
-			<tr>
-			<td><input class=\"btn btn-primary btn-large btn-block\" value=\"Submit Order\" type=\"submit\"/></td>
-			</tr>
-			</table>
-			</form>
 			";
 			
 			/*if (!mysql_member_check_bid($c, get_post_var('item_id'), get_post_var('newbid') * 100)) {

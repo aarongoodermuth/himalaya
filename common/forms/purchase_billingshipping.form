@@ -3,6 +3,18 @@ submit button for adding user-->
 <h3>Billing Info</h3>
 <table>
   <tr>
+    <td>Card Type:</td>
+    <td>
+      <select class="span3" name="cardtype">
+      <option value="American Express">American Express</option>
+      <option value="Discover">Discover</option>
+      <option value="MasterCard">MasterCard</option>
+      <option value="Visa">Visa</option>
+      </select>
+    </td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
     <td>Card Number:</td>
     <td><input type="text" name="cardnumber" id="cardnumber"/></td>
     <td>&nbsp;</td>
