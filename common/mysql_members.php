@@ -189,7 +189,7 @@ function mysql_member_create_ru($c, $username, $password, $name, $email,
   $income   = sanitize($income);
 
   mysql_member_insert_phone($c, $username, $phone);
-  mysql_member_insert_address($c, $address, $username, $zip);
+  mysql_member_insert_address($c, $address, $username, $zip, $name);
 
   $str = "INSERT INTO $RU_TABLE VALUES(?, ?, ?, ?, ?, 0)";
   if ($stmt = mysqli_prepare($c, $str)) {
@@ -408,28 +408,87 @@ function mysql_member_insert_phone($c, $username, $phone)
 
 // ...
 // (boolean)
-function mysql_member_insert_address($c, $street, $username, $zip)
+function mysql_member_insert_address($c, $street, $username, $zip, $name)
 {
-  global $ADDRESS_TABLE;
+	global $ADDRESS_TABLE;
 
-  $street   = sanitize($street);
-  $zip      = sanitize($zip);
-  $username = sanitize($username);
+	$street   = sanitize($street);
+	$zip      = sanitize($zip);
+	$name     = sanitize($name);
+	$username = sanitize($username);
 
-  if(!mysql_member_zip_exists($c, $zip))
-  {
-    return false;
-  }
-  
-  $str = "INSERT INTO $ADDRESS_TABLE VALUES(?, ?, ?)";
-  if ($stmt = mysqli_prepare($c, $str)) {
-    mysqli_stmt_bind_param($stmt, 'sss', $street, $zip, $username);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
-    return true;
-  }
+	if(!mysql_member_zip_exists($c, $zip)) {
+		return false;
+	}
 
-  return false;
+	$str = "INSERT INTO $ADDRESS_TABLE VALUES(?, ?, ?, ?)";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'ssss', $street, $zip, $name, $username);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_close($stmt);
+		return true;
+	}
+
+	return false;
+}
+
+// create records in Credit_Cards and Has_Card relations
+// (boolean)
+function mysql_member_insert_credit_card($c, $username, $cnumber, $ctype, $cname, $expmonth, $expyear)
+{
+	global $CREDIT_CARDS_TABLE, $HAS_CARD_TABLE;
+
+	$username = sanitize($username);
+	$phone    = sanitize($cardnumber);
+
+	switch($expmonth) {  /* determine last day of the month for the expiration date */
+	case 1:
+	case 3:
+	case 5:
+	case 7:
+	case 8:
+	case 10:
+	case 12:
+		$expday = 31;
+		break;
+	case 2:
+		if ($expyear % 4 == 0)
+			$expday = 29;
+		else 
+			$expday = 28;
+		break;
+	case 4:
+	case 6:
+	case 9:
+	case 11:
+		$expday = 30;
+		break;
+	default:
+		return false;
+		break;
+	}
+	
+	$expdate = "$expyear-$expmonth-$expday";
+	
+	$str = "INSERT INTO $CREDIT_CARDS_TABLE VALUES(?, ?, ?, ?)";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'ssss', $cnumber, $ctype, $cname, $expdate);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		return false;
+	}
+	
+	$str = "INSERT INTO $HAS_CARD_TABLE VALUES(?, ?)";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'ss', $cnumber, $username);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		return false;
+	}
+	
+	return true;
 }
 
 // gets all info related to a registered_user
