@@ -98,12 +98,7 @@ function mysql_get_search_query()
   $where_clause .= "AND (P.p_name LIKE ? OR P.p_desc LIKE ?) ";
 
   // ensure items in results have of one of the selected item conditions
-  $where_clause .= 'AND (';
-  for($i = 0; $i < count($itemconds) - 1; $i++) // stop after second to last element
-  {
-    $where_clause .= "S.scondition = $itemconds[$i] OR ";
-  }
-  $where_clause .= "S.scondition = $itemconds[$i]) ";
+  $where_clause .= 'AND S.scondition IN (' . implode(',', $itemconds) . ') ';
 
   // ensure results match seller types specified
   // (if both specified, no clause needed)
@@ -243,7 +238,7 @@ if($user != null)
               printf('<td>$%.2f</td>', $recent_bid/100);
               echo "<td>$auc_end_time</td>";
             }
-            else
+            else // show sale price or auction information where appropriate
             {
               if($auc_end_time == null) // item is a sale
               {
