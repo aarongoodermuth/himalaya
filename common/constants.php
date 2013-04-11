@@ -30,6 +30,8 @@ $ORDERS_TABLE        =     $DB_NAME . '.Orders';
 $CREDIT_CARDS_TABLE  =     $DB_NAME . '.Credit_Cards';
 $HAS_CARD_TABLE      =     $DB_NAME . '.Has_Card';
 
+$SITE_URL            =     'http://himalaya.goodermuth.com';
+
 $USER_TYPE_MAPPING       = array('Registered User', 'Supplier');
 $ADMIN_USER_TYPE_MAPPING = array('System', 'SysAdmin', 'Owner', 'Telemarketer',
                                'Sales Manager', 'Shipping', 'Accounting', 
