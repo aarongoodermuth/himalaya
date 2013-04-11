@@ -205,13 +205,16 @@ if($user != NULL) {
 			echo "<form name=\"placebid\" action=\"/users/placebid.php\" method=\"post\">";
 		}
 
-		echo
-		"<input id=\"item_id\" type=\"hidden\" name=\"item_id\"/>
+		echo "
+		<input id=\"item_id\" type=\"hidden\" name=\"item_id\"/>
 		<script>document.getElementById(\"item_id\").value=$id;</script>
 		<input id=\"item_name\" type=\"hidden\" name=\"item_name\"/>
 		<script>document.getElementById(\"item_name\").value=\"$item_info[6]\";</script>
 		<input id=\"shipping_zip\" type=\"hidden\" name=\"shipping_zip\"/>
 		<script>document.getElementById(\"shipping_zip\").value=$item_info[10];</script>
+		<input id=\"seller\" type=\"hidden\" name=\"seller\"/>
+		<script>document.getElementById(\"seller\").value=\"$item_info[2]\";</script>
+		
 		<table>
 		  <tr>
 		    <td height=\"30\">Item Condition:</td>
