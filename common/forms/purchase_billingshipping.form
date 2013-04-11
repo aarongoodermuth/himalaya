@@ -5,10 +5,6 @@ submit button for adding user-->
   <tr>
     <td>Card Number:</td>
     <td><input type="text" name="cardnumber" id="cardnumber"/></td>
-    <script>
-      var cardnumber = new LiveValidation('cardnumber');
-      cardnumber.add(Validate.Numericality, {onlyInteger: true, is: 16});
-    </script>
     <td>&nbsp;</td>
   </tr>
   <tr>
@@ -90,10 +86,11 @@ submit button for adding user-->
     </script>
   </tr>
   <tr>
-    <td><input class="btn btn-primary btn-large btn-block" value="Submit" type="submit"/></td>
+    <td><input class="btn btn-primary btn-large btn-block" value="Next" type="submit"/></td>
   </tr>
 </table>
 </form>
+<p>Note: Clicking "Next" will maintain your credit card and address information for later purchases.</p>
 <script>
   var subcardnumber = new LiveValidation('cardnumber', {onlyOnSubmit: true});
   subcardnumber.add(Validate.Presence);
@@ -101,12 +98,10 @@ submit button for adding user-->
   subcardname.add(Validate.Presence);
   var subshiptoname = new LiveValidation('shiptoname', {onlyOnSubmit: true});
   subshiptoname.add(Validate.Presence);
-  
   var subshiptostreet = new LiveValidation('shiptostreet', {onlyOnSubmit: true});
   subshiptostreet.add(Validate.Presence);
   var subshiptozip = new LiveValidation('shiptozip', {onlyOnSubmit: true});
   subshiptozip.add(Validate.Presence);
   var subshiptophone = new LiveValidation('shiptophone', {onlyOnSubmit: true});
   subshiptophone.add(Validate.Presence);
-
 </script>
