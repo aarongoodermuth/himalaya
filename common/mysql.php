@@ -200,6 +200,50 @@ function get_zip_info($c, $zip)
 	return array($city, $zstate);
 }
 
+// create new record in Orders relation
+// (boolean)
+function mysql_create_order($c, $item_id, $purchaser, $price, $street, $zip, $cnumber)
+{
+	global $ORDERS_TABLE;
+	
+	$today = date("Y-m-d");
+	
+	$str = "INSERT INTO $ORDERS_TABLE VALUES (?, ?, 0, ?, ?, ?, ?, ?)";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'ississs', $item_id, $purchaser, $today, 
+		                       $price, $street, $zip, $cnumber);
+		if (!mysqli_stmt_execute($stmt)) {
+			printf("Error: %s.\n", mysqli_stmt_error($stmt));
+		}
+		mysqli_stmt_fetch();
+		mysqli_stmt_close($stmt);
+		return true;
+	}
+
+	return false;
+}
+
+// remove the Sales record with item_id
+// (boolean)
+function mysql_remove_sales_record($c, $item_id)
+{
+	global $SALES_TABLE;
+
+	$str = "DELETE FROM $SALES_TABLE WHERE item_id=?";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'i', $item_id);
+		if (!mysqli_stmt_execute($stmt)) {
+			mysqli_stmt_close($stmt);
+			return false;
+		}
+		mysqli_stmt_fetch();
+		mysqli_stmt_close($stmt);
+		return true;
+	}
+
+	return false;
+}
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/
