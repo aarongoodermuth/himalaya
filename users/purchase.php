@@ -82,17 +82,22 @@ if ($user != null) {
 		// update DB
 		$item_id = get_post_var('item_id');
 		$item_name = get_post_var('item_name');
-		$price = get_post_var('price'); 
+		$price = get_post_var('price');
+		$seller = get_post_var('seller');
 		$shipping_zip = get_post_var('shipping_zip');
 		/* billing/shipping page */
 		echo "
-		<form name=\"purchase_billingshipping\" action=\"purchaseconfirm.php\" method=\"post\">
+		<form name=\"purchase_billingshipping\" action=\"purchasesubmit.php\" method=\"post\">
 		<input id=\"item_id\" type=\"hidden\" name=\"item_id\"/>
 		<script>document.getElementById(\"item_id\").value=$item_id;</script>
 		<input id=\"item_name\" type=\"hidden\" name=\"item_name\"/>
 		<script>document.getElementById(\"item_name\").value=\"$item_name\";</script>
 		<input id=\"shipping_zip\" type=\"hidden\" name=\"shipping_zip\"/>
 		<script>document.getElementById(\"shipping_zip\").value=$shipping_zip;</script>
+		<input id=\"price\" type=\"hidden\" name=\"price\"/>
+		<script>document.getElementById(\"price\").value=$price;</script>
+		<input id=\"seller\" type=\"hidden\" name=\"seller\"/>
+		<script>document.getElementById(\"seller\").value=\"$seller\";</script>
 		";
 		
 		show_form('purchase_billingshipping');
