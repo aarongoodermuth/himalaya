@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# usage: ./emailpass emailaddress pathtomessage
+# usage: ./emailpass emailaddress pathtomessage subjectline
 
 import smtplib
 from email.MIMEMultipart import MIMEMultipart
@@ -11,7 +11,7 @@ import os, sys, syslog
 gmail_user = "himalaya.biz431@gmail.com"
 gmail_pwd = "himalaya431w"
 
-def mail(to, subject, filepath):
+def mail(to, filepath, subject):
    fp = open(filepath, 'rb')
    msg = MIMEText(fp.read(), 'html')
    fp.close()
@@ -28,5 +28,5 @@ def mail(to, subject, filepath):
    mailServer.sendmail(gmail_user, to, msg.as_string())
    mailServer.close()
 
-mail(str(sys.argv[1]), "new temporary password", str(sys.argv[2]))
-syslog.syslog('emailed a passowrd recovery email to ' + str(sys.argv[1]));
+mail(str(sys.argv[1]), str(sys.argv[2]), str(sys.argv[3]))
+syslog.syslog('emailed ' + str(sys.argv[2]) +  ' to ' + str(sys.argv[1]));
