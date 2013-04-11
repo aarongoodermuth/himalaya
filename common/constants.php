@@ -27,6 +27,8 @@ $RATINGS_TABLE       =     $DB_NAME . '.Ratings';
 $CAN_RATE_TABLE      =     $DB_NAME . '.Can_Rate';
 $CATEGORY_TABLE      =     $DB_NAME . '.Categories';
 $ORDERS_TABLE        =     $DB_NAME . '.Orders';
+$CREDIT_CARDS_TABLE  =     $DB_NAME . '.Credit_Cards';
+$HAS_CARD_TABLE      =     $DB_NAME . '.Has_Card';
 
 $USER_TYPE_MAPPING       = array('Registered User', 'Supplier');
 $ADMIN_USER_TYPE_MAPPING = array('System', 'SysAdmin', 'Owner', 'Telemarketer',
@@ -47,6 +49,6 @@ $hash_portable = FALSE;
  * real/new hashes.  The intent is to mitigate timing attacks (probing for
  * valid usernames).  This is optional - the line may be commented out if you
  * don't care about timing attacks enough to spend CPU time on mitigating them
- * or if you can't easily determine what salt string would be appropriate. */
+ */
 $dummy_salt = '$2a$08$1234567890123456789012';
 ?>
