@@ -434,7 +434,7 @@ function mysql_member_insert_address($c, $street, $username, $zip, $name)
 
 // add a record to Can_Rate for a buyer and seller
 // (boolean)
-function mysql_member_insert_can_rate($c, $seller, $buyer)
+function mysql_member_insert_can_rate($c, $seller, $buyer, $item_id)
 {
 	global $CAN_RATE_TABLE, $USER_TYPE_MAPPING;
 
@@ -446,9 +446,9 @@ function mysql_member_insert_can_rate($c, $seller, $buyer)
 		return false;
 	}
 
-	$str = "INSERT INTO $CAN_RATE_TABLE VALUES (?, ?)";
+	$str = "INSERT INTO $CAN_RATE_TABLE VALUES (?, ?, ?)";
 	if ($stmt = mysqli_prepare($c, $str)) {
-		mysqli_stmt_bind_param($stmt, 'ss', $seller, $buyer);
+		mysqli_stmt_bind_param($stmt, 'ssi', $seller, $buyer, $item_id);
 		mysqli_stmt_execute($stmt);
 		mysqli_stmt_close($stmt);
 		return true;

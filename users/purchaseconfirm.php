@@ -216,7 +216,7 @@ if ($user != null) {
 			<br>
 			";
 			
-			if(mysql_member_insert_can_rate($c, $seller, $user)) {
+			if(mysql_member_insert_can_rate($c, $seller, $user, $item_id)) {
 				echo "
 				      <p>Now that  you have purchased an item from $seller, you 
 				      may now <a href=\"/users/view.php?=$seller\">rate this user</a>.
