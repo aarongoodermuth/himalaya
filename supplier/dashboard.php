@@ -48,10 +48,16 @@ if($user != null)
   $type = mysql_get_type_from_username($c, $user);
   if($type == $USER_TYPE_MAPPING[1])
   {
-    // is a RU
+    // is a supplier
     print_html_header();
+    print_html_nav();
+    echo '<div class="container-fluid">';
+    echo '<body>';
     echo '<h3>Welcome to the Supplier Dashboard, ' . $user . '!</h3>';
     show_links();
+    echo '</div>';
+    print_html_footer_js();
+    print_html_footer2();
     print_html_footer();
   }
   elseif($type == $USER_TYPE_MAPPING[0])

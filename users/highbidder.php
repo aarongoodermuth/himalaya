@@ -26,10 +26,10 @@ function print_auctions_table($c, $user)
   // print header
   echo '<div style="text-align:center">';
   echo '<h3>Auctions where I am high bidder</h3>';
-
+  
   // get info from db
   $rows = mysql_member_get_bidding($c, $user);
-
+  
   if($rows === null)
   {
     echo '<p>You are not the high bidder on any items.</p>';
