@@ -77,6 +77,7 @@ function mysql_get_search_query()
   global $REG_USER_TABLE;
   global $SUPPLIERS_TABLE;
   global $SALES_TABLE;
+  global $ORDERS_TABLE;
 
   $itemtypes   = $_POST['itemtype'];   // sale item types array (values: sale | auction)
   $itemconds   = $_POST['itemcond'];   // item condition array  (values: 0-5)
@@ -99,6 +100,9 @@ function mysql_get_search_query()
 
   // ensure items in results have of one of the selected item conditions
   $where_clause .= 'AND S.scondition IN (' . implode(',', $itemconds) . ') ';
+
+  // ensure items have not already been sold
+  $where_clause .= "AND S.item_id NOT IN (SELECT item_id FROM $ORDERS_TABLE) ";
 
   // ensure results match seller types specified
   // (if both specified, no clause needed)
@@ -139,6 +143,7 @@ function mysql_get_search_query()
                       "(S.item_id IN (SELECT item_id FROM $AUCTIONS_TABLE)) ";
   }
 
+  print_message( $select_clause . $from_clause . $where_clause );
   return $select_clause . $from_clause . $where_clause;
 } 
 
