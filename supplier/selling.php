@@ -125,7 +125,7 @@ $user = check_logged_in_user($c);
 
 if($user != null)
 {
-  if(mysql_get_type_from_username($c, $user) == $USER_TYPE_MAPPING[0])
+  if(mysql_get_type_from_username($c, $user) == $USER_TYPE_MAPPING[1])
   {
     print_html_header(); // will change to nav header later
     echo '<body>';
