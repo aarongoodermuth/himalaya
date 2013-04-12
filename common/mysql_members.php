@@ -707,9 +707,9 @@ function mysql_member_redeem_gift($c, $username, $code)
 // (boolean)
 function mysql_member_place_bid($c, $user, $item_id, $newbid)
 {
-	global $AUCTIONS_TABLE, $SALE_ITEMS_TABLE;
+	global $AUCTIONS_TABLE, $SALE_ITEMS_TABLE, $HAS_BID_TABLE;
 	
-	$str = "SELECT S.username $SALE_ITEMS_TABLE S WHERE item_id=?";
+	$str = "SELECT S.username FROM $SALE_ITEMS_TABLE S WHERE S.item_id=?";
 	if ($stmt = mysqli_prepare($c, $str)) {
 		mysqli_stmt_bind_param($stmt, 'i', $item_id);
 		mysqli_stmt_execute($stmt);
@@ -717,6 +717,7 @@ function mysql_member_place_bid($c, $user, $item_id, $newbid)
 		mysqli_stmt_fetch($stmt);
 		mysqli_stmt_close($stmt);
 	} else {
+		printf("Errormessage: %s\n", mysqli_error($c));
 		return false;
 	}
 	
@@ -731,6 +732,28 @@ function mysql_member_place_bid($c, $user, $item_id, $newbid)
 		mysqli_stmt_fetch($stmt);
 		mysqli_stmt_close($stmt);
 	} else {
+		return false;
+	}
+	
+	$str = "INSERT INTO $HAS_BID_TABLE VALUES (?, ?, ?)";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'iis', $item_id,  $newbid, $user);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_fetch($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		printf("Errormessage: %s\n", mysqli_error($c));
+		return false;
+	}
+	
+	$str = "UPDATE $HAS_BID_TABLE SET bid_amount=? WHERE item_id=? AND bidder=?";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'iis', $newbid, $item_id, $user);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_fetch($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		printf("Errormessage: %s\n", mysqli_error($c));
 		return false;
 	}
 	

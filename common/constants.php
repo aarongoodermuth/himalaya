@@ -29,6 +29,7 @@ $CATEGORY_TABLE      =     $DB_NAME . '.Categories';
 $ORDERS_TABLE        =     $DB_NAME . '.Orders';
 $CREDIT_CARDS_TABLE  =     $DB_NAME . '.Credit_Cards';
 $HAS_CARD_TABLE      =     $DB_NAME . '.Has_Card';
+$HAS_BID_TABLE       =     $DB_NAME . '.Has_Bid';
 
 $SITE_URL            =     'http://himalaya.goodermuth.com';
 
