@@ -143,7 +143,6 @@ function mysql_get_search_query()
                       "(S.item_id IN (SELECT item_id FROM $AUCTIONS_TABLE)) ";
   }
 
-  print_message( $select_clause . $from_clause . $where_clause );
   return $select_clause . $from_clause . $where_clause;
 } 
 
