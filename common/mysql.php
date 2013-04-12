@@ -145,35 +145,56 @@ function mysql_get_username_from_cookie( $c, $cookie_val )
     return null;
   }
 }
-// ...
-// (string)
-function mysql_get_type_from_username($c, $username)
+// gets type of user
+//  $USER_TYPE_MAPPING[0]  => registered user
+//  $USER_TYPE_MAPPING[1]  => supplier
+//  null => non-user
+function mysql_get_type_from_username($c, $uname)
 {
-  global $RU_TABLE, $SUPPLIERS_TABLE, $USER_TYPE_MAPPING;
+  global $REG_USER_TABLE, $SUPPLIERS_TABLE, $USER_TYPE_MAPPING;
 
-  $username = sanitize($username);
+	$uname = sanitize($uname);  
 
-  $query[0] = 'SELECT COUNT(*) FROM ' . $RU_TABLE        . ' WHERE username="' . $username . '"';
-  $query[1] = 'SELECT COUNT(*) FROM ' . $SUPPLIERS_TABLE . ' WHERE username="' . $username . '"';
+	$str = "SELECT COUNT(*)
+	        FROM $REG_USER_TABLE ru
+	        WHERE  ru.username = ?";
 
-  $db_answer[0] = mysqli_query($c, $query[0]);
-  $db_answer[1] = mysqli_query($c, $query[1]);
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 's', $uname);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_bind_result($stmt, $reg_user);
+		mysqli_stmt_fetch($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		printf("Errormessage: %s\n", mysqli_error($c));
+		return NULL;
+	}
 
-  $row[0] = mysqli_fetch_row($db_answer[0]);
-  $row[1] = mysqli_fetch_row($db_answer[1]);
+    if ($reg_user === 1) {
+        return $USER_TYPE_MAPPING[0];
+    }
+    
+    
+    $str = "SELECT COUNT(*)
+	        FROM $SUPPLIERS_TABLE s
+	        WHERE  s.username = ?";
 
-  if($row[0][0] == 1 && $row[1][0] == 0)
-  {
-    return $USER_TYPE_MAPPING[0];
-  }
-  elseif($row[0][0] == 0 && $row[1][0] == 1)
-  {
-    return $USER_TYPE_MAPPING[1];
-  }
-  else
-  {
-    return null;
-  }
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 's', $uname);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_bind_result($stmt, $supplier);
+		mysqli_stmt_fetch($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		printf("Errormessage: %s\n", mysqli_error($c));
+		return NULL;
+	}
+
+    if ($supplier === 1) {
+        return $USER_TYPE_MAPPING[1];
+    }
+
+	return null;
 }
 
 //  get the corresponding city and state for a ZIP code
