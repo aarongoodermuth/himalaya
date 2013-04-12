@@ -88,6 +88,7 @@ if($user != null)
       echo '<p style="color:red">All values must be filled in</p>';
     }
     show_form('gift_card_retailer');
+    echo '<p><a href="dashboard.php">Return to Dashboard</a></p>';
   }
   else
   {
