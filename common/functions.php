@@ -34,6 +34,11 @@ function print_html_nav()
   echo file_get_contents('navigation.html', true);
 }
 
+function print_html_nav_supplier()
+{
+  echo file_get_contents('navigation_supplier.html', true);
+}
+
 // (void)
 function print_html_footer()
 {
