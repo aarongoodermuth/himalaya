@@ -432,6 +432,35 @@ function mysql_member_insert_address($c, $street, $username, $zip, $name)
 	return false;
 }
 
+// add a record to Can_Rate for a buyer and seller
+// (boolean)
+function mysql_member_insert_can_rate($c, $seller, $buyer)
+{
+	global $CAN_RATE_TABLE;
+
+	$seller = sanitize($seller);
+	$buyer  = sanitize($buyer);
+
+	/* 
+	 * check that both the buyer and seller are Registered_Users;
+	 * this is not really an error if the seller is a Supplier, but return false
+	 */
+	if (!(mysql_get_type_from_username($c, $seller) == $USER_TYPE_MAPPING[0] && 
+	      mysql_get_type_from_username($c, $buyer) == $USER_TYPE_MAPPING[0])) {
+		return false;
+	}
+
+	$str = "INSERT INTO $CAN_RATE_TABLE VALUES (?, ?)";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'ss', $seller, $buyer);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_close($stmt);
+		return true;
+	}
+
+	return false;
+}
+
 // create records in Credit_Cards and Has_Card relations
 // (boolean)
 function mysql_member_insert_credit_card($c, $username, $cnumber, $ctype, $cname, $expmonth, $expyear)
