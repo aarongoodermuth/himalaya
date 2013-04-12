@@ -215,6 +215,13 @@ if ($user != null) {
 			</table>
 			<br>
 			";
+			
+			if(mysql_member_insert_can_rate($c, $seller, $user)) {
+				echo "
+				      <p>Now that  you have purchased an item from $seller, you 
+				      may now <a href=\"/users/view.php?=$seller\">rate this user</a>.
+				      </p>";
+			}
 
 			if (!send_order_email($c, $item_id, $user, $cardname)) {
 				echo '<p style="color:red">There was a problem sending your confirmation email. 
