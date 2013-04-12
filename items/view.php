@@ -183,7 +183,7 @@ if($user != NULL) {
 
   if($id != NULL) { // get item info
 	if (($price_info = mysql_get_price_info($c, $id)) == NULL) {
-		echo "couldn't get price info";
+		header('refresh:0; url=/notfound.html');
 		// couldn't find an item
 	} elseif (($item_info = mysql_get_item_info($c, $id)) == NULL) {
 		echo "couldn't get item info";
