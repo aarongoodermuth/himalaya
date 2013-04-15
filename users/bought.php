@@ -54,13 +54,18 @@ function print_sale_item($c, $item)
 {
   switch($item[3])
   {
+    case 0:
+      $status = 'Not yet recieved at Himalaya.biz facilities';
+      break;
     case 1:
-      $status = '';
+      $status = 'Item recieved at Himalaya.biz facilities';
       break;
     case 2:
-      $status = '';
+      $status = 'Void';
       break;
-    // ...
+    case 3:
+      $status = 'Complete. Enroute to you';
+      break;
     default:
       $status = 'unknown';
   }
@@ -71,10 +76,12 @@ function print_sale_item($c, $item)
   echo '<td><a href="../items/view.php?id=' . $item[0] . '">' . $item[0] . '</a></td></tr>';
   echo '<tr><td style="font-weight:bold">Description</td>';
   echo '<td>' . $item[1] . '</a></td></tr>';
-  echo '<tr><td style="font-weight:bold">iPurchase Price</td>';
+  echo '<tr><td style="font-weight:bold">Purchase Price</td>';
   echo '<td>' . sprintf('$%.2f', $item[2]/100) . '</a></td></tr>';
   echo '<tr><td style="font-weight:bold">Order Status</td>';
   echo '<td>' . $status . '</td></tr>';
+  echo '<tr><td style="font-weight:bold">Action Date</td>';
+  echo '<td>' . $item[4] . '</td>';
 
   echo '</table>';
 }

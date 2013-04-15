@@ -933,7 +933,7 @@ function mysql_member_get_orders($c, $user)
 {
   global $ORDERS_TABLE, $SALE_ITEMS_TABLE;
 
-  $str = "SELECT O.item_id, SI.item_desc, O.status, O.action_date  
+  $str = "SELECT O.item_id, SI.item_desc, O.price, O.status, O.action_date  
           FROM $SALE_ITEMS_TABLE SI, $ORDERS_TABLE O 
           WHERE SI.item_id = O.item_id
           AND O.username = ?";
@@ -941,7 +941,7 @@ function mysql_member_get_orders($c, $user)
   {
     mysqli_stmt_bind_param($stmt, 's', $user);
     mysqli_stmt_execute($stmt);
-    mysqli_stmt_bind_result($stmt, $row[0], $row[1], $row[2], $row[3]);
+    mysqli_stmt_bind_result($stmt, $row[0], $row[1], $row[2], $row[3], $row[4]);
     mysqli_stmt_store_result($stmt);
     
     if(0 === mysqli_stmt_num_rows($stmt))
@@ -949,17 +949,17 @@ function mysql_member_get_orders($c, $user)
       return null;
     }
 
-    mysqli_stmt_free_result($stmt);
-
     $i = 0;
-    while(mysqli_stmt_fetch($db_answer))
+    while(mysqli_stmt_fetch($stmt))
     {
-      for($j=0; $j<4; $j++)
+      for($j=0; $j<5; $j++)
         $retval[$i][$j] = $row[$j];
       $i++;
     }
 
     mysqli_stmt_close($stmt);
+    mysqli_stmt_free_result($stmt);
+    
   } else {
 	return $row = false;
   }
