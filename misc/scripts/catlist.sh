@@ -16,7 +16,12 @@ function children()
 	FILENAME=/tmp/children_$depth
 	rm -f $FILENAME
 
-	mysql -u $DBUSER -p${DBPASS} -e "SELECT C.category_id, C.category_name FROM Categories C WHERE  C.parent_category_id = $2 INTO OUTFILE '$FILENAME' FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\\n'" $DBNAME
+	mysql -u $DBUSER -p${DBPASS} -e \
+                "SELECT C.category_id, C.category_name 
+                 FROM   Categories C 
+                 WHERE  C.parent_category_id = $2 
+                 INTO   OUTFILE '$FILENAME' FIELDS TERMINATED BY ',' 
+                        ENCLOSED BY '\"' LINES TERMINATED BY '\\n'" $DBNAME
 
 	cat $FILENAME | while read LINE
 	do	
@@ -37,7 +42,12 @@ function children()
 	# go depth first down the tree, keep track of depth
 	# for each, print with tabs(?)
 rm -f $PARENTS
-mysql -u $DBUSER -p${DBPASS} -e "SELECT C.category_id, C.category_name FROM Categories C WHERE  C.parent_category_id = 0 INTO OUTFILE '$PARENTS' FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\\n'" $DBNAME
+mysql -u $DBUSER -p${DBPASS} -e \
+        "SELECT C.category_id, C.category_name 
+         FROM   Categories C 
+         WHERE  C.parent_category_id = 0 
+         INTO   OUTFILE '$PARENTS' FIELDS TERMINATED BY ',' 
+                ENCLOSED BY '\"' LINES TERMINATED BY '\\n'" $DBNAME
 
 echo -e "
 <select value=\"category\" class=\"span4\" name=\"category\">
