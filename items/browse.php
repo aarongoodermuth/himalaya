@@ -20,10 +20,8 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/mysql.php';
 
 // prints a link for each category that is a child of start_id
 // prints links depth first in a div along the left-hand side of the page
-function print_tree_starting_from_id($start_id)
-{
-  $cats = new SimpleXMLElement('../common/categories.xml', null, true);
-  
+function print_tree_starting_from_id($cats, $start_id)
+{  
   foreach($cats as $cat) // meow
   {
     if(!$found && $cat->id != $start_id) // haven't encountered starting category yet
@@ -51,17 +49,25 @@ function print_tree_starting_from_id($start_id)
   }
   
   if(!$children) // there were no child categories
-    echo "No further sub-categories.<br>";
+    echo "No further sub-categories.<br>";    
 }
 
 // returns the name of the category for the given category id
 // assumes id is a valid category id
-function get_cat_name_by_id($id)
+function cat_get_name($cats, $id)
 {
-  $cats = new SimpleXMLElement('../common/categories.xml', null, true);
   $catname = $cats->xpath("/category_tree/category[id=$id]/name");
   
   return $catname[0];
+}
+
+//function cat_get_parent_name
+
+// returns the category id of the parent of the given category id
+// assumes id is a valid category id
+function cat_get_parent_id($cats, $id)
+{
+  //$pid = $cats->xpath("/category_tree/category[id=$id]/
 }
 
 // prints HTML text in red
@@ -84,28 +90,38 @@ function print_message($s)
 $c = mysql_make_connection();
 $user = check_logged_in_user($c);
 
+$cats = new SimpleXMLElement('../common/categories.xml', null, true);
+
 if($user != null)
 {
   print_html_header();
   echo '<body>';
   print_html_nav();
   echo '<div class="container-fluid">';
-
   echo '<h3>Browse</h3>';
+  
+  // create category list div
+  echo '<div class="span3">' .
+       '  <div class="tile" style="text-align:left">' .
+       '    <h4>Climb higher!</h4>';
 
   if(empty($_GET['cid'])) // basic browse page - show complete category list
   {
-    echo '<h4>Climb higher!</h4>Choose a category to browse.<br><br>';
-    print_tree_starting_from_id(0);
+    echo 'Choose a category to browse.<br><br>';
+    print_tree_starting_from_id($cats, 0);
   }
   else // show items, sorting options, and subcategories
   {
     $browse_cat = $_GET['cid'];
     
-    echo '<h4>Climb higher!</h4>';
-    echo 'Categories under ' . get_cat_name_by_id($browse_cat) . ':<br><br>';
-    print_tree_starting_from_id($browse_cat);
+    echo 'Under ' . cat_get_name($cats, $browse_cat) . ':<br><br>';
+    print_tree_starting_from_id($cats, $browse_cat);
   }
+  
+  // end category list div
+  echo '</div>'; // tile
+  echo '</div>'; // span3
+  echo 'some main body text hopefully';
 }
 else // user not logged in
 {
