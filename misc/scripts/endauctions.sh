@@ -6,15 +6,19 @@ DBNAME="himalaya"
 DBUSER="root"
 DBPASS="431w"
 AUCTIONS=/tmp/finished_acutions
+SITEURL=himalaya.goodermuth.com
 
 # terminate an auction by item_id
 # usage: terminate item_id
 function terminate()
 {
-	LOSERSFILE=/tmp/auction_$1_losers
-	WINFILE=/tmp/auction_$1_winner
-	SELLERFILE=/tmp/auction_$1_seller
-	ITEMFILE=/tmp/auction_$1_item
+	LOSERSFILE=/tmp/auction_${1}_losers
+	WINFILE=/tmp/auction_${1}_winner
+	SELLERFILE=/tmp/auction_${1}_seller
+	ITEMFILE=/tmp/auction_${1}_item
+	TOSELLER=/tmp/auction_${1}_seller_email.html
+	TOWINNER=/tmp/auction_${1}_winner_email.html
+	TOLOSER=/tmp/auction_${1}_loser_email.html
 
 	rm -f $LOSERSFILE $WINFILE $SELLERFILE $ITEMFILE
 
@@ -39,7 +43,7 @@ function terminate()
 		        A.recent_bidder=D.username AND Z.zip=D.zip AND
 			A.recent_bidder=H.username AND H.cnumber=C.cnumber
 		 LIMIT  1
-		 INTO   OUTFILE '$WINFILE' FIELDS TERMINATED BY ','
+		 INTO   OUTFILE '$WINFILE' FIELDS TERMINATED BY ';'
 		        LINES TERMINATED BY '\\n'" $DBNAME
 
 	# get email of seller
@@ -47,7 +51,7 @@ function terminate()
 		"SELECT S.username, E.email
 		 FROM   Emails E, Sale_Items S
 		 WHERE  S.item_id=$1 AND E.username=S.username
-		 INTO   OUTFILE '$SELLERFILE' FIELDS TERMINATED BY ','
+		 INTO   OUTFILE '$SELLERFILE' FIELDS TERMINATED BY ';'
 		        LINES TERMINATED BY '\\n'" $DBNAME
 	
 	# get item information
@@ -56,59 +60,222 @@ function terminate()
 	         FROM   Products P, Sale_Items S, ZIP_Codes Z
 		 WHERE  item_id=$1 AND S.product_id=P.product_id AND 
 		        S.shipping_zip=Z.zip
-		 INTO   OUTFILE '$ITEMFILE' FIELDS TERMINATED BY ','
+		 INTO   OUTFILE '$ITEMFILE' FIELDS TERMINATED BY ';'
 		        LINES TERMINATED BY '\\n'" $DBNAME
 
-	WINNER=`cat $WINFILE | cut -d',' -f1`
-	LASTBID=`cat $WINFILE | cut -d',' -f2`
-	RESERVE=`cat $WINFILE | cut -d',' -f3`
-	WINEMAIL=`cat $WINFILE | cut -d',' -f4`
-	TOSTREET=`cat $WINFILE | cut -d',' -f5`
-	TOCITY=`cat $WINFILE | cut -d',' -f6`
-	TOSTATE=`cat $WINFILE | cut -d',' -f7`
-	TOZIP=`cat $WINFILE | cut -d',' -f8`
-	CARDNUM=`cat $WINFILE | cut -d',' -f9`
-	CARDTYPE=`cat $WINFILE | cut -d',' -f10`
-	CARDNAME=`cat $WINFILE | cut -d',' -f11`
-	SELLER=`cat $SELLERFILE | cut -d',' -f1`
-	SELLEMAIL=`cat $SELLERFILE | cut -d',' -f2`
-	PNAME=`cat $ITEMFILE | cut -d',' -f1`
-	CONDITION=`cat $ITEMFILE | cut -d',' -f2`
-	FROMCITY=`cat $ITEMFILE | cut -d',' -f3`
-	FROMSTATE=`cat $ITEMFILE | cut -d',' -f4`
-	FROMZIP=`cat $ITEMFILE | cut -d',' -f5`
+	WINNER=`cat $WINFILE | cut -d';' -f1`
+	LASTBID=`cat $WINFILE | cut -d';' -f2`
+	RESERVE=`cat $WINFILE | cut -d';' -f3`
+	WINEMAIL=`cat $WINFILE | cut -d';' -f4`
+	TOSTREET=`cat $WINFILE | cut -d';' -f5`
+	TOCITY=`cat $WINFILE | cut -d';' -f6`
+	TOSTATE=`cat $WINFILE | cut -d';' -f7`
+	TOZIP=`cat $WINFILE | cut -d';' -f8`
+	CARDNUM=`cat $WINFILE | cut -d';' -f9`
+	CARDTYPE=`cat $WINFILE | cut -d';' -f10`
+	CARDNAME=`cat $WINFILE | cut -d';' -f11`
+	SELLER=`cat $SELLERFILE | cut -d';' -f1`
+	SELLEMAIL=`cat $SELLERFILE | cut -d';' -f2`
+	PNAME=`cat $ITEMFILE | cut -d';' -f1`
+	CONDITION=`cat $ITEMFILE | cut -d';' -f2`
+	FROMCITY=`cat $ITEMFILE | cut -d';' -f3`
+	FROMSTATE=`cat $ITEMFILE | cut -d';' -f4`
+	FROMZIP=`cat $ITEMFILE | cut -d';' -f5`
 
-	# get price as 2-digit dollar value
-	RSCALED=`echo "scale=2; $RESERVE / 100" | bc`
-	ADJPRICE=`printf "%.2f" $RSCALED`
-
-	# if the reserve price was not met
-	if [ $RESERVE -gt $LASTBID ]
+	if [ -z $WINNER ]
 	then
+		# no bids were placed on the item, just email the seller
+		echo "
+<html>
+	<head>
+		<title>Himalaya.biz - auction over</title>
+	</head>
+	<body>
+		<h2>Your auction has ended</h2>
+		You are receiving this message because the item you had for
+		auction on Himalaya.biz -- $PNAME -- was not sold, because no 
+		one placed a bid on the item.<br><br>
+
+		As a result, the item has been removed from our inventory, but 
+		feel free to 
+		<a href=\"$SITEURL/members/sellitem.php\">post it again</a> as 
+		an auction or a sale.<br><br>
+		
+		Thanks for shopping with Himalaya.biz!<br><br>
+	  
+		-- The Himalaya Team<br>
+	</body>
+</html>" > $TOSELLER
+
+		if [ -n $SELLEMAIL ]  # seller is a registered user
+		then
+			messagesend $SELLEMAIL $TOSELLER "end of auction"
+		fi
+	elif [ $RESERVE -gt $LASTBID ]
+	then
+		# if the reserve price was not met
+		
+		# get price as 2-digit dollar value
+		echo reserve = $RESERVE
+		RSCALED=`echo "scale=2; $RESERVE / 100" | bc`
+		ADJPRICE=`printf "%.2f" $RSCALED`
+		
 		echo auction failed, item_id = $1
 		echo reserve price $ADJPRICE is greater than last bid $LASTBID
 
-		#mysql -u $DBUSER -p${DBPASS} -e \
-		#	"DELETE FROM Auctions WHERE item_id=$1; 
-		#         DELETE FROM Sale_Items WHERE item_id=$1" $DBNAME
+		mysql -u $DBUSER -p${DBPASS} -e \
+			"DELETE FROM Auctions WHERE item_id=$1; 
+		         DELETE FROM Sale_Items WHERE item_id=$1" $DBNAME
 		# notify seller and highest bidder
-
+		
+		
 	else
+		echo reserve = $RESERVE
+		RSCALED=`echo "scale=2; $RESERVE / 100" | bc`
+		ADJPRICE=`printf "%.2f" $RSCALED`
 		echo auction succeeded, item_id = $1
 		echo reserve price $ADJPRICE is less than or equal to last bid $LASTBID
+		
 		# create an orders record
-		#mysql -u $DBUSER -p${DBPASS} -e \
-		#	"INSERT INTO Orders 
-		#        VALUES ($1, $WINNER, 0, $TODAY, $LASTBID, 
-		#	         $WINSTREET, $WINZIP, $WINCNUM)" $DBNAME
+		mysql -u $DBUSER -p${DBPASS} -e \
+			"INSERT INTO Orders 
+		        VALUES ($1, '$WINNER', 0, '$TODAY', $LASTBID, 
+			        '$TOSTREET', '$TOZIP', '$CARDNUM')" $DBNAME
 
-		# notify buyer and seller that the auction ended
-		# sendmessage email messagefile subjectline
+		echo "
+<html>
+	<head>
+		<title>Himalaya.biz - auction over</title>
+	</head>
+	<body>
+		<h2>You won an auction!</h2>
+		You are receiving this message because you won an item for 
+		auction on Himalaya.biz! Upon ending the auction, we took your 
+		default address and credit card information in order to 
+		complete the transaction.<br><br>
+
+		Here's the information for the item, as well as the billing 
+		and shipping information:<br><br>
+
+		<h3>Item Information</h3>
+		<table>
+			<tr>
+				<td>Item Name:</td>
+				<td>$PNAME</td>
+			</tr>
+			<tr>
+				<td>Seller:</td>
+				<td>$SELLER</td>
+			</tr>
+			<tr>
+				<td>Item Price:</td>
+				<td>\$$ADJPRICE</td>
+			</tr>
+	    <tr>
+	      <td>Shipping from:</td>
+	      <td>$FROMCITY, $FROMSTATE $FROMZIP</td>
+	    </tr>
+	  </table>
+	
+	  <h3>Billing Information</h3>
+	  <table>
+	    <tr> 
+	      <td>Name on Card:</td>
+	      <td>$CARDNAME</td>
+	    </tr>
+	    <tr>
+	      <td>Card Type:</td>
+	      <td>$CARDTYPE</td>
+	    </tr>
+	    <tr>
+	      <td>Card Number:</td>
+	      <td>$CARDNUM</td>
+	    </tr>
+	  </table>
+	
+	  <h3>Shipping Information</h3>
+	  <table>
+	    <tr>
+	      <td>Full Name:</td>
+	      <td>$TONAME</td>
+	    </tr>
+	    <tr>
+	      <td>Street Address:</td>
+	      <td>$TOSTREET</td>
+	    </tr>
+	    <tr>
+	      <td>City, State:</td>
+	      <td>$TOCITY, $TOSTATE</td>
+	    </tr> 
+	    <tr>
+	      <td>ZIP code:</td>
+	      <td>$TOZIP</td>
+	    </tr>
+	  </table>
+	  <br><br>
+	  
+	  Be on the lookout for more emails as your order progresses. 
+	  Thanks for shopping with Himalaya.biz!<br><br>
+	  
+	  -- The Himalaya Team<br>
+	</body>
+</html>" > $TOWINNER
+		
+		echo "
+<html>
+	<head>
+		<title>Himalaya.biz - auction over</title>
+	</head>
+	<body>
+		<h2>Your auction has ended</h2>
+		You are receiving this message because the item you had for
+		auction on Himalaya.biz -- $PNAME -- has been sold!<br><br>
+
+		Please send your item to the Himalaya.biz shipping facility 
+		within two weeks, or the order will be voided. The address to 
+		send your item to is:<br><br>
+		
+		Himalaya.biz Shipping<br>
+		13 Main St<br>
+		State College, PA 16801<br><br>
+		
+		Thanks for shopping with Himalaya.biz!<br><br>
+	  
+		-- The Himalaya Team<br>
+	</body>
+</html>" > $TOSELLER
+
+		echo "
+<html>
+	<head>
+		<title>Himalaya.biz - auction over</title>
+	</head>
+	<body>
+		<h2>Your auction has ended</h2>
+		You are receiving this message because the item you had bid
+		on at Himalaya.biz -- $PNAME -- has been sold, but you did not 
+		place the winning bid.<br><br>
+		
+		Feel free to try to win some other 
+		<a href=\"$SITEURL/items/browse.php\">auctions</a>!<br><br>
+		
+		Thanks for shopping with Himalaya.biz!<br><br>
+
+		-- The Himalaya Team<br>
+	</body>
+</html>" > $TOLOSER
+
+		if [ -n $SELLEMAIL ]  # seller is a registered user
+		then
+			messagesend $SELLEMAIL $ENDFILE \
+			            "your auction item has sold!"
+		fi
+		messagesend $WINEMAIL $TOWINNER "you won an auction!"
 	fi
 
 	cat $LOSERSFILE | while read EMAIL
 	do
-		echo sending email to $EMAIL, subject
+		messagesend $EMAIL $TOLOSER "you did not win an auction"
 	done
 
 	echo
