@@ -131,18 +131,15 @@ if($user != null)
   $cats = new SimpleXMLElement('../common/categories.xml', null, true);
   $cat_set = !empty($_GET['cid']);
   
-  if($cat_set) // get current category id and name
-  {
-    $browse_cat_id = ((int)$_GET['cid']);
-    $browse_cat_name = cat_get_name($cats, $browse_cat_id);
-  }
+  $browse_cat_id = ($cat_set ? ((int)$_GET['cid']) : 0);
+  $browse_cat_name = cat_get_name($cats, $browse_cat_id);
 
   print_html_header();
   echo '<body>';
   print_html_nav();
   echo '<div class="container-fluid">';
   
-  if($cat_set) // show category path at top of page when appropriate
+  if($cat_set) // show title and category path at top of page as appropriate
   {
     echo "<h3>Browse - $browse_cat_name</h3>";
     print_cat_path($cats, $browse_cat_id);
@@ -152,10 +149,15 @@ if($user != null)
     echo '<h3>Browse</h3>';
   }
   
-  // create category list div
-  echo '<div class="span3">' .
-       '  <div class="tile" style="text-align:left">' .
-       '    <h4>Climb higher!</h4>';
+  // begin category list/options div (aka left bar)
+  echo '<div class="span">';
+  
+  
+  
+  // begin category list div
+  echo '  <div class="row">';
+  echo '    <div class="tile" style="text-align:left; display:inline-block">' .
+       '      <h4>Climb higher!</h4>';
 
   if(!$cat_set) // basic browse page - show complete category list
   {
@@ -168,10 +170,50 @@ if($user != null)
     print_tree_starting_from_id($cats, $browse_cat_id);    
   }
   
-  // end category list div
-  echo '</div>'; // tile
-  echo '</div>'; // span3
-  echo 'some main body text hopefully';
+  echo '    </div>'; // tile - category list
+  echo '  </div>'; // row - category list
+  
+  // begin list options div
+  echo '  <div class="row">';
+  echo '    <div class="tile" style="text-align:left; display:inline-block; margin-top:20px">';
+  
+  show_form('browse');
+  
+  // change form destination to the current page
+  echo "<script>document.browse.action=\"browse.php?cid=$browse_cat_id\"</script>";
+  echo '<div id="errordiv"></div>'; // for displaying error messages though javascript
+  
+  // populate any fields that previously posted values
+  echo '<script>';
+  foreach($_POST['itemtype'] as $itemtype)
+  {
+    echo "document.getElementById(\"$itemtype\").checked = true;";
+  }
+  foreach($_POST['itemcond'] as $cond_num)
+  {
+    echo "document.getElementById(\"itemcond$cond_num\").checked = true;";
+  }
+  foreach($_POST['sellertype'] as $sellertype)
+  {
+    echo "document.getElementById(\"$sellertype\").checked = true;";
+  }
+  echo '</script>';
+  
+  echo '    </div>'; // tile - options
+  echo '  </div>'; // row - options
+  
+  echo '</div>'; // span - left bar
+  
+  // begin main body div for item list
+  echo '<div class="span">';
+  echo 'some main body text hopefully<br><br><br><br><br><br><br><br>meow meow meow meow meow meow';
+  print_message(implode(',',$_POST['itemtype']));
+  print_message(implode(',',$_POST['itemcond']));
+  print_message(implode(',',$_POST['sellertype']));
+  echo '</div>'; // span - main body
+  
+  print_html_footer_js();
+  print_html_footer();
 }
 else // user not logged in
 {
