@@ -48,6 +48,40 @@
 		</li>
     <li>
       <a href="/items/browse.php">Browse</a>
+      <ul>
+        <!-- create links to top-level categories for browsing -->
+        <!-- maintain a handle to the first link or else UI gets weird -->
+        <li id="firstbrowsecat"></li>
+        <script>
+          // open XML file
+          var req = new XMLHttpRequest();
+          req.open("GET", "../common/categories.xml", false);
+          req.send();
+          var xml = req.responseXML;
+          
+          // get ids and names of all categories at the first level
+          var ids_iter = xml.evaluate('/category_tree/category[depth=1]/id', xml, 
+                                      null, XPathResult.ANY_TYPE, null);
+          var names_iter = xml.evaluate('/category_tree/category[depth=1]/name', xml, 
+                                        null, XPathResult.ANY_TYPE, null);
+          var cid = ids_iter.iterateNext();
+          var cname = names_iter.iterateNext();
+          
+          // create links
+          document.getElementById('firstbrowsecat').innerHTML = 
+            '<a href="/items/browse.php?cid=' + cid.firstChild.nodeValue + '">' + cname.firstChild.nodeValue + '</a>';  
+          cid = ids_iter.iterateNext();
+          cname = names_iter.iterateNext();
+
+          while(cid && cname)
+          {
+            document.write('<li><a href="/items/browse.php?cid=' + cid.firstChild.nodeValue + 
+                           '">' + cname.firstChild.nodeValue + '</a>');
+            cid = ids_iter.iterateNext();
+            cname = names_iter.iterateNext();
+          }
+        </script>
+      </ul>
     </li>
 		<li>
 		  <a href="#">Account</a>
