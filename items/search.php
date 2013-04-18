@@ -18,10 +18,41 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/functions.php';
 /** FUNCTIONS **/
 /***************/
 
-// checks if all post values are set to non-empty values
+// checks if all post values are set to non-empty, valid values
 // (boolean)
-function all_set()
+function all_set($c)
 {
+  if(!empty($_POST['zipcode'])) // ensure ZIP code is valid
+  {
+    global $ZIP_TABLE;
+  
+    if($stmt = mysqli_prepare($c, "SELECT zip from $ZIP_TABLE WHERE zip=?")) // query successfully prepared
+    {
+      mysqli_stmt_bind_param($stmt, 's', $_POST['zipcode']);
+    
+      if(mysqli_stmt_execute($stmt)) // successful query
+      {
+        mysqli_stmt_bind_result($stmt, $zip);
+        if(mysqli_stmt_fetch($stmt) == null) // no results - ZIP code is not in the database
+        {
+          print_message('Invalid ZIP code.');
+          return false;
+        }
+      }
+      else // unsuccessful query
+      {
+        print_message('ZIP code verification failed. Sorry about that!');
+      }
+    
+      mysqli_stmt_close($stmt);
+    }
+    else // query couldn't be built
+    {
+      print_message('Invalid ZIP code format.');
+    }
+  }
+
+  // zip code is valid - check rest of post values
   return !empty($_POST['searchterm']) &&
          !empty($_POST['itemtype'])   &&
          !empty($_POST['itemcond'])   &&
@@ -166,7 +197,7 @@ if($user != null)
   print_html_nav();
   echo '<div class="container-fluid">';
 
-  if(all_set()) // execute search
+  if(all_set($c)) // execute search
   {
     echo '<h3>Search Results</h3>';
 
