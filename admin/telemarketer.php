@@ -28,8 +28,14 @@ function print_report_row($c, $row)
   echo '<tr>';
   while($i < count($row) - 1) // 1 for the gift card balance,
   {
-
-    echo '<td>' . $row[$i] . '</td>';
+    if($i == 3)
+    {
+      echo '<td>' . format_age($row[$i]) . '</td>';
+    }
+    else
+    {
+      echo '<td>' . $row[$i] . '</td>';
+    }
     $i++;
   }
   
@@ -40,6 +46,17 @@ function print_report_row($c, $row)
   echo '<td>' . disp_addresses($c, $address) . '</td>';
   echo '<td>' . disp_phones($phones) . '</td>';
   echo '</tr>';
+}
+
+// formats the age given a date of birth
+// (string)
+function format_age($dob)
+{
+  $today = new DateTime();
+  $then  = new DateTime($dob);
+
+  $diff = $today->diff($then);
+  return $diff->y;
 }
 
 // gets all phone numbers as '<br />' seperated string
