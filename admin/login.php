@@ -93,7 +93,7 @@ else
       echo '<p style="color:red">Username or Password was not valid</p>';
 
       // show the pasword page
-      show_form('login');
+      show_form('login_admin');
     }
   }
   else
@@ -101,7 +101,7 @@ else
     print_html_header();
     // no login was attempted
     // just show the password page
-    show_form('login');
+    show_form('login_admin');
   }
 }
 
