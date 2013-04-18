@@ -1,0 +1,33 @@
+<!--provides a username, password, and submit button for logging in-->
+</br>
+<center>
+<div class="container">
+<div class="login">
+<!---->
+<div class="login-screen">
+  <div class="login-icon">
+    <img src="http://himalaya.goodermuth.com/design/images/illustrations/bag.png" alt="Welcome to the Himalaya.biz Admin Page" />
+    <h4>Welcome to the <small>Himalaya.biz Admin Site</small></h4>
+  </div>
+
+  <div class="login-form">
+  <form action='login.php' method='post'>
+  <input type="hidden" name="op" value="login"/>
+    <div class="control-group">
+      <input type="text" class="login-field" value="" placeholder="username" id="login-name" name="username"/>
+      <label class="login-field-icon fui-man-16" for="login-name"></label>
+    </div>
+
+    <div class="control-group">
+      <input type="password" class="login-field" value="" placeholder="password" id="login-pass" name="password"/>
+      <label class="login-field-icon fui-lock-16" for="login-pass"></label>
+    </div>
+    <input class="btn btn-primary btn-large btn-block" value="Login" type="submit"></input>
+    <br /><a class="login-link" href="http://himalaya.goodermuth.com/index.php">Return to Main Site</a>
+  </form>
+  </div>
+</div>
+<!--</form>-->
+</div>
+</div>
+</center>
