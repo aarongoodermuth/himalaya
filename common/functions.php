@@ -45,11 +45,6 @@ function print_html_footer2()
   echo file_get_contents('footer.html', true);
 }
 
-function print_html_footer_liveval()
-{
-  echo '';
-}
-
 function print_html_footer_js()
 {
   echo '
@@ -135,10 +130,8 @@ function check_logged_in_admin_user($c)
 // (void)
 function show_form($form_name)
 {
-  $data = file_get_contents('/home/goodermuth/dev/websites/himalaya/common/forms/' 
-                                 . $form_name . '.form');
-  echo $data;
- 
+  $docroot = $_SERVER['DOCUMENT_ROOT'];  
+  include "$docroot/common/forms/$form_name.form";
 }
 
 // filters all inputs for SQL Injection
