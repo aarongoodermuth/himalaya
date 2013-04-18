@@ -17,12 +17,6 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/constants.php';
 /***************/
 
 // (void)
-/*function print_html_header()
-{
-  echo '<html><body>';
-}*/
-
-// (void)
 function print_html_header()
 {
   echo file_get_contents('header.html', true);
@@ -31,7 +25,7 @@ function print_html_header()
 // (void)
 function print_html_nav()
 {
-  echo file_get_contents('navigation.html', true);
+  include 'navigation.php';
 }
 
 function print_html_nav_supplier()
