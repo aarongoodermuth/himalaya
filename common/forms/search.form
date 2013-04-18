@@ -9,8 +9,6 @@
     <td><label class="checkbox"><input id="auction" type="checkbox" name="itemtype[]" value="auction">Auction</label></td>
   </tr>
   <tr>
-  </tr>
-  <tr>
     <td>Item condition:</td>
     <td><label class="checkbox"><input id="itemcond0" type="checkbox" name="itemcond[]" value="0">New</label></td>
     <td><label class="checkbox"><input id="itemcond1" type="checkbox" name="itemcond[]" value="1">Used - Like New</label></td>
@@ -23,11 +21,46 @@
     <td><label class="checkbox"><input id="itemcond5" type="checkbox" name="itemcond[]" value="5">Used - For Parts Only</label></td>
   </tr>
   <tr>
-  </tr>
-  <tr>
     <td>Seller type:</td>
     <td><label class="checkbox"><input id="supplier" type="checkbox" name="sellertype[]" value="supplier">Supplier</label></td>
     <td><label class="checkbox"><input id="user" type="checkbox" name="sellertype[]" value="user">Individual</label></td>
+  </tr>
   </table>
-  <div class="span2"><input class="btn btn-lage btn-block btn-primary"type="submit" value="Search"></div>
+  <table>
+  <tr>
+    <td><label class="checkbox"><input id="zipcheck" type="checkbox" name="zipcheck" value="zipcheck" onchange="update_zip_fields()"></label></td>
+    <td>Items within</td>
+    <td><select name="radius" id="zipselect">
+      <option value="10">10&nbsp;&nbsp;</option>
+      <option value="25">25&nbsp;&nbsp;</option>
+      <option value="50">50&nbsp;&nbsp;</option>
+      <option value="100">100&nbsp;&nbsp;</option>
+    </select></td>
+    <td>&nbsp;miles of&nbsp;</td>
+    <td><input type="text" id="zipfield" value="ZIP Code" disabled="disabled" name="zipcode"></td>
+  </tr>
+  </table>
+  <input class="btn btn-lage btn-block btn-primary" type="submit" value="Search" style="width:auto; padding:5px">
+  <script>
+    // enable zip code UI elements when the zip checkbox is checked; disable in the opposite case
+    function update_zip_fields()
+    {
+      if(document.getElementById('zipcheck').checked)
+      {
+        document.getElementById('zipfield').disabled = false;
+        document.getElementById('zipfield').value = "";
+        document.getElementById('zipfield').placeholder = "ZIP Code";
+        document.getElementById('zipfield').focus();
+      }
+      else
+      {
+        document.getElementById('zipfield').disabled = true;
+        document.getElementById('zipfield').value = "ZIP Code";
+      }
+    }
+    
+    // ensure the zip code entered is well-formed
+    var zip = new LiveValidation('zipfield', {onlyOnSubmit: true, validMessage: ' '});
+    zip.add(Validate.Format, {pattern: /^\d{5}$/, failureMessage: 'Not a valid ZIP code format!'});
+  </script>
 </form>

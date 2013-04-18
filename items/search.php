@@ -285,7 +285,9 @@ if($user != null)
     echo '<script>populate(' . post_or_null($_POST['searchterm']) . ',' .
                                post_or_null($_POST['itemtype'])   . ',' .
                                post_or_null($_POST['itemcond'])   . ',' .
-                               post_or_null($_POST['sellertype']) . ');</script>';
+                               post_or_null($_POST['sellertype']) . ',' .
+                               post_or_null($_POST['zipcheck'])   . ',' .
+                               post_or_null($_POST['zipcode'])    . ');</script>';
   }
   else // no post values - populate form with default values
   {

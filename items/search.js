@@ -26,11 +26,11 @@ function search_populate_all()
 
 // sets field values based on non-null arguments
 // alerts the user as to which inputs are missing (null)
-function populate(searchterm, itemtypes, itemconds, sellertypes)
+function populate(searchterm, itemtypes, itemconds, sellertypes, zipcheck, zipcode)
 {
   var i;
 
-  document.write("<p style=\"color:red\">Please enter values for the following fields:");
+  document.write("<p style=\"color:red\"><br>Please enter values for the following fields:");
 
   if(searchterm === null)
   {
@@ -75,6 +75,21 @@ function populate(searchterm, itemtypes, itemconds, sellertypes)
     {
       document.getElementById(sellertypes[i]).checked = true;
     }
+  }
+  
+  if(zipcheck != null && zipcode === null) // zip search specified, but empty input
+  {
+    document.write("<br>ZIP Code");
+    document.getElementById("zipcheck").checked = true;
+    document.getElementById("zipfield").disabled = false;
+    document.getElementById("zipfield").value = "";
+    document.getElementById("zipfield").placeholder = "ZIP Code";
+  }
+  else if(zipcode != null) // input specified; restore
+  {
+    document.getElementById("zipcheck").checked = true;
+    document.getElementById("zipfield").disabled = false;
+    document.getElementById("zipfield").value = zipcode;
   }
 
   document.write("</p>");
