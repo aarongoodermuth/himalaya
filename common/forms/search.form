@@ -59,6 +59,8 @@
       }
     }
     
+    //update_zip_fields(); // force update if browser back button is pressed
+    
     // ensure the zip code entered is well-formed
     var zip = new LiveValidation('zipfield', {onlyOnSubmit: true, validMessage: ' '});
     zip.add(Validate.Format, {pattern: /^\d{5}$/, failureMessage: 'Not a valid ZIP code format!'});

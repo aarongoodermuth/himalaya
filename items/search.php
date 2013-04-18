@@ -22,6 +22,9 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/functions.php';
 // (boolean)
 function all_set($c)
 {
+  if(!empty($_POST['zipcheck']) && empty($_POST['zipcode'])) // zip code search specified, but no
+    return false;                                            //   zip code entered
+
   if(!empty($_POST['zipcode'])) // ensure ZIP code is valid
   {
     global $ZIP_TABLE;
@@ -109,6 +112,8 @@ function mysql_get_search_query()
   global $SUPPLIERS_TABLE;
   global $SALES_TABLE;
   global $ORDERS_TABLE;
+  global $ZIP_TABLE;
+  global $EARTH_RADIUS;
 
   $itemtypes   = $_POST['itemtype'];   // sale item types array (values: sale | auction)
   $itemconds   = $_POST['itemcond'];   // item condition array  (values: 0-5)
@@ -134,6 +139,21 @@ function mysql_get_search_query()
 
   // ensure items have not already been sold
   $where_clause .= "AND S.item_id NOT IN (SELECT item_id FROM $ORDERS_TABLE) ";
+  
+  // if zip code search specified, ensure items are within the given radius of the given zip code
+  if(!empty($_POST['zipcode']))
+  {
+    $where_clause .= "AND S.item_id IN (" . 
+                       "SELECT s.item_id " .
+                       "FROM $SALE_ITEMS_TABLE s INNER JOIN $ZIP_TABLE z ON s.shipping_zip = z.zip " .
+                       "WHERE ($EARTH_RADIUS * acos(cos(radians(( " .
+                          "SELECT lat FROM $ZIP_TABLE WHERE zip = ? " .
+                          "))) * cos(radians(z.lat)) * cos(radians(( " .
+                          "SELECT lon FROM $ZIP_TABLE WHERE zip = ? " .
+                          ")) - radians(z.lon)) + sin(radians(( " .
+                          "SELECT lat FROM $ZIP_TABLE WHERE zip = ? " .
+                          "))) * sin(radians(z.lat)))) <= ?) ";
+  }
 
   // ensure results match seller types specified
   // (if both specified, no clause needed)
@@ -204,7 +224,18 @@ if($user != null)
     if($stmt = mysqli_prepare($c, mysql_get_search_query())) // query successfully prepared
     {
       $searchterm = '%' . $_POST['searchterm'] . '%';
-      mysqli_stmt_bind_param($stmt, 'ss', $searchterm, $searchterm);
+      
+      if(!empty($_POST['zipcode'])) // bind zip inputs for zip code search
+      {
+        $zipcode = $_POST['zipcode'];
+        $radius = ((int)$_POST['radius']);
+        mysqli_stmt_bind_param($stmt, 'sssssi', $searchterm, $searchterm, $zipcode, $zipcode,
+                                                $zipcode, $radius);
+      }
+      else // no zip code search
+      {
+        mysqli_stmt_bind_param($stmt, 'ss', $searchterm, $searchterm);
+      }
 
       if(mysqli_stmt_execute($stmt)) // successful query
       {
