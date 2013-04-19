@@ -479,16 +479,21 @@ function mysql_admin_recently_sold($c)
 {
   global $SUPPLIERS_TABLE, $PRODUCTS_TABLE;
 
-  $query = 'SELECT action_date, 
-                   username, 
-                   (SELECT p_name FROM Products p WHERE p.product_id =
+  $query = 'SELECT p.p_name, p.p_desc, category_name, si.username, price/100 
+            FROM Orders o, Sale_Items si, Products p, Categories c
+            WHERE si.item_id=o.item_id
+            AND   p.product_id=si.product_id
+            AND   p.category_id=c.category_id
+            AND   (o.action_date >= (CURDATE()-7))';
+  /*$query = 'SELECT (SELECT p_name FROM Products p WHERE p.product_id =
                        (SELECT product_id from Sale_Items s WHERE o.item_id=s.item_id)), 
                    (SELECT p_desc FROM Products p WHERE p.product_id =
                        (SELECT product_id from Sale_Items s WHERE o.item_id=s.item_id)), 
-                   (SELECT price from Sales where o.item_id=item_id), 
+                   (SELECT o.price from Sales s, Orders o), 
                    (SELECT item_desc FROM Sale_Items where o.item_id=item_id), 
                    (SELECT username FROM Sale_Items where o.item_id=item_id) 
-            FROM Orders o WHERE (o.action_date >= (CURDATE()-7))';
+            FROM Orders o 
+            WHERE (o.action_date >= (CURDATE()-7))';*/
   
   $db_answer = mysqli_query($c, $query);
   if($db_answer === false)
