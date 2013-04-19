@@ -49,6 +49,10 @@ function print_lowstock_table($c)
 function print_sold_items_table($c)
 {
   $rows = mysql_admin_recently_sold($c);
+  for($i=0;$i<count($rows);$i++)
+  {
+    $rows[$i][4] = sprintf('$%.2f', $rows[$i][4]);
+  }
   echo make_html_table($rows);  
 }
 
@@ -114,7 +118,8 @@ if( $user_type == $ADMIN_USER_TYPE_MAPPING[1] ||
   echo '<div><h4 style="text-align:center">Recently Sold Items</h4>';
   echo '<table style="text-align:center" align="center" border="1">';
   echo '<tr style="font-weight:bold; text-align:center"><td>Name</td>
-           <td>Retailer</td><td>Selling Price</td></tr>';
+           <td>Description</td><td>Category</td><td>Seller</td>
+           <td>Selling Price</td></tr>';
   print_sold_items_table($c);
   echo '</table>'; 
   echo '</div>';
