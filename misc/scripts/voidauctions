@@ -1,0 +1,156 @@
+#!/bin/bash
+
+set -e 
+
+DBNAME="himalaya"
+DBUSER="root"
+DBPASS="431w"
+ORDERS=/tmp/orders_inprogress
+SITEURL=himalaya.goodermuth.com
+
+# void an order by item_id
+# usage: voidorder line
+function voidorder()
+{
+	SELLER=/tmp/orders
+
+	rm -f $SELLERFILE $ITEMFILE
+
+	ID=`echo "$1" | cut -d';' -f1`
+	BUYER=`echo "$1" | cut -d';' -f2`
+	STATUS=`echo "$1" | cut -d';' -f3`
+	PNAME=`echo "$1" | cut -d';' -f4`
+	SELLER=`echo "$1" | cut -d';' -f5`
+
+	# get buyer's email
+	mysql -u $DBUSER -p${DBPASS} -e \
+		"SELECT E.email
+		 FROM   Emails E
+		 WHERE  E.username='$BUYER'
+		 INTO   OUTFILE '$BUYFILE' LINES TERMINATED BY '\\n'" $DBNAME
+
+	# get email of seller
+	mysql -u $DBUSER -p${DBPASS} -e \
+		"SELECT E.email
+		 FROM   Emails E
+		 WHERE  E.username='$SELLER'
+		 INTO   OUTFILE '$SELLFILE' LINES TERMINATED BY '\\n'" $DBNAME
+	
+	BUYEMAIL=`cat $BUYFILE`
+	SELLEMAIL=`cat $SELLFILE`
+
+	# remove the order record
+
+
+
+	if [ $STATUS -eq 0 ]
+	then
+		# the item was never recieved at the shipping facility
+		echo "
+<html>
+	<head>
+		<title>Himalaya.biz - order voided</title>
+	</head>
+	<body>
+		<h2>order $ID has been voided</h2>
+		You are receiving this message because the order for the item 
+		you had for sale on Himalaya.biz -- $PNAME -- has been voided, 
+		because you did send the item to the shipping facility within
+		two weeks after the end of the sale.<br><br>
+
+		Thanks for shopping with Himalaya.biz!<br><br>
+	  
+		-- The Himalaya Team<br>
+	</body>
+</html>" > $TOSELLER
+
+		echo "
+<html>
+	<head>
+		<title>Himalaya.biz - order voided</title>
+	</head>
+	<body>
+		<h2>order $ID has been voided</h2>
+		You are receiving this message because the order for the item 
+		you purchased on Himalaya.biz -- $PNAME -- has been voided, 
+		because you the seller did not send item to the shipping 
+		facility within two weeks after the end of the sale. We 
+		apologize for the inconvenience, but feel free to look for 
+		other items to buy!<br><br>
+
+		Thanks for shopping with Himalaya.biz!<br><br>
+	  
+		-- The Himalaya Team<br>
+	</body>
+</html>" > $TOBUYER
+
+	else
+		# buyer's credit card charge did not go through
+		echo "
+<html>
+	<head>
+		<title>Himalaya.biz - order $ID voided</title>
+	</head>
+	<body>
+		<h2>order $ID has been voided</h2>
+		You are receiving this message because the order for the item  
+		you purchased on Himalaya.biz -- $PNAME -- has been voided,  
+		because the charge to your credit card did not go through 
+		within two weeks after the item arrived at our shipping 
+		facility.<br><br>
+
+	  -- The Himalaya Team<br>
+	</body>
+</html>" > $TOBUYER
+		
+		echo "
+<html>
+	<head>
+		<title>Himalaya.biz - order $ID voided</title>
+	</head>
+	<body>
+		<h2>order $ID has been voided</h2>
+		You are receiving this message because the order for the item  
+		you had for sale on Himalaya.biz -- $PNAME -- has been voided,
+		because the charge to the buyer's credit card did not go 
+		through within two weeks after the item arrived at our shipping
+		facility. We apologize for the inconvenience, but feel free to 
+		post the item again!<br><br>
+
+	  -- The Himalaya Team<br>
+	</body>
+</html>" > $TOSELLER
+
+	fi
+
+	if [ -n $SELLEMAIL ]  # seller is a registered user
+	then
+		messagesend $SELLEMAIL $TOSELLER "order $ID voided"
+	fi
+	messagesend $BUYEMAIL $TOBUYER "order $ID voided"
+
+	echo
+}
+
+#####################
+
+rm -f $ORDERS
+
+TIME=`date --date "2 weeks ago" +"%F %T"`
+TODAY=`date +%F`
+
+mysql -u $DBUSER -p${DBPASS} -e \
+	"SELECT R.item_id, R.username, R.status, P.p_name, S.username
+	 FROM   Orders R, Products P, Sale_Items
+	 WHERE  R.action_date < \"$TIME\" AND (R.status=1 OR R.status=1) AND
+	 R.item_id=S.item_id AND S.product_id=P.product_id
+	 INTO   OUTFILE '$AUCTIONS' FIELDS TERMINATED ';'
+	        LINES TERMINATED BY '\\n'" $DBNAME
+
+cat $ORDERS | while read LINE
+do
+	echo $LINE
+	#voidorders $ID $BUYER $STATUS
+done
+
+exit 0
