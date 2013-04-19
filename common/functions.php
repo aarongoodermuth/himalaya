@@ -25,7 +25,7 @@ function print_html_header()
 // (void)
 function print_html_nav()
 {
-  include 'navigation.php';
+  echo file_get_contents('navigation.html', true);
 }
 
 function print_html_nav_supplier()
@@ -130,9 +130,7 @@ function check_logged_in_admin_user($c)
 // (void)
 function show_form($form_name)
 {
-  $data = file_get_contents('/home/goodermuth/dev/websites/himalaya/common/forms/' 
-                                       . $form_name . '.form');
-  echo $data;
+  include "/home/goodermuth/dev/websites/himalaya/common/forms/$form_name.form";
 }
 
 // filters all inputs for SQL Injection
