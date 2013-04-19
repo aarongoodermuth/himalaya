@@ -28,6 +28,7 @@ function show_links()
   echo '<p><a href="highbidder.php">Items where I am high bidder</a></p>';        // items where i am high bidder
   echo '<p><a href="../items/search.php">Search or Browse</a></p>';          // search/browse
   echo '<p><a href="sellitem.php">Sell Item</a></p>';                        // sell an item
+  echo '<p><a href="nickspage.php">Rate members you have bought from</a></p>';
   echo '<p><a href="redeem.php">Redeem a Gift Card</a></p>';
   echo '<p><a href="balance.php">Show Gift Card Balance</a></p>';
   echo '<p><a href="editaccount.php">Edit Account</a></p>';                  // edit account
@@ -58,7 +59,7 @@ if($user != null)
     print_html_header();
     echo '<body>';
     print_html_nav();
-    echo '<body><div class="container-fluid">';
+    echo '<div class="container-fluid">';
     echo '<h3>Welcome to the User Dashboard, ' . $user . '!</h3>';
     show_links();
     echo "</div></br>\n";
