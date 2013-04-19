@@ -5,22 +5,25 @@ set -e
 DBNAME="himalaya"
 DBUSER="root"
 DBPASS="431w"
-ORDERS=/tmp/orders_inprogress
+ORDERS=/tmp/orders_tovoid
 SITEURL=himalaya.goodermuth.com
 
 # void an order by item_id
 # usage: voidorder line
 function voidorder()
 {
-	SELLER=/tmp/orders
-
-	rm -f $SELLERFILE $ITEMFILE
-
 	ID=`echo "$1" | cut -d';' -f1`
 	BUYER=`echo "$1" | cut -d';' -f2`
 	STATUS=`echo "$1" | cut -d';' -f3`
 	PNAME=`echo "$1" | cut -d';' -f4`
 	SELLER=`echo "$1" | cut -d';' -f5`
+
+	BUYFILE=/tmp/orders_void_${ID}_buyer
+	SELLFILE=/tmp/orders_void_${ID}_seller
+	TOBUYER=/tmp/orders_void_${ID}_tobuyer.html
+	TOSELLER=/tmp/orders_void_${ID}_toseller.html
+
+	rm -f $SELLFILE $BUYFILE $TOBUYER $TOSELLER
 
 	# get buyer's email
 	mysql -u $DBUSER -p${DBPASS} -e \
@@ -40,8 +43,8 @@ function voidorder()
 	SELLEMAIL=`cat $SELLFILE`
 
 	# remove the order record
-
-
+	mysql -u $DBUSER -p${DBPASS} -e \
+		"UPDATE Orders SET status=3 WHERE item_id=$ID" $DBNAME
 
 	if [ $STATUS -eq 0 ]
 	then
@@ -123,10 +126,11 @@ function voidorder()
 
 	fi
 
-	if [ -n $SELLEMAIL ]  # seller is a registered user
+	if [ ! -z $SELLEMAIL ]  # seller is a registered user
 	then
 		messagesend $SELLEMAIL $TOSELLER "order $ID voided"
 	fi
+	echo messagesend $BUYEMAIL $TOBUYER "order $ID voided"
 	messagesend $BUYEMAIL $TOBUYER "order $ID voided"
 
 	echo
@@ -136,21 +140,21 @@ function voidorder()
 
 rm -f $ORDERS
 
-TIME=`date --date "2 weeks ago" +"%F %T"`
-TODAY=`date +%F`
+TIME=`date  +"%F %T"`
+echo TIME = $TIME
+#TIME=`date --date "2 weeks ago" +"%F %T"`
 
 mysql -u $DBUSER -p${DBPASS} -e \
 	"SELECT R.item_id, R.username, R.status, P.p_name, S.username
-	 FROM   Orders R, Products P, Sale_Items
-	 WHERE  R.action_date < \"$TIME\" AND (R.status=1 OR R.status=1) AND
-	 R.item_id=S.item_id AND S.product_id=P.product_id
-	 INTO   OUTFILE '$AUCTIONS' FIELDS TERMINATED ';'
+	 FROM   Orders R, Products P, Sale_Items S
+	 WHERE  R.action_date < '$TIME' AND (R.status=0 OR R.status=1) AND
+	        R.item_id=S.item_id AND S.product_id=P.product_id
+	 INTO   OUTFILE '$ORDERS' FIELDS TERMINATED BY ';'
 	        LINES TERMINATED BY '\\n'" $DBNAME
 
 cat $ORDERS | while read LINE
 do
-	echo $LINE
-	#voidorders $ID $BUYER $STATUS
+	voidorder $LINE
 done
 
 exit 0
