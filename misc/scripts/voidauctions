@@ -140,9 +140,7 @@ function voidorder()
 
 rm -f $ORDERS
 
-TIME=`date  +"%F %T"`
-echo TIME = $TIME
-#TIME=`date --date "2 weeks ago" +"%F %T"`
+TIME=`date --date "2 weeks ago" +"%F %T"`
 
 mysql -u $DBUSER -p${DBPASS} -e \
 	"SELECT R.item_id, R.username, R.status, P.p_name, S.username
