@@ -130,8 +130,9 @@ function check_logged_in_admin_user($c)
 // (void)
 function show_form($form_name)
 {
-  $docroot = $_SERVER['DOCUMENT_ROOT'];  
-  include "$docroot/common/forms/$form_name.form";
+  $data = file_get_contents('/home/goodermuth/dev/websites/himalaya/common/forms/' 
+                                       . $form_name . '.form');
+  echo $data;
 }
 
 // filters all inputs for SQL Injection
