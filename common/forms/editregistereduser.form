@@ -4,33 +4,79 @@ submit button for adding user-->
 <form name="edituser" action="editaccount.php" method="post">
 <h3>Edit Account</h3>
 <table>
-<tr><td>Full Name: </td><td><input type="text" value="" placeholder="Full Name" name="name"></input></td></tr>
-<tr><td>Email: </td><td><input type="text" value="" placeholder="Email" name="email"></input></td></tr>
-<tr><td>
-<div class="row">
-  <div class="span2">
-    Gender:
-    <label class="radio">
-      <input id="gender1" type="radio" name="gender" value="M">Male</input>
-    </label>
-    <label class="radio">
-      <input id="gender2" type="radio" name="gender" value="F">Female</input> 
-    </label>
-  </div>
-</div>
-</td></tr>
-
-<tr><td>Street Address: </td><td><input type="text" value="" placeholder="Address" name="address"></input></td></tr>
-<tr><td>ZIP Code: </td><td><input type="text" value="" placeholder="ZIP code" name="zip"></input></td></tr>
-<tr><td>Phone Number: </td><td><input type="text" value="" placeholder="Phone Number" name="phone"></input></td></tr>
-<tr><td>Date of Birth: </td><td><input type="text" value="" placeholder="yyyy-mm-dd" name="dob"></input></td></tr>
-<tr><td>Income: </td><td><input type="text" value="" placeholder="Income ($)" name="income"></input></td></tr>
-
-<!-- <tr><td><input value="Submit" type="submit"></input></td></tr> -->
-<!-- <a href="#" class="btn btn-large btn-block btn-primary">Primary Button</a> -->
-<tr><td><br></td></tr>
-<tr><td><input class="btn btn-large btn-block btn-primary" value="Submit" type="submit"></input></td></tr>
+  <tr>
+    <td>Full Name:</td>
+    <td><input type="text" value="" placeholder="Full Name" name="name" id="name"></input></td>
+  </tr>
+  <tr>
+    <td>Email:</td>
+    <td><input type="text" value="" placeholder="Email" name="email" id="email"></input></td>
+    <script>
+      var email = new Livevalidation('email');
+      password.add(Validate.Email);
+    </script>
+  </tr>
+  <tr>
+    <td>
+      <div class="row">
+        <div class="span2">
+        Gender:
+          <label class="radio">
+            <input id="gender1" type="radio" name="gender" value="M">Male</input>
+          </label>
+          <label class="radio">
+            <input id="gender2" type="radio" name="gender" value="F">Female</input> 
+          </label>
+        </div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td>Street Address: </td>
+    <td><input type="text" value="" placeholder="Address" name="address" id="address"></input></td>
+  </tr>
+  <tr>
+    <td>ZIP Code: </td>
+    <td><input type="text" value="" placeholder="ZIP code" name="zip" id="zip"></input></td>
+    <script>
+      var zip = new LiveValidation('zip');
+      zip.add(Validate.Numericality, { onlyInteger: true, minimum: 1 });
+      zip.add(Validate.Length, { is: 5 });
+    </script>
+  </tr>
+  <tr>
+    <td>Phone Number: </td>
+    <td><input type="text" value="" placeholder="Phone Number" name="phone" id="phone"></input></td>
+    <script>
+      var phone = new LiveValidation('phone');
+      phone.add(Validate.Length, { minimum: 10, maximum: 16});
+    </script>
+  </tr>
+  <tr>
+    <td>Date of Birth: </td>
+    <td><input type="text" value="" placeholder="yyyy-mm-dd" name="dob" id="dob"></input></td>
+  </tr>
+  <tr>
+    <td>Income:</td><td><input type="text" value="" placeholder="Income ($)" name="income" id="income"></input></td>
+  </tr>
+  <tr><td><br></td></tr>
+  <tr><td><input class="btn btn-large btn-block btn-primary" value="Submit" type="submit"></input></td></tr>
 </table>
 </form>
+<script>
+  var subname = new LiveValidation('name', {onlyOnSubmit: true});
+  subname.add(Validate.Presence);
+  var subemail = new LiveValidation('email', {onlyOnSubmit: true});
+  subemail.add(Validate.Presence);
+  var subaddress = new LiveValidation('address', {onlyOnSubmit: true});
+  subaddress.add(Validate.Presence);
+  var subzip = new LiveValidation('zip', {onlyOnSubmit: true});
+  subzip.add(Validate.Presence);
+  var subphone = new LiveValidation('phone', {onlyOnSubmit: true});
+  subphone.add(Validate.Presence);
+  var subdob = new LiveValidation('dob', {onlyOnSubmit: true});
+  subdob.add(Validate.Presence);
+  var subincome = new LiveValidation('income', {onlyOnSubmit: true});
+  subincome.add(Validate.Presence);  
+</script>
 </div>
-
