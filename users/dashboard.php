@@ -26,6 +26,7 @@ function show_links()
   echo '<p><a href="selling.php">Items I am selling</a></p>';                // items I'm selling
   echo '<p><a href="bought.php">Items I am buying</a></p>';                  // items I have bought
   echo '<p><a href="highbidder.php">Items where I am high bidder</a></p>';        // items where i am high bidder
+  echo '<p><a href="order.php">My unfullfilled orders</a></p>';
   echo '<p><a href="../items/search.php">Search or Browse</a></p>';          // search/browse
   echo '<p><a href="sellitem.php">Sell Item</a></p>';                        // sell an item
   echo '<p><a href="nickspage.php">Rate members you have bought from</a></p>';

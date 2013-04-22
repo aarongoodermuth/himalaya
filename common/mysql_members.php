@@ -936,7 +936,7 @@ function mysql_member_get_orders($c, $user)
   $str = "SELECT O.item_id, SI.item_desc, O.price, O.status, O.action_date  
           FROM $SALE_ITEMS_TABLE SI, $ORDERS_TABLE O 
           WHERE SI.item_id = O.item_id
-          AND O.username = ?";
+          AND SI.username = ?"; 
   if ($stmt = mysqli_prepare($c, $str)) 
   {
     mysqli_stmt_bind_param($stmt, 's', $user);
@@ -1134,6 +1134,102 @@ function send_order_email($c, $item_id, $username, $cname)
 	shell_exec("/usr/local/bin/messagesend $email $filepath \"order confirmation\"");
 	
 	return true;
+}
+
+// posts the item that the user wants to post
+// NOT DONE YET... BUT FOR REAL DOE
+// (boolean)
+function post_item($c, $desc, $prod_id, $category, $condition, $url, $zip, $saletype, $abid, $areserve, $sprice)
+{
+    /*product_id INT NOT NULL,
+	p_name VARCHAR(128) NOT NULL,
+	p_desc VARCHAR(500) NOT NULL,
+	category_id SMALLINT NOT NULL,*/
+    global $SALE_ITEMS_TABLE, $AUCTIONS_TABLE, $SALES_TABLE, $PRODUCTS_TABLE;
+
+    // get smallest available item id for new posting
+    $query = "SELECT MIN(s1.item_id) + 1 AS 'smallest'
+                FROM $SALE_ITEMS_TABLE s1 LEFT OUTER JOIN $SALE_ITEMS_TABLE s2
+                ON s2.item_id = s1.item_id + 1
+                WHERE s2.item_id IS NULL;";
+    $db_answer = mysqli_query($c, $query);
+    $row = mysqli_fetch_row($db_answer);
+    $item_id = $row[0];
+    
+    $uname = check_logged_in_user($c);
+    
+    $today = date("Y-m-d H:i:s");
+    
+    // NEW PRODUCT INSERT
+    /*if ($prod_id = -1)
+    {
+         $query = "SELECT MIN(p1.item_id) + 1 AS 'smallest'
+                FROM $PRODUCTS_TABLE p1 LEFT OUTER JOIN $PRODUCTS_TABLE p2
+                ON p2.item_id = p1.item_id + 1
+                WHERE p2.item_id IS NULL;";
+        $db_answer = mysqli_query($c, $query);
+        $row = mysqli_fetch_row($db_answer);
+        $prod_id = $row[0];
+        
+        // remove when we pass this to the function
+        $prod_name = '';
+        $prod_desc = '';
+        
+        $str = "INSERT INTO $PRODUCTS_TABLE VALUES (?, ?, ?, ?)";
+        if ($stmt = mysqli_prepare($c, $str)) {
+            mysqli_stmt_bind_param($stmt, 'issi', $prod_id, $prod_name, $prod_desc, $category);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_fetch($stmt);
+            mysqli_stmt_close($stmt);
+        } else {
+            printf("Errormessage: %s\n", mysqli_error($c));
+            return false;
+        }
+    }*/
+    
+    $str = "INSERT INTO $SALE_ITEMS_TABLE VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'isisisss', $item_id, $desc, $prod_id, $uname, $category, $url, $cur_date, $zip);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_fetch($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		printf("Errormessage: %s\n", mysqli_error($c));
+		return false;
+	}
+    
+    if ($saletype == 'S') {
+        $str = "INSERT INTO $SALES_TABLE VALUES (?, ?)";
+        if ($stmt = mysqli_prepare($c, $str)) {
+            mysqli_stmt_bind_param($stmt, 'ii', $item_id, $sprice);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_fetch($stmt);
+            mysqli_stmt_close($stmt);
+        } else {
+            printf("Errormessage: %s\n", mysqli_error($c));
+            return false;
+        }
+    }
+    else if ($saletype == 'A') {
+        $date = date("Y-m-d H:i:s"); // current date
+        $end_date = date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s", strtotime($date)) . " +2 week"));
+        
+        $str = "INSERT INTO $AUCTIONS_TABLE VALUES (?, ?, ?, ?, NULL)";
+        if ($stmt = mysqli_prepare($c, $str)) {
+            mysqli_stmt_bind_param($stmt, 'iiis', $item_id, $areserve, $abid, $end_date);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_fetch($stmt);
+            mysqli_stmt_close($stmt);
+        } else {
+            printf("Errormessage: %s\n", mysqli_error($c));
+            return false;
+        }
+    }
+    else {
+        return false;
+    }
+    
+    return true;
 }
 
 
