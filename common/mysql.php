@@ -240,6 +240,9 @@ function mysql_create_order($c, $item_id, $purchaser, $price, $street, $zip, $cn
 		mysqli_stmt_close($stmt);
 		return true;
 	}
+	
+	$root = $_SERVER['DOCUMENT_ROOT'];
+	shell_exec('/usr/local/bin/catxml.sh > $root/common/categories.xml');
 
 	return false;
 }
@@ -261,6 +264,9 @@ function mysql_remove_sales_record($c, $item_id)
 		mysqli_stmt_close($stmt);
 		return true;
 	}
+	
+	$root = $_SERVER['DOCUMENT_ROOT'];
+	shell_exec('/usr/local/bin/catxml.sh > $root/common/categories.xml');
 
 	return false;
 }

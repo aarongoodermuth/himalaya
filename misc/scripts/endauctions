@@ -19,6 +19,7 @@ function terminate()
 	TOSELLER=/tmp/auction_${1}_seller_email.html
 	TOWINNER=/tmp/auction_${1}_winner_email.html
 	TOLOSER=/tmp/auction_${1}_loser_email.html
+	CATXML=/home/goodermuth/dev/websites/himalaya/common/categories.xml
 
 	rm -f $LOSERSFILE $WINFILE $SELLERFILE $ITEMFILE
 
@@ -126,6 +127,10 @@ function terminate()
 		mysql -u $DBUSER -p${DBPASS} -e \
 			"DELETE FROM Auctions WHERE item_id=$1; 
 		         DELETE FROM Sale_Items WHERE item_id=$1" $DBNAME
+	
+		# rebuild the categories xml file
+		/usr/local/bin/catxml.sh > $CATXML
+
 		# notify seller and highest bidder
 		
 		
