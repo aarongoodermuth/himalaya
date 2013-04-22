@@ -112,11 +112,11 @@ if( values_set() )
         // redirect to user page
         header('refresh:4; url=login.php');
         print_this_html_header();
-	echo '<div class="container-fluid">';
+        echo '<div class="container-fluid">';
         echo '<p style="color:red">Account Successfully Created. Redirecting</p>';
       } else {
         print_this_html_header();
-	echo '<div class="container-fluid">';
+        echo '<div class="container-fluid">';
         echo '<p style="color:red">Not all entries were valid</p>';
       }
     } else {
