@@ -1,0 +1,34 @@
+#!/bin/sh
+
+set -e 
+
+DBNAME="himalaya"
+DBUSER="root"
+DBPASS="431w"
+THRESH="6 months"
+ITEMS=/tmp/items_old
+CATXML=/home/goodermuth/dev/websites/himalaya/common/categories.xml
+SITEURL=himalaya.goodermuth.com
+
+rm -f $ITEMS
+
+TIME=`date --date "$THRESH ago" +"%F %T"`
+
+mysql -u $DBUSER -p${DBPASS} -e \
+	"SELECT R.item_id 
+	 FROM   Orders R 
+	 WHERE  R.action_date < \"$TIME\"
+	 INTO   OUTFILE '$ITEMS' LINES TERMINATED BY '\\n'" $DBNAME
+
+cat $ITEMS | while read ID
+do
+	mysql -u $DBUSER -p${DBPASS} -e \
+		"DELETE FROM Orders WHERE item_id=$1" $DBNAME
+
+	mysql -u $DBUSER -p${DBPASS} -e \
+		"DELETE FROM Sale_Items WHERE item_id=$1" $DBNAME
+done
+
+/usr/local/bin/catxml.sh > $CATXML
+
+exit 0
