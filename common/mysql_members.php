@@ -903,7 +903,7 @@ function mysql_member_get_bidding($c, $user)
 
   $query = 'SELECT SI.item_id, SI.item_desc, A.recent_bid, A.end_date 
             FROM ' . $SALE_ITEMS_TABLE . ' SI, ' . $AUCTIONS_TABLE . ' A 
-            WHERE SI.item_id=A.item_id AND SI.username="' . $user . '"';
+            WHERE SI.item_id=A.item_id AND A.recent_bidder="' . $user . '"';
  
   $db_answer = mysqli_query($c, $query);
 
