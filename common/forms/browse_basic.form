@@ -1,0 +1,61 @@
+<!--provides controls for refining the browse page items list-->
+<form name="browse" action='browse.php' method='post' onsubmit="return validate();">
+  <h4>Additional Options</h4>
+  <table>
+  <tr>
+    <td>Item type:</td>
+  </tr>
+  <tr>
+    <td><label class="checkbox"><input id="sale" type="checkbox" name="itemtype[]" value="sale">Sale</label></td>
+    <td><label class="checkbox"><input id="auction" type="checkbox" name="itemtype[]" value="auction">Auction</label></td>
+  </tr>
+  <tr>
+    <td>Item condition:</td>
+  </tr>
+  <tr>
+    <td><label class="checkbox"><input id="itemcond0" type="checkbox" name="itemcond[]" value="0">New</label></td>
+    <td><label class="checkbox"><input id="itemcond1" type="checkbox" name="itemcond[]" value="1">Used - Like New</label></td>
+  </tr>
+  <tr>
+    <td><label class="checkbox"><input id="itemcond2" type="checkbox" name="itemcond[]" value="2">Used - Very Good</label></td>
+    <td><label class="checkbox"><input id="itemcond3" type="checkbox" name="itemcond[]" value="3">Used - Good</label></td>
+  </tr>
+  <tr>
+    <td><label class="checkbox"><input id="itemcond4" type="checkbox" name="itemcond[]" value="4">Used - Acceptable&nbsp;&nbsp;</label></td>
+    <td><label class="checkbox"><input id="itemcond5" type="checkbox" name="itemcond[]" value="5">Used - For Parts Only</label></td>
+  </tr>
+  <tr>
+    <td>Seller type:</td>
+  </tr>
+  <tr>
+    <td><label class="checkbox"><input id="supplier" type="checkbox" name="sellertype[]" value="supplier">Supplier</label></td>
+    <td><label class="checkbox"><input id="user" type="checkbox" name="sellertype[]" value="user">Individual</label></td>
+  </table>
+  <input type="submit" value="Apply">
+  <script>
+    function validate()
+    {
+      var itemtypes = (document.getElementById('sale').checked ||
+                       document.getElementById('auction').checked);
+      
+      var itemconds = false;
+      for(i = 0; i < 6; i++)
+      {
+        if(document.getElementById('itemcond' + i).checked)
+        {
+          itemconds = true;
+          break;
+        }
+      }
+      
+      var sellertypes = (document.getElementById('supplier').checked ||
+                         document.getElementById('user').checked);
+                         
+      if(!(itemtypes && itemconds && sellertypes))
+        document.getElementById('errordiv').innerHTML = 
+          '<font style="color:#b94a48; font-weight:bold">Missing input!</font>';
+                         
+      return (itemtypes && itemconds && sellertypes);
+    }
+  </script>
+</form>

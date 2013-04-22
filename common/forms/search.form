@@ -9,15 +9,15 @@
     <td><label class="checkbox"><input id="auction" type="checkbox" name="itemtype[]" value="auction">Auction</label></td>
   </tr>
   <tr>
-    <td>Item condition:</td>
+    <td>Item condition:&nbsp;</td>
     <td><label class="checkbox"><input id="itemcond0" type="checkbox" name="itemcond[]" value="0">New</label></td>
     <td><label class="checkbox"><input id="itemcond1" type="checkbox" name="itemcond[]" value="1">Used - Like New</label></td>
     <td><label class="checkbox"><input id="itemcond2" type="checkbox" name="itemcond[]" value="2">Used - Very Good</label></td>
   </tr>
   <tr>
     <td></td>
-    <td><label class="checkbox"><input id="itemcond3" type="checkbox" name="itemcond[]" value="3">Used - Good</label></td>
-    <td><label class="checkbox"><input id="itemcond4" type="checkbox" name="itemcond[]" value="4">Used - Acceptable</label></td>
+    <td><label class="checkbox"><input id="itemcond3" type="checkbox" name="itemcond[]" value="3">Used - Good&nbsp;</label></td>
+    <td><label class="checkbox"><input id="itemcond4" type="checkbox" name="itemcond[]" value="4">Used - Acceptable&nbsp;</label></td>
     <td><label class="checkbox"><input id="itemcond5" type="checkbox" name="itemcond[]" value="5">Used - For Parts Only</label></td>
   </tr>
   <tr>

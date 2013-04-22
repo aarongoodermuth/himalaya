@@ -23,7 +23,8 @@ function children()
 		ID=`echo "$LINE" | cut -d',' -f1 | sed "s/\"//g"`
 		CAT=`echo "$LINE" | cut -d',' -f2 | sed -e "s/\"//g" -e "s/\&/\&amp;/g"`
 		PID=`echo "$LINE" | cut -d',' -f3 | sed "s/\"//g"`
-		printf "<category>\n  <id>$ID</id>\n  <name>$CAT</name>\n  <pid>$PID</pid>\n  <depth>$(($1+1))</depth>\n</category>\n"
+		ITEMCOUNT=`mysql -u $DBUSER -p${DBPASS} -e "SELECT COUNT(S.item_id) FROM Sale_Items S, Products P WHERE S.product_id = P.product_id AND S.item_id NOT IN (SELECT item_id from Orders) AND P.category_id = $ID" $DBNAME | tr '\n' ' ' | cut -d ' ' -f2`
+		printf "<category>\n  <id>$ID</id>\n  <name>$CAT</name>\n  <pid>$PID</pid>\n  <depth>$(($1+1))</depth>\n  <item_count>$ITEMCOUNT</item_count>\n</category>\n"
 		children $(($1+1)) $ID
 	done
 }
@@ -36,7 +37,7 @@ mysql -u $DBUSER -p${DBPASS} -e "SELECT C.category_id, C.category_name, C.parent
 
 echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 echo "<category_tree>"
-printf "<category>\n  <id>0</id>\n  <name>All Items</name>\n  <pid>0</pid>\n  <depth>0</depth>\n</category>\n"
+printf "<category>\n  <id>0</id>\n  <name>All Items</name>\n  <pid>0</pid>\n  <depth>0</depth>\n  <item_count>0</item_count>\n</category>\n"
 
 cat $PARENTS | while read LINE
 do
@@ -46,7 +47,8 @@ do
 	ID=`echo "$LINE" | cut -d',' -f1 | sed "s/\"//g"`
 	CAT=`echo "$LINE" | cut -d',' -f2 | sed -e "s/\"//g" -e "s/\&/\&amp;/g"`
 	PID=`echo "$LINE" | cut -d',' -f3 | sed "s/\"//g"`
-	printf "<category>\n  <id>$ID</id>\n  <name>$CAT</name>\n  <pid>$PID</pid>\n  <depth>$depth</depth>\n</category>\n"
+	ITEMCOUNT=`mysql -u $DBUSER -p${DBPASS} -e "SELECT COUNT(S.item_id) FROM Sale_Items S, Products P WHERE S.product_id = P.product_id AND S.item_id NOT IN (SELECT item_id from Orders) AND P.category_id = $ID" $DBNAME | tr '\n' ' ' | cut -d ' ' -f2`
+	printf "<category>\n  <id>$ID</id>\n  <name>$CAT</name>\n  <pid>$PID</pid>\n  <depth>$depth</depth>\n  <item_count>$ITEMCOUNT</item_count>\n</category>\n"
 	children $depth $ID 
 done
 

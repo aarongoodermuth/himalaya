@@ -45,7 +45,7 @@ function print_tree_starting_from_id($cats, $start_id)
     for($i = $start_depth + 1; $i < $cur_depth; $i++)
       echo '&nbsp;&nbsp;&nbsp;&nbsp;';
       
-    echo "<font size=\"3\"><a href=\"browse.php?cid=$cat->id\">$cat->name ($cat->item_count)</a></font><br>";
+    echo "<font size=\"3\"><a href=\"browse.php?cid=$cat->id\">$cat->name</a></font><br>";
   }
   
   if(!$children) // there were no child categories
@@ -56,21 +56,19 @@ function print_tree_starting_from_id($cats, $start_id)
 function print_cat_path($cats, $cur_id)
 {
   // create array of ancestors, working up the category tree
-  $nodes[0] = cat_get_name($cats, $cur_id) . ' (' . cat_get_item_count($cats, $cur_id) . ')';
+  $nodes[0] = cat_get_name($cats, $cur_id);
   $id = $cur_id;
   
   while(($id = cat_get_parent_id($cats, $id)) != 0) // while we still haven't reached the root
   {
     // add a link to the current ancestor to the category array
     $name = cat_get_name($cats, $id);
-    $nodes[] = "<a href=\"browse.php?cid=$id\">$name (" . cat_get_item_count($cats, $id) .
-               ")</a>";
+    $nodes[] = "<a href=\"browse.php?cid=$id\">$name</a>";
   }
   
   // add a link to the root category
   $name = cat_get_name($cats, 0);
-  $nodes[] = "<a href=\"browse.php?cid=$id\">$name (" . cat_get_item_count($cats, 0) .
-               ")</a>";
+  $nodes[] = "<a href=\"browse.php?cid=0\">$name</a>";
   
   // reverse array and implode to create a string in the form of
   //   root -> cat1 -> cat2 -> ... -> cur_cat
@@ -106,15 +104,6 @@ function cat_get_parent_id($cats, $id)
   $pid = $cats->xpath("/category_tree/category[id=$id]/pid");
   
   return $pid[0];
-}
-
-// returns the number of items directly in the category given by id
-// assumes id is a valid category id
-function cat_get_item_count($cats, $id)
-{
-  $item_count = $cats->xpath("/category_tree/category[id=$id]/item_count");
-  
-  return $item_count[0];
 }
 
 // prints HTML text in red
@@ -261,16 +250,17 @@ $user = check_logged_in_user($c);
 
 if($user != null)
 {
-  $cats = new SimpleXMLElement('../common/categories.xml', null, true); // get categories XML file
+  $cats = new SimpleXMLElement('../common/categories.xml', null, true);
   $cat_set = !empty($_GET['cid']);
   
   $browse_cat_id = ($cat_set ? ((int)$_GET['cid']) : 0);
   $browse_cat_name = cat_get_name($cats, $browse_cat_id);
 
-  print_html_header();
+  //print_html_header();
+  echo '<html>';
   echo '<body>';
-  print_html_nav();
-  echo '<div class="container-fluid">';
+  //print_html_nav();
+  //echo '<div class="container-fluid">';
   
   if($cat_set) // show title and category path at top of page as appropriate
   {
@@ -283,11 +273,14 @@ if($user != null)
   }
   
   // begin category list/options div (aka left bar)
-  echo '<div class="span" style="margin-right:20px">';
+  //echo '<div class="span" style="margin-right:20px">';
+  echo '<div style="float:left">';
   
   // begin category list div
-  echo '  <div class="row">';
-  echo '    <div class="tile" style="text-align:left; display:inline-block">' .
+  //echo '  <div class="row">';
+  echo '<div>';
+  //echo '    <div class="tile" style="text-align:left; display:inline-block">' .
+  echo '   <div>' .
        '      <h4>Climb higher!</h4>';
 
   if(!$cat_set) // basic browse page - show complete category list
@@ -297,7 +290,7 @@ if($user != null)
   }
   else // show items, sorting options, and subcategories
   {
-    echo "Under $browse_cat_name :<br><br>";
+    echo 'Under ' . cat_get_name($cats, $browse_cat_id) . ':<br><br>';
     print_tree_starting_from_id($cats, $browse_cat_id);    
   }
   
@@ -305,10 +298,12 @@ if($user != null)
   echo '  </div>'; // row - category list
   
   // begin list options div
-  echo '  <div class="row">';
-  echo '    <div class="tile" style="text-align:left; display:inline-block; margin-top:20px">';
+  //echo '  <div class="row">';
+  echo '<div>';
+  //echo '    <div class="tile" style="text-align:left; display:inline-block; margin-top:20px">';
+  echo '<div>';
   
-  show_form('browse');
+  show_form('browse_basic');
   
   // change form destination to the current page
   echo "<script>document.browse.action=\"browse.php?cid=$browse_cat_id\"</script>";
@@ -343,6 +338,10 @@ if($user != null)
   echo '  </div>'; // row - options 
   echo '</div>'; // span - left bar
   
+  // begin div for item list
+  //echo '<div class="span" style="display:inline-block">';
+
+  
   // show items
   if($stmt = mysqli_prepare($c, mysql_get_search_query($browse_cat_id, $cats))) // query successfully prepared
   {
@@ -370,14 +369,12 @@ if($user != null)
                                        $recent_bid, $auc_end_time);
       }
 
-      if(($num_items = mysqli_stmt_num_rows($stmt)) < 1)
+      if(mysqli_stmt_num_rows($stmt) < 1)
       {
         echo '<p>Sorry! There are currently no items available in this category.</p>';
       }
       else // show results in a table
       {
-        echo "Showing a total of $num_items items in $browse_cat_name and its subcategories:<br>";
-      
         echo '<table cellpadding="5px">
               <tr align="center">
                 <td><b>Product name</b></td>
@@ -403,14 +400,14 @@ if($user != null)
         $i = 0;
         while(mysqli_stmt_fetch($stmt))
         {
-          if($i++ % 2 == 0) // alternate table row color
+          /*if($i++ % 2 == 0) // alternate table row color
             echo '<tr style="background-color:#ecf0f5">';
           else
-            echo '<tr>';
+           */ echo '<tr>';
           
           //echo '<tr>';
           echo "<td><a href=\"/items/view.php?id=$item_id\">$prod_name</a></td>";
-          echo "<td><a href=\"/items/browse.php?cid=$cat_id\">" . cat_get_name($cats, $cat_id) . '</a></td>';
+          echo "<td><a href=\"items/browse.php?cid=$cat_id\">" . cat_get_name($cats, $cat_id) . '</a></td>';
           echo '<td>' . int_to_condition($i_cond) . '</td>';
           echo "<td><a href=\"/users/view.php?username=$seller_name\">$seller_name</a></td>";
 
@@ -459,8 +456,10 @@ if($user != null)
   
   echo '</div>'; // container-fluid
   
-  print_html_footer_js();
-  print_html_footer();
+  //print_html_footer_js();
+  //print_html_footer();
+  echo '</body>';
+  echo '</html>';
 }
 else // user not logged in
 {
