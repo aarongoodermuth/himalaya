@@ -12,8 +12,8 @@ submit button for adding user-->
     <td>Email:</td>
     <td><input type="text" value="" placeholder="Email" name="email" id="email"></input></td>
     <script>
-      var email = new Livevalidation('email');
-      password.add(Validate.Email);
+      var email = new LiveValidation('email');
+      email.add(Validate.Email);
     </script>
   </tr>
   <tr>
