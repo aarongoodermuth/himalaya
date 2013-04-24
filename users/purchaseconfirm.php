@@ -231,9 +231,7 @@ if ($user != null) {
 	} else {
 		echo '<p style="color:red">There was a problem. Please try again.</p>';
 	}
-	echo "<a href=\"/items/view.php?id=" . get_post_var('item_id') . 
-	     "\">Return to the sale page</a><br>
-	      </div>";
+	echo "</div>";
 	print_html_footer2();
 	print_html_footer_js();
 	print_html_footer();

@@ -24,13 +24,18 @@ function mysql_member_username_unique($c, $username)
   global $MEMBERS_TABLE;
   $username = sanitize($username);
 
-  $query = 'SELECT COUNT(*) FROM ' . $MEMBERS_TABLE . ' WHERE username="' 
-              . $username . '"';
-  
-  $db_answer = mysqli_query($c, $query);
+  $str = "SELECT COUNT(*) FROM $MEMBERS_TABLE WHERE username=?";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 's', $username);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_bind_result($stmt, $count);
+		mysqli_stmt_fetch($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		return false;
+  }
 
-  $row = mysqli_fetch_row($db_answer);
-  return ($row[0] == 0);
+  return ($count == 0);
 }
 
 function reset_password($c, $username)
@@ -102,6 +107,7 @@ function reset_password($c, $username)
 	return true;
 }
 
+// check if a password is sufficiently strong
 function my_pwqcheck($newpass, $oldpass = '', $user = '')
 {
         global $use_pwqcheck, $pwqcheck_args;
@@ -127,7 +133,7 @@ function my_pwqcheck($newpass, $oldpass = '', $user = '')
 // inserts a member into the database
 // (boolean)
 function mysql_member_create_member($c, $username, $password)
-{  
+{
   global $MEMBERS_TABLE, $hash_cost_log2, $hash_portable;
 
   if (!preg_match('/^[a-zA-Z0-9_]{1,60}$/', $username))
@@ -181,13 +187,6 @@ function mysql_member_create_ru($c, $username, $password, $name, $email,
     return false;
   }
 
-  $username = sanitize($username);
-  $name     = sanitize($name);
-  $email    = sanitize($email);
-  $gender   = sanitize($gender);
-  $dob      = sanitize($dob);
-  $income   = sanitize($income);
-
   mysql_member_insert_phone($c, $username, $phone);
   mysql_member_insert_address($c, $address, $username, $zip, $name);
 
@@ -219,10 +218,6 @@ function mysql_member_create_ru($c, $username, $password, $name, $email,
 // (boolean)
 function mysql_member_create_supplier($c, $username, $password, $company, $contact)
 {
-	/*$username = sanitize($username);
-	$company  = sanitize($company);
-	$contact  = sanitize($contact);*/
-
 	global $SUPPLIERS_TABLE, $MEMBERS_TABLE;
 
 	if (!mysql_member_create_member($c, $username, $password)) {
@@ -253,9 +248,6 @@ function mysql_member_add_email($c, $username, $email)
 {
   global $EMAIL_TABLE;
 
-  $username = sanitize($username);
-  $email    = sanitize($email);
-
   $str = "INSERT INTO $EMAIL_TABLE VALUES(?, ?)";
   if ($stmt = mysqli_prepare($c, $str)) {
 	mysqli_stmt_bind_param($stmt, 'ss', $username, $email);
@@ -269,98 +261,77 @@ function mysql_member_add_email($c, $username, $email)
 
 // updates RU info. Returns true on sucess, false on failure
 // (boolean)
-function mysql_member_update_ru($c, $username, $name, $email, $gender, $age, 
+function mysql_member_update_ru($c, $username, $name, $email, $gender, $dob, 
                                     $income, $street, $zip, $phone )
 {
-  global $RU_TABLE, $ADDRESS_TABLE, $PHONE_TABLE, $EMAIL_TABLE;
+	global $RU_TABLE, $ADDRESS_TABLE, $PHONE_TABLE, $EMAIL_TABLE;
 
-  $username = sanitize($username);
-  $name     = sanitize($name);
-  $email    = sanitize($email);
-  $gender   = sanitize($gender);
-  $age      = sanitize($age);
-  $income   = sanitize($income);
-  $street   = sanitize($street);
-  $zip      = sanitize($zip);
-  $phone    = sanitize($phone);
+	$str = "UPDATE $RU_TABLE 
+	        SET    name=?, gender=?, dob=?, income=? 
+		WHERE  username=?";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'sssis', $name, $gender, 
+		                              $dob, $income, $username);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		return false;
+	}
+  
+	$str = "UPDATE $ADDRESS_TABLE SET street=?, zip=?, username=?";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'sss', $street, $zip, $username);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		mysqli_rollback($c);
+		return false;
+	}
 
-  $query = 'UPDATE ' . $RU_TABLE . 
-          ' SET name="'   . $name   . '",' .
-          ' gender="' . $gender . '",' .
-          ' dob="'    . $age    . '",' .
-          ' income="' . $income . '" ' .
-          ' WHERE username="' . $username . '"';
-  if( !mysqli_query($c, $query) ){ echo $query;return false;}
-
-  $query = 'UPDATE ' . $ADDRESS_TABLE . 
-          ' SET street="' . $street . '", ' . 
-          ' zip="'    . $zip    . '" ' .
-          ' WHERE username="' . $username . '"';
-  if( !mysqli_query($c, $query) )
-  {echo $query;
-    mysqli_rollback($c);
-    return false;
-  }
-
-  $query = 'UPDATE '. $PHONE_TABLE .
-          ' SET pnum="' . $phone . '" ' . 
-          ' WHERE username="' . $username . '"';
-  if( !mysqli_query($c, $query) )
-  {echo $query;
-    mysqli_rollback($c);
-    mysqli_rollback($c);
-    return false;
-  }  
+	$str = "UPDATE $PHONE_TABLE SET pnum=? WHERE username=?";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'sss', $phone, $username);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		mysqli_rollback($c);
+		mysqli_rollback($c);
+		return false;
+	}
+    	
+	$str = "UPDATE $EMAIL_TABLE SET email=? WHERE username=?";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'ss', $email, $username);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		mysqli_rollback($c);
+		mysqli_rollback($c);
+		mysqli_rollback($c);
+		return false;
+	}
  
-  $query = 'UPDATE ' . $EMAIL_TABLE .
-          ' SET email="' . $email . '"' .
-          ' WHERE username="' . $username . '"';
-  if( !mysqli_query($c, $query) )
-  {
-    mysqli_rollback($c);
-    mysqli_rollback($c);
-    mysqli_rollback($c);
-    return false;
-  }
- 
-  return true;
+	return true;
 }
 
 // updates supplier info. returns true on success, false on failure
 // (boolean)
 function mysql_member_update_supplier($c, $username, $company, $contact)
 {
-  global $SUPPLIERS_TABLE;
+	global $SUPPLIERS_TABLE;
 
-  $username = sanitize($username);
-  $company  = sanitize($company);
-  $contact  = sanitize($contact);
+	$str = "UPDATE $SUPPLIERS_TABLE 
+	        SET    company_name=?, contact_name=? 
+		WHERE  username=?";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'sss', $company, $contact, $username);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		return false;
+	}
 
-  $query = 'UPDATE ' . $SUPPLIERS_TABLE . 
-          ' SET company_name="' . $company . '", ' . 
-               'contact_name="' . $contact . '"'  .
-          ' WHERE username="' . $username . '"';
-  if( !mysqli_query($c, $query) )
-  {
-    return false;
-  }
-  
-  return true;
-}
-
-// ...
-// (boolean)
-function mysql_member_new_password($c, $username, $password)
-{
-  global $MEMBERS_TABLE;
-
-  $username = sanitize($username);
-  $password = sanitize($password);
-
-  $query = 'UPDATE ' . $MEMBERS_TABLE. ' SET password="' . $password . 
-              '" WHERE username="' . $username . '"';
-
-  return mysqli_query($c, $query);
+	return true;
 }
 
 // returns true if a zip code is found in the database
@@ -369,8 +340,6 @@ function mysql_member_zip_exists($c, $zip)
 {
   global $ZIP_TABLE;
 
-  $zip = sanitize($zip);
-  
   $str = "SELECT COUNT(*) FROM $ZIP_TABLE WHERE zip=?";
   if ($stmt = mysqli_prepare($c, $str)) {
 	mysqli_stmt_bind_param($stmt, 's', $zip);
@@ -392,9 +361,6 @@ function mysql_member_insert_phone($c, $username, $phone)
 {
   global $PHONE_TABLE;
 
-  $username = sanitize($username);
-  $phone    = sanitize($phone);
-
   $str = "INSERT INTO $PHONE_TABLE VALUES(?, ?)";
   if ($stmt = mysqli_prepare($c, $str)) {
     mysqli_stmt_bind_param($stmt, 'ss', $username, $phone);
@@ -411,11 +377,6 @@ function mysql_member_insert_phone($c, $username, $phone)
 function mysql_member_insert_address($c, $street, $username, $zip, $name)
 {
 	global $ADDRESS_TABLE;
-
-	$street   = sanitize($street);
-	$zip      = sanitize($zip);
-	$name     = sanitize($name);
-	$username = sanitize($username);
 
 	if(!mysql_member_zip_exists($c, $zip)) {
 		return false;
@@ -1002,9 +963,6 @@ function send_order_email($c, $item_id, $username, $cname)
 	if ($action_date == NULL || $price == NULL || $shiptostreet == NULL || $shiptozip == NULL || 
 	    $cardnumber == NULL || $product_name == NULL || $seller == NULL || $shipfromzip == NULL ||
 	    $cardtype == NULL || $cardname == NULL || $cardexp == NULL) {
-		/*echo "action_date = $action_date, pr = $price, tostreet = $shiptostreet, tozip  = $shiptozip,
-	       cardnum = $cardnumber, pname = $product_name, seller = $seller, fromzip =  $shipfromzip,
-	       ctype =  $cardtype, cname = $cardname, cexp = $cardexp, tophone = $shiptophone";*/
 		return false;
 	}
 	
@@ -1137,14 +1095,9 @@ function send_order_email($c, $item_id, $username, $cname)
 }
 
 // posts the item that the user wants to post
-// NOT DONE YET... BUT FOR REAL DOE
 // (boolean)
 function post_item($c, $desc, $prod_id, $category, $condition, $url, $zip, $saletype, $abid, $areserve, $sprice)
 {
-    /*product_id INT NOT NULL,
-	p_name VARCHAR(128) NOT NULL,
-	p_desc VARCHAR(500) NOT NULL,
-	category_id SMALLINT NOT NULL,*/
     global $SALE_ITEMS_TABLE, $AUCTIONS_TABLE, $SALES_TABLE, $PRODUCTS_TABLE;
 
     // get smallest available item id for new posting
@@ -1160,38 +1113,11 @@ function post_item($c, $desc, $prod_id, $category, $condition, $url, $zip, $sale
     
     $today = date("Y-m-d H:i:s");
     
-    // NEW PRODUCT INSERT
-    /*if ($prod_id = -1)
-    {
-         $query = "SELECT MIN(p1.item_id) + 1 AS 'smallest'
-                FROM $PRODUCTS_TABLE p1 LEFT OUTER JOIN $PRODUCTS_TABLE p2
-                ON p2.item_id = p1.item_id + 1
-                WHERE p2.item_id IS NULL;";
-        $db_answer = mysqli_query($c, $query);
-        $row = mysqli_fetch_row($db_answer);
-        $prod_id = $row[0];
-        
-        // remove when we pass this to the function
-        $prod_name = '';
-        $prod_desc = '';
-        
-        $str = "INSERT INTO $PRODUCTS_TABLE VALUES (?, ?, ?, ?)";
-        if ($stmt = mysqli_prepare($c, $str)) {
-            mysqli_stmt_bind_param($stmt, 'issi', $prod_id, $prod_name, $prod_desc, $category);
-            mysqli_stmt_execute($stmt);
-            mysqli_stmt_fetch($stmt);
-            mysqli_stmt_close($stmt);
-        } else {
-            printf("Errormessage: %s\n", mysqli_error($c));
-            return false;
-        }
-    }*/
-    
     $str = "INSERT INTO $SALE_ITEMS_TABLE VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 	if ($stmt = mysqli_prepare($c, $str)) {
-		mysqli_stmt_bind_param($stmt, 'isisisss', $item_id, $desc, $prod_id, $uname, $category, $url, $cur_date, $zip);
+		mysqli_stmt_bind_param($stmt, 'isisisss', $item_id, $desc, $prod_id, $uname, $category, $url, $today, $zip);
 		mysqli_stmt_execute($stmt);
-		mysqli_stmt_fetch($stmt);
+        mysqli_stmt_fetch($stmt);
 		mysqli_stmt_close($stmt);
 	} else {
 		printf("Errormessage: %s\n", mysqli_error($c));
@@ -1229,6 +1155,56 @@ function post_item($c, $desc, $prod_id, $category, $condition, $url, $zip, $sale
         return false;
     }
     
+    shell_exec('sudo /usr/local/bin/cattoxml');
+    return true;
+}
+
+// posts the rating that the user wants to post
+// (boolean)
+function post_rating($c, $seller_item, $rating, $desc)
+{
+    global $CAN_RATE_TABLE, $RATINGS_TABLE;
+
+    $uname = check_logged_in_user($c);
+    
+    $today = date("Y-m-d");
+    
+    $pieces = explode("-", $seller_item);
+    $seller = $pieces[0];
+    $item = $pieces[1];
+    
+    /*rated_user
+	rating_user
+	rating
+	review_date
+	item_id
+	review_description*/
+    
+    $str = "INSERT INTO $RATINGS_TABLE VALUES (?, ?, ?, ?, ?, ?)";
+	if ($stmt = mysqli_prepare($c, $str)) {
+		mysqli_stmt_bind_param($stmt, 'ssisis', $seller, $uname, $rating, $today, $item, $desc);
+		mysqli_stmt_execute($stmt);
+        mysqli_stmt_fetch($stmt);
+		mysqli_stmt_close($stmt);
+	} else {
+		printf("Errormessage: %s\n", mysqli_error($c));
+		return false;
+	}
+
+    /*rated_user
+	rating_user
+	item_id*/
+    $str = "DELETE FROM $CAN_RATE_TABLE WHERE rated_user=? AND rating_user=? AND item_id=?";
+    if ($stmt = mysqli_prepare($c, $str)) {
+        mysqli_stmt_bind_param($stmt, 'ssi', $seller, $uname, $item);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_fetch($stmt);
+        mysqli_stmt_close($stmt);
+    } else {
+        printf("Errormessage: %s\n", mysqli_error($c));
+        return false;
+    }
+
     return true;
 }
 

@@ -145,6 +145,7 @@ function mysql_get_username_from_cookie( $c, $cookie_val )
     return null;
   }
 }
+
 // gets type of user
 //  $USER_TYPE_MAPPING[0]  => registered user
 //  $USER_TYPE_MAPPING[1]  => supplier
@@ -156,8 +157,8 @@ function mysql_get_type_from_username($c, $uname)
 	$uname = sanitize($uname);  
 
 	$str = "SELECT COUNT(*)
-	        FROM $REG_USER_TABLE ru
-	        WHERE  ru.username = ?";
+		FROM $REG_USER_TABLE ru
+		WHERE  ru.username = ?";
 
 	if ($stmt = mysqli_prepare($c, $str)) {
 		mysqli_stmt_bind_param($stmt, 's', $uname);
@@ -170,14 +171,13 @@ function mysql_get_type_from_username($c, $uname)
 		return NULL;
 	}
 
-    if ($reg_user === 1) {
-        return $USER_TYPE_MAPPING[0];
-    }
+	if ($reg_user === 1) {
+		return $USER_TYPE_MAPPING[0];
+	}
     
-    
-    $str = "SELECT COUNT(*)
-	        FROM $SUPPLIERS_TABLE s
-	        WHERE  s.username = ?";
+	$str = "SELECT COUNT(*)
+		FROM $SUPPLIERS_TABLE s
+		WHERE  s.username = ?";
 
 	if ($stmt = mysqli_prepare($c, $str)) {
 		mysqli_stmt_bind_param($stmt, 's', $uname);
@@ -187,12 +187,12 @@ function mysql_get_type_from_username($c, $uname)
 		mysqli_stmt_close($stmt);
 	} else {
 		printf("Errormessage: %s\n", mysqli_error($c));
-		return NULL;
+	return NULL;
 	}
 
-    if ($supplier === 1) {
-        return $USER_TYPE_MAPPING[1];
-    }
+	if ($supplier === 1) {
+		return $USER_TYPE_MAPPING[1];
+	}
 
 	return null;
 }
@@ -235,16 +235,15 @@ function mysql_create_order($c, $item_id, $purchaser, $price, $street, $zip, $cn
 		                       $price, $street, $zip, $cnumber);
 		if (!mysqli_stmt_execute($stmt)) {
 			printf("Error: %s.\n", mysqli_stmt_error($stmt));
+			return false;
 		}
 		mysqli_stmt_fetch();
 		mysqli_stmt_close($stmt);
-		return true;
 	}
-	
-	$root = $_SERVER['DOCUMENT_ROOT'];
-	shell_exec('/usr/local/bin/catxml.sh > $root/common/categories.xml');
 
-	return false;
+	$ret = shell_exec("sudo /usr/local/bin/cattoxml");
+
+	return true;
 }
 
 // remove the Sales record with item_id
@@ -265,8 +264,7 @@ function mysql_remove_sales_record($c, $item_id)
 		return true;
 	}
 	
-	$root = $_SERVER['DOCUMENT_ROOT'];
-	shell_exec('/usr/local/bin/catxml.sh > $root/common/categories.xml');
+	shell_exec('sudo /usr/local/bin/cattoxml');
 
 	return false;
 }

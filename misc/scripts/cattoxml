@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -e
+
+ROOTDIR=/home/goodermuth/dev/websites/himalaya
+
+/usr/local/bin/catxml.sh > $ROOTDIR/common/categories.xml
+
+exit 0
