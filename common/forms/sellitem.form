@@ -50,7 +50,12 @@ echo "
 </tr>
 <tr>
 <td>Shipping ZIP Code: </td>
-<td><input type=\"text\" name=\"zip\"/></td>
+<td><input type=\"text\" name=\"zip\" id=\"zip\"/>
+  <script>
+    var zip = new LiveValidation('zip');
+    zip.add(Validate.Numericality, { onlyInteger: true, minimum: 1 });
+    zip.add(Validate.Length, { is: 5 });
+  </script></td>
 </tr>
 <tr>
 <div class=\"row\">
@@ -80,7 +85,7 @@ echo "
 </tr>
 </div>
 </table>
-<input value=\"Submit\" type=\"submit\"/>
+<input class=\"btn btn-lage btn-block btn-primary\" type=\"submit\" value=\"Submit\" style=\"width:auto; padding:5px\">
 </form>";
 
 ?>
