@@ -2531,3 +2531,7 @@ body.vjs-full-window {
 
 .mll, .mhl, .mal {
   margin-left: 20px; }
+
+table.sortable tbody tr:nth-child(2n) td {
+  background: #ecf0f5;
+}

@@ -193,8 +193,8 @@ function mysql_get_search_query()
     $where_clause  .= " AND A.item_id = S.item_id AND " .
                       "(S.item_id IN (SELECT item_id FROM $AUCTIONS_TABLE)) ";
   }
-print_message($select_clause . $from_clause . $where_clause);
-  return $select_clause . $from_clause . $where_clause;
+
+  return $select_clause . $from_clause . $where_clause . 'ORDER BY P.p_name';
 } 
 
 /*******************/
@@ -217,6 +217,7 @@ if($user != null)
   print_html_header();
   echo '<body>';
   print_html_nav();
+  echo '<script src="../common/javascript/sorttable.js"></script>'; // JS for sortable tables
   echo '<div class="container-fluid">';
 
   if(all_set($c)) // execute search
@@ -269,35 +270,32 @@ if($user != null)
         }
         else // show results in a table
         {
-          echo '<table cellpadding="5" style="margin-bottom:20px">
+          echo '<table class="sortable" cellpadding="5" style="margin-bottom:20px">
                 <tr align="center">
-                  <td><b>Product name</b></td>
-                  <td><b>Category</b></td>
-                  <td><b>Item condition</b></td>
-                  <td><b>Seller</b></td>';
+                  <th><b>Product name</b></th>
+                  <th><b>Category</b></th>
+                  <th><b>Item condition</b></th>
+                  <th><b>Seller</b></th>';
           if($only_sales)
           {
-            echo '<td><b>Sale price</b></td>';
+            echo '<th><b>Sale price</b></th>';
           }
           else if($only_aucts)
           {
-            echo '<td><b>Recent bid</b></td>';
-            echo '<td><b>Auction end time</b></td>';
+            echo '<th><b>Recent bid</b></th>';
+            echo '<th><b>Auction end time</b></th>';
           }
           else
           {
-            echo '<td><b>Sale price/recent bid</b></td>
-                  <td><b>Auction end time</b></td>';
+            echo '<th><b>Sale price/recent bid</b></th>
+                  <th><b>Auction end time</b></th>';
           } 
           echo '</tr>';
 
-          $i = 0;
+          $now = new DateTime('now'); // current date in MySQL format for getting time differences for auctions
           while(mysqli_stmt_fetch($stmt))
           {            
-            if($i++ % 2 == 0) // alternate table row color
-              echo '<tr style="background-color:#ecf0f5">';
-            else
-              echo '<tr>';
+            echo '<tr>';
             
             echo "<td><a href=\"/items/view.php?id=$item_id\">$prod_name</a></td>";
             $cat_name = $cats->xpath("/category_tree/category[id=$cat_id]/name");
@@ -319,13 +317,49 @@ if($user != null)
               if($auc_end_time == null) // item is a sale
               {
                 printf('<td>$%.2f</td>', $sale_price/100);
+                echo '<td align="center"></td>'; // no auction end time
               }
               else // item is an auction
               {
                 printf('<td>$%.2f</td>', $recent_bid/100);
+              
+                // get amount of time until the auction ends
+                $time = datetime::createfromformat("Y-m-d H:i:s", $auc_end_time);
+                $diff = $now->diff($time);
+                if($diff->d == 0) // auction ends today - show more precise time info
+                {
+                  echo '<td>';
+                  if($diff->h == 1)
+                    echo '1 hour, ';
+                  else
+                    echo "$diff->h hours, ";
+                
+                  if($diff->i == 1)
+                    echo '1 minute, ';
+                  else
+                    echo "$diff->i minutes, ";
+                  
+                  if($diff->s == 1)
+                    echo '1 second';
+                  else
+                    echo "$diff->s seconds";
+                  echo '</td>';                  
+                }
+                else // auction ends at least one day from now - show less precise time info
+                {
+                  echo '<td>';
+                  if($diff->d == 1)
+                    echo '1 day, ';
+                  else
+                    echo "$diff->d days, ";
+                  
+                  if($diff->h == 1)
+                    echo '1 hour';
+                  else
+                    echo "$diff->h hours";
+                  echo '</td>';              
+                }
               }
-
-              echo "<td>$auc_end_time</td>";
             }
 
             echo '</tr>';
