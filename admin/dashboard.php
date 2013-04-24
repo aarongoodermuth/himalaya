@@ -49,6 +49,8 @@ function show_shipping_page()
 function show_accounting_page()
 {
   echo "<p><a href='accounting.php'>Accounting Page</a></p>";
+  echo "<p><a href='chargecard.php'>Charge Gift Card</a></p>";
+  echo "<p><a href='creditaccount.php'>Credit Account</a></p>";
 }
 
 // (void)

@@ -1,0 +1,7 @@
+<!--provides a text box and submit button for entering cleared payments-->
+<form action='creditaccount.php' method='post'>
+<h3>Enter Username associated with gift card transaction</h3>
+<p>Username: <input type="text" name="username"></input></p>
+<p>Amount to Credit: <input type="text" name="amount"></input></p>
+<p><input value="Submit" type="submit"></input></p>
+</form>

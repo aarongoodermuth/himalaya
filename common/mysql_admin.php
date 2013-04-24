@@ -561,6 +561,33 @@ function mysql_admin_insert_gift_card($c, $number, $amount)
   return mysqli_query($c, $query);
 }
 
+// ...
+// (boolean)
+function mysql_admin_charge_gift_card($c, $user, $amount)
+{
+  global $RU_TABLE;
+
+  $user = sanitize($user);
+  $amount = sanitize($amount);
+  
+  $query = 'UPDATE ' . $RU_TABLE . ' SET gift_card_balance=gift_card_balance-' . $amount . ' WHERE username="' . $user . '"' ;
+  return mysqli_query($c, $query);
+}
+
+// ...
+// (boolean)
+function mysql_admin_credit_gift_card($c, $user, $amount)
+{
+  global $RU_TABLE;
+
+  $user = sanitize($user);
+  $amount = sanitize($amount);
+  
+  $query = 'UPDATE ' . $RU_TABLE . ' SET gift_card_balance=gift_card_balance+' . $amount . ' WHERE username="' . $user . '"' ;
+  return mysqli_query($c, $query);
+}
+
+
 /*******************/
 /** END FUNCTIONS **/
 /*******************/
