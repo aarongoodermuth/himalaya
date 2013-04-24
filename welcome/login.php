@@ -71,7 +71,6 @@ if($username != null)
   // redirect
   header( 'Refresh:' . $REDIRECT_TIME . '; url=../users/dashboard.php' );
  
-  print_html_header();
   // show user information, give chance to log out, give chance to redirect 
   //    manually
   echo "<p>Welcome back $username!</p>";
@@ -116,7 +115,10 @@ else
       echo '<div class="demo-icons-24"><span class="fui-plus-24"></span></div>';
       echo '<div><p>New to Himalaya.biz? <a href="createaccount.php">
               Create an account</a></p></div>';
-      echo '';
+      
+      print_html_footer2();
+      print_html_footer_js();
+      print_html_footer();
     }
   }
   else
@@ -135,13 +137,13 @@ else
             Create an account</a></p>
         </div>
       </div>';
+    print_html_footer2();
+    print_html_footer_js();
+    print_html_footer();
   }
 }
 
 mysql_disconnect($c);
-print_html_footer2();
-print_html_footer_js();
-print_html_footer();
 
 /******************/
 /** END PHP CODE **/
