@@ -199,6 +199,12 @@ if($user != NULL) {
 		$condition = int_to_condition($item_info[3]);
 		echo "<h3>$item_info[6]</h3>\n";
 		
+		$type = mysql_get_type_from_username($c, $user);
+		$subbtn = "";
+		if($type == $USER_TYPE_MAPPING[0]) {  // registered user
+			$subbtn = "<input class=\"btn btn-primary btn-large btn-block\" value=\"Place Bid\" type=\"submit\"/>";
+		}
+		
 		if ($price_info[0] == 's') {  /* sale */
 			echo "<form name=\"purchase\" action=\"/users/purchase.php\" method=\"post\">";
 		} else {                      /* auction */
@@ -263,8 +269,8 @@ if($user != NULL) {
 			<tr>
 			  <td>&nbsp;</td>
 			  <td>&nbsp;</td>
-			  <td height=\"30\">
-			    <input class=\"btn btn-primary btn-large btn-block\" value=\"Purchase\" type=\"submit\"/>
+			  <td>
+			    $subbtn
 			  </td>
 			</tr>";
 		} elseif ($price_info[3] == NULL){    // auction, no bids yet
@@ -274,39 +280,46 @@ if($user != NULL) {
 			  <td>&nbsp;</td>
 			  ";
 			printf("<td height=\"30\">$%.2f</td>", $price_info[1] / 100);
-			echo
-			"</tr>
-			<tr>
-			  <td><input type=\"text\" name=\"newbid\" placeholder=\"Bid Amount (USD)\"/></td>
-			  <td>&nbsp;</td>
-			  <td>
-			    <div class=\"span2\">
-			    <input class=\"btn btn-primary btn-large btn-block\" value=\"Place Bid\" type=\"submit\"/>
-			    </div>
-			  </td>
-			  <td>&nbsp;</td>
-			</tr>";
+			
+			echo "</tr>";
+			
+			if($type == $USER_TYPE_MAPPING[0]) {  // registered user
+				echo "
+				<tr>
+				  <td><input type=\"text\" name=\"newbid\" placeholder=\"Bid Amount (USD)\"/></td>
+				  <td>&nbsp;</td>
+				  <td>
+				    <div class=\"span2\">
+				    <input class=\"btn btn-primary btn-large btn-block\" value=\"Place Bid\" type=\"submit\"/>
+				    </div>
+				  </td>
+				  <td>&nbsp;</td>
+				</tr>";
+			}		
 		} else {                      // auction, bids exist
-			echo 
-			"<tr>
+			echo "
+			<tr>
 			  <td height=\"30\">Current Bid:</td>
 			  <td>&nbsp;</td>
 			";
 			printf("<td height=\"30\">$%.2f</td>", $price_info[1] / 100);
-			echo
-			"</tr>
-			<tr>
-			  <td height=\"30\"><input type=\"text\" name=\"newbid\" placeholder=\"Bid Amount (USD)\"/></td>
-			  <td height=\"30\"><input class=\"btn btn-primary btn-large btn-block\" value=\"Place Bid\" type=\"submit\"></input></td>
-			  <td>&nbsp;</td>
-			</tr>
-			<tr>
-			";
-			printf("<td height=\"30\">($%.2f or above)</td>", ($price_info[1] + 200) / 100);
-			echo
-			" <td>&nbsp;</td>
-			  <td height=\"30\"></td>
-			</tr>";
+			echo "</tr>";
+			
+			if($type == $USER_TYPE_MAPPING[0]) {  // registered user
+				echo "
+				<tr>
+				  <td height=\"30\"><input type=\"text\" name=\"newbid\" placeholder=\"Bid Amount (USD)\"/></td>
+				  <td height=\"30\"><input class=\"btn btn-primary btn-large btn-block\" value=\"Place Bid\" type=\"submit\"></input></td>
+				  <td>&nbsp;</td>
+				</tr>
+				<tr>
+				";
+				printf("<td height=\"30\">($%.2f or above)</td>", ($price_info[1] + 200) / 100);
+				echo
+				" <td>&nbsp;</td>
+				  <td height=\"30\"></td>
+				</tr>";
+			}
 		}
 		
 		echo "</table></form><br><br>";
