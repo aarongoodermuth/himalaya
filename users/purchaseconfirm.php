@@ -219,7 +219,7 @@ if ($user != null) {
 			if(mysql_member_insert_can_rate($c, $seller, $user, $item_id)) {
 				echo "
 				      <p>Now that  you have purchased an item from $seller, you 
-				      may now <a href=\"/users/view.php?=$seller\">rate this user</a>.
+				      may now <a href=\"/members/view.php?username=$seller\">rate this user</a>.
 				      </p>";
 			}
 
@@ -249,3 +249,4 @@ mysql_disconnect($c);
 
 //------------------------------------------------------------------------------
 ?>
+
