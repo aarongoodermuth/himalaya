@@ -1,0 +1,60 @@
+<?php
+
+echo "<form name=\"rateseller\" action=\"rateseller.php\" method=\"post\">
+<h3>Rate a Seller!</h3>
+<table name=\"seller_table\">
+<tr>
+<td>Choose Seller and Product:</td>
+<td><select class =\"span3\" name=\"seller_item\">";
+
+global $CAN_RATE_TABLE, $SALE_ITEMS_TABLE;
+  
+$c = mysql_make_connection();
+$user = check_logged_in_user($c);
+
+if($user != null)
+{
+    $query = 'SELECT cr.rated_user, cr.item_id, s.item_desc FROM ' . $CAN_RATE_TABLE
+        . ' cr, ' . $SALE_ITEMS_TABLE . ' s WHERE rating_user="' . $user
+        . '" AND cr.item_id = s.item_id';
+
+    $db_answer = mysqli_query($c, $query);
+    while ($row = mysqli_fetch_row($db_answer))
+    {
+      echo "<option value=\"$row[0]-$row[1]\">$row[0] - $row[2]</option>";
+    }
+}
+else
+{
+  header('refresh:0; url=../welcome/login.php');
+}
+
+echo "</select></td>
+</tr>
+<tr>
+<td>Rating: </td>
+<td><select class =\"span3\" name=\"rating\">
+<option value=\"1\">1 star</option>
+<option value=\"2\">2 stars</option>
+<option value=\"3\">3 stars</option>
+<option value=\"4\">4 stars</option>
+<option value=\"5\">5 stars</option>
+<option value=\"6\">6 stars</option>
+<option value=\"7\">7 stars</option>
+<option value=\"8\">8 stars</option>
+<option value=\"9\">9 stars</option>
+<option value=\"10\">10 stars</option>
+</td>
+</tr>
+<tr>
+<td valign=\"top\">Review Description (500 chars max):</td>
+<td>
+<textarea type=\"text\" name=\"desc\" rows=\"5\" cols=\"80\" maxlength=\"500\"></textarea>
+</td>
+</tr>
+</div>
+</table>
+<input class=\"btn btn-lage btn-block btn-primary\" type=\"submit\" value=\"Submit\" style=\"width:auto; padding:5px\">
+</form>";
+
+?>
