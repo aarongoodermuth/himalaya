@@ -11,8 +11,10 @@ ls -1t $BKDIR/${DBNAME}* | while read FILENAME
 do
 	let "count++"
 
+  CDATE=`date --date "${count} days ago" +%s`
+
 	# only delete when more than THRESH backups
-	[ $count -lt $THRESH ] && continue 
+	[ $CDATE -gt $THRESH ] && continue 
 
 	CUR=`echo "$FILENAME" | sed -e "s/.*${DBNAME}_//" -e "s/.sql.gz//"`
 	CURYEAR=`echo "${CUR}" | cut -d'-' -f1`
