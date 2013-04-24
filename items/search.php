@@ -300,7 +300,7 @@ if($user != null)
             echo "<td><a href=\"/items/view.php?id=$item_id\">$prod_name</a></td>";
             $cat_name = $cats->xpath("/category_tree/category[id=$cat_id]/name");
             echo "<td><a href=\"/items/browse.php?cid=$cat_id\">$cat_name[0]</a></td>";
-            echo '<td>' . int_to_condition($i_cond) . '</td>';
+            echo "<td sorttable_customkey=\"$i_cond\">" . int_to_condition($i_cond) . '</td>';
             echo "<td><a href=\"/members/view.php?username=$seller_name\">$seller_name</a></td>";
 
             if($only_sales) // show sale price
@@ -317,7 +317,7 @@ if($user != null)
               if($auc_end_time == null) // item is a sale
               {
                 printf('<td>$%.2f</td>', $sale_price/100);
-                echo '<td align="center"></td>'; // no auction end time
+                echo '<td sorttable_customkey="' . PHP_INT_MAX . '"></td>'; // no auction end time
               }
               else // item is an auction
               {
@@ -326,9 +326,10 @@ if($user != null)
                 // get amount of time until the auction ends
                 $time = datetime::createfromformat("Y-m-d H:i:s", $auc_end_time);
                 $diff = $now->diff($time);
+                
+                echo '<td sorttable_customkey="' . $time->getTimestamp() . '">';
                 if($diff->d == 0) // auction ends today - show more precise time info
                 {
-                  echo '<td>';
                   if($diff->h == 1)
                     echo '1 hour, ';
                   else
@@ -343,11 +344,9 @@ if($user != null)
                     echo '1 second';
                   else
                     echo "$diff->s seconds";
-                  echo '</td>';                  
                 }
                 else // auction ends at least one day from now - show less precise time info
                 {
-                  echo '<td>';
                   if($diff->d == 1)
                     echo '1 day, ';
                   else
@@ -357,8 +356,8 @@ if($user != null)
                     echo '1 hour';
                   else
                     echo "$diff->h hours";
-                  echo '</td>';              
                 }
+                echo '</td>';
               }
             }
 
