@@ -236,7 +236,7 @@ if($user != NULL) {
 		    <td height=\"30\">Seller:</td>
 		    <td>&nbsp;</td>
 		    <td height=\"30\">
-		      <a href=\"/users/view.php?username=$item_info[2]\">$item_info[2]</a>";
+		      <a href=\"/members/view.php?username=$item_info[2]\">$item_info[2]</a>";
 		
 		if (($rating_info = mysql_get_avg_rating($c, $item_info[2])) != NULL) {
 			printf("&nbsp;&nbsp;(%.1f/10 rating)", $rating_info[0]);

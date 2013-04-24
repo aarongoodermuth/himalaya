@@ -193,7 +193,7 @@ function mysql_get_search_query()
     $where_clause  .= " AND A.item_id = S.item_id AND " .
                       "(S.item_id IN (SELECT item_id FROM $AUCTIONS_TABLE)) ";
   }
-
+print_message($select_clause . $from_clause . $where_clause);
   return $select_clause . $from_clause . $where_clause;
 } 
 
@@ -303,7 +303,7 @@ if($user != null)
             $cat_name = $cats->xpath("/category_tree/category[id=$cat_id]/name");
             echo "<td><a href=\"/items/browse.php?cid=$cat_id\">$cat_name[0]</a></td>";
             echo '<td>' . int_to_condition($i_cond) . '</td>';
-            echo "<td><a href=\"/users/view.php?username=$seller_name\">$seller_name</a></td>";
+            echo "<td><a href=\"/members/view.php?username=$seller_name\">$seller_name</a></td>";
 
             if($only_sales) // show sale price
             {

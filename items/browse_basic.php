@@ -409,7 +409,7 @@ if($user != null)
           echo "<td><a href=\"/items/view.php?id=$item_id\">$prod_name</a></td>";
           echo "<td><a href=\"items/browse.php?cid=$cat_id\">" . cat_get_name($cats, $cat_id) . '</a></td>';
           echo '<td>' . int_to_condition($i_cond) . '</td>';
-          echo "<td><a href=\"/users/view.php?username=$seller_name\">$seller_name</a></td>";
+          echo "<td><a href=\"/members/view.php?username=$seller_name\">$seller_name</a></td>";
 
           if($only_sales) // show sale price
           {
