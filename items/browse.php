@@ -283,7 +283,7 @@ if($user != null)
   }
   
   // begin category list/options div (aka left bar)
-  echo '<div class="span" style="margin-right:20px">';
+  echo '<div class="span" style="margin-right:20px; margin-bottom:20px">';
   
   // begin category list div
   echo '  <div class="row">';
@@ -378,7 +378,7 @@ if($user != null)
       {
         echo "Showing a total of $num_items items in $browse_cat_name and its subcategories:<br>";
       
-        echo '<table cellpadding="5px">
+        echo '<table cellpadding="5px" style="margin-bottom:5px">
               <tr align="center">
                 <td><b>Product name</b></td>
                 <td><b>Category</b></td>
@@ -408,7 +408,6 @@ if($user != null)
           else
             echo '<tr>';
           
-          //echo '<tr>';
           echo "<td><a href=\"/items/view.php?id=$item_id\">$prod_name</a></td>";
           echo "<td><a href=\"/items/browse.php?cid=$cat_id\">" . cat_get_name($cats, $cat_id) . '</a></td>';
           echo '<td>' . int_to_condition($i_cond) . '</td>';
@@ -460,6 +459,7 @@ if($user != null)
   echo '</div>'; // container-fluid
   
   print_html_footer_js();
+  print_html_footer2();
   print_html_footer();
 }
 else // user not logged in

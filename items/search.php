@@ -123,7 +123,7 @@ function mysql_get_search_query()
 
   // note: this select clause will return bogus values for auction attributes when only
   //       sale items are specified, but these attributes are just ignored anyway
-  $select_clause = 'SELECT P.p_name, S.scondition, M.username, S.item_id';
+  $select_clause = 'SELECT P.p_name, S.scondition, M.username, S.item_id, P.category_id';
   $from_clause   = " FROM $PRODUCTS_TABLE P, $SALE_ITEMS_TABLE S, $MEMBERS_TABLE M";
 
   $where_clause  = ' WHERE ';
@@ -212,6 +212,8 @@ $user = check_logged_in_user($c);
 
 if($user != null)
 {
+  $cats = new SimpleXMLElement('../common/categories.xml', null, true); // get categories XML file
+
   print_html_header();
   echo '<body>';
   print_html_nav();
@@ -248,16 +250,16 @@ if($user != null)
 
         if($only_sales) // only show product name, item cond., seller, and price
         {
-          mysqli_stmt_bind_result($stmt, $prod_name, $i_cond, $seller_name, $item_id, $sale_price);
+          mysqli_stmt_bind_result($stmt, $prod_name, $i_cond, $seller_name, $item_id, $cat_id, $sale_price);
         }
         else if($only_aucts) // show auction information
         {
-          mysqli_stmt_bind_result($stmt, $prod_name, $i_cond, $seller_name, $item_id, $recent_bid,
+          mysqli_stmt_bind_result($stmt, $prod_name, $i_cond, $seller_name, $item_id, $cat_id, $recent_bid,
                                          $auc_end_time);
         }
         else // show auction or sale information where appropriate
         {
-          mysqli_stmt_bind_result($stmt, $prod_name, $i_cond, $seller_name, $item_id, $sale_price,
+          mysqli_stmt_bind_result($stmt, $prod_name, $i_cond, $seller_name, $item_id, $cat_id, $sale_price,
                                          $recent_bid, $auc_end_time);
         }
 
@@ -267,9 +269,10 @@ if($user != null)
         }
         else // show results in a table
         {
-          echo '<table cellpadding="5">
+          echo '<table cellpadding="5" style="margin-bottom:20px">
                 <tr align="center">
                   <td><b>Product name</b></td>
+                  <td><b>Category</b></td>
                   <td><b>Item condition</b></td>
                   <td><b>Seller</b></td>';
           if($only_sales)
@@ -288,10 +291,17 @@ if($user != null)
           } 
           echo '</tr>';
 
+          $i = 0;
           while(mysqli_stmt_fetch($stmt))
-          {
-            echo '<tr align="center">';
+          {            
+            if($i++ % 2 == 0) // alternate table row color
+              echo '<tr style="background-color:#ecf0f5">';
+            else
+              echo '<tr>';
+            
             echo "<td><a href=\"/items/view.php?id=$item_id\">$prod_name</a></td>";
+            $cat_name = $cats->xpath("/category_tree/category[id=$cat_id]/name");
+            echo "<td><a href=\"/items/browse.php?cid=$cat_id\">$cat_name[0]</a></td>";
             echo '<td>' . int_to_condition($i_cond) . '</td>';
             echo "<td><a href=\"/users/view.php?username=$seller_name\">$seller_name</a></td>";
 
@@ -360,6 +370,7 @@ if($user != null)
   }
 
   print_html_footer_js();
+  print_html_footer2();
   print_html_footer();
 }
 else // user not logged in
