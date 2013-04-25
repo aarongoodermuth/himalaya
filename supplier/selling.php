@@ -144,12 +144,12 @@ if($user != null)
   }
   else
   {
-    header('refresh:0; url=../supplier/selling.php');
+    header('refresh:0; url=/users/selling.php');
   }
 }
 else
 {
-  header('refresh:0; url=../welcome/login.php');
+  header('refresh:0; url=/welcome/login.php');
 }
 
 echo '</div>';

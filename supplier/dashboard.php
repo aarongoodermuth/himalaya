@@ -25,9 +25,10 @@ function show_links()
 {
   echo '<p><a href="selling.php">Items I am selling</a></p>';                // items I'm selling
   echo '<p><a href="orders.php">My Unfullfilled Orders</a></p>';             // items that have sold but need shipping
+  echo '<p><a href="/members/sellitem.php">Sell Item</a></p>';             // sell an item
   echo '<p><a href="editaccount.php">Edit Account</a></p>';                  // edit account
-  echo '<p><a href="../members/changepassword.php">Change Password</a></p>'; // change password
-  echo '<p><a href="../welcome/logout.php">Log Out</a></p>';                 // log out
+  echo '<p><a href="/members/changepassword.php">Change Password</a></p>'; // change password
+  echo '<p><a href="/welcome/logout.php">Log Out</a></p>';                 // log out
 } 
 
 /*******************/
@@ -63,7 +64,7 @@ if($user != null)
   elseif($type == $USER_TYPE_MAPPING[0])
   {
     // is a supplier
-    header('refresh:0; url=../user/dashboard.php');
+    header('refresh:0; url=/user/dashboard.php');
   }
   else
   {
@@ -72,7 +73,7 @@ if($user != null)
 }
 else
 {
-  header('refresh:0; url=../welcome/login.php');
+  header('refresh:0; url=/welcome/login.php');
 }
 
 mysql_disconnect($c);

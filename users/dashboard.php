@@ -23,18 +23,19 @@ include_once '/home/goodermuth/dev/websites/himalaya/common/functions.php';
 function show_links()
 {
   echo '<div class="pvl">';
-  echo '<p><a href="selling.php">Items I am selling</a></p>';                // items I'm selling
-  echo '<p><a href="bought.php">Items I am buying</a></p>';                  // items I have bought
-  echo '<p><a href="highbidder.php">Items where I am high bidder</a></p>';        // items where i am high bidder
+  echo '<p><a href="selling.php">Items I am selling</a></p>';                  // items I'm selling
+  echo '<p><a href="bought.php">Items I am buying</a></p>';                    // items I have bought
+  echo '<p><a href="highbidder.php">Items where I am high bidder</a></p>';     // items where i am high bidder
   echo '<p><a href="order.php">My unfullfilled orders</a></p>';
-  echo '<p><a href="../items/search.php">Search or Browse</a></p>';          // search/browse
-  echo '<p><a href="sellitem.php">Sell Item</a></p>';                        // sell an item
-  echo '<p><a href="nickspage.php">Rate members you have bought from</a></p>';
+  echo '<p><a href="/items/search.php">Search</a></p>';                      // search
+  echo '<p><a href="/items/browse.php">Browse</a></p>';                      // browse
+  echo '<p><a href="/members/sellitem.php">Sell Item</a></p>';               // sell an item
+  echo '<p><a href="rateseller.php">Rate members you have bought from</a></p>';
   echo '<p><a href="redeem.php">Redeem a Gift Card</a></p>';
   echo '<p><a href="balance.php">Show Gift Card Balance</a></p>';
-  echo '<p><a href="editaccount.php">Edit Account</a></p>';                  // edit account
-  echo '<p><a href="../members/changepassword.php">Change Password</a></p>'; // change password
-  echo '<p><a href="../welcome/logout.php">Log Out</a></p>';                 // log out
+  echo '<p><a href="editaccount.php">Edit Account</a></p>';                    // edit account
+  echo '<p><a href="/members/changepassword.php">Change Password</a></p>';   // change password
+  echo '<p><a href="/welcome/logout.php">Log Out</a></p>';                   // log out
   echo '</div>';
 } 
 
@@ -71,7 +72,7 @@ if($user != null)
   elseif($type == $USER_TYPE_MAPPING[1])
   {
     // is a supplier
-    header('refresh:0; url=../supplier/dashboard.php');
+    header('refresh:0; url=/supplier/dashboard.php');
   }
   else
   {
@@ -80,7 +81,7 @@ if($user != null)
 }
 else
 {
-  header('refresh:0; url=../welcome/login.php');
+  header('refresh:0; url=/welcome/login.php');
 }
 
 mysql_disconnect($c);
