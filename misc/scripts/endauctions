@@ -132,6 +132,46 @@ function terminate()
 		/usr/local/bin/catxml.sh > $CATXML
 
 		# notify seller and highest bidder
+		echo "
+<html>
+	<head>
+		<title>Himalaya.biz - auction over</title>
+	</head>
+	<body>
+		<h2>Your auction has ended</h2>
+		You are receiving this message because the item you had for
+		auction on Himalaya.biz -- $PNAME -- was not sold, because  
+		the winning bid did not meet or exceed your reserve price.
+		<br><br>
+
+		As a result, the item has been removed from our inventory, but 
+		feel free to 
+		<a href=\"$SITEURL/members/sellitem.php\">post it again</a> as 
+		an auction or a sale.<br><br>
+		
+		Thanks for shopping with Himalaya.biz!<br><br>
+	  
+		-- The Himalaya Team<br>
+	</body>
+</html>" > $TOSELLER
+
+		echo "
+<html>
+	<head>
+		<title>Himalaya.biz - auction over</title>
+	</head>
+	<body>
+		<h2>Your auction has ended</h2>
+		You are receiving this message because the item you won an 
+		auction for on Himalaya.biz -- $PNAME -- was not sold, 
+		because your winning bid did not meet the seller's hidden 
+		reserve price.<br><br
+
+		Thanks for shopping with Himalaya.biz!<br><br>
+	  
+		-- The Himalaya Team<br>
+	</body>
+</html>" > $TOSELLER
 		
 		
 	else
