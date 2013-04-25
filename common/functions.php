@@ -137,7 +137,7 @@ function show_form($form_name)
 // (string)
 function sanitize($input)
 {
-  $input = mysql_real_escape_string($input);
+  //$input = mysql_real_escape_string($input);
   return $input;
 }
 
